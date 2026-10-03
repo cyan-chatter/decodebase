@@ -52,9 +52,10 @@ def fake_ollama() -> FakeOllama:
 
 
 @pytest.fixture
-def client(fake_ollama: FakeOllama) -> OllamaClient:
-    settings = Settings()
-    return OllamaClient(settings, transport=fake_ollama.transport)
+def client(fake_ollama: FakeOllama, tmp_path):
+    settings = Settings(state_dir=str(tmp_path / ".cfl"))
+    with OllamaClient(settings, transport=fake_ollama.transport) as instance:
+        yield instance
 
 
 @pytest.fixture

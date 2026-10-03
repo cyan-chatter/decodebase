@@ -143,6 +143,18 @@ def reset_embeddings(conn: psycopg.Connection, dim: int) -> None:
 # -----------------------------------------------------------------------------
 
 
+def database_diagnostics(conn: psycopg.Connection) -> tuple[set[str], str | None]:
+    """Read extension and schema metadata for doctor, including unmigrated databases."""
+    extensions = {
+        row[0] for row in conn.execute(
+            "SELECT extname FROM pg_extension WHERE extname IN ('vector', 'pg_trgm')"
+        ).fetchall()
+    }
+    exists = conn.execute("SELECT to_regclass('public.meta')").fetchone()[0]
+    version = get_meta(conn, 'schema_version') if exists else None
+    return extensions, version
+
+
 def get_meta(conn: psycopg.Connection, key: str) -> str | None:
     """Get a meta value by key."""
     row = conn.execute(

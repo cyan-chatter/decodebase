@@ -65,47 +65,27 @@ def check_models_pulled(client: OllamaClient, settings: Settings) -> None:
 def warm_and_benchmark(client: OllamaClient, settings: Settings) -> Bench:
     """Load both models and measure throughput. Never raises; returns zeros on error."""
     try:
-        estimated_tokens = settings.num_ctx - 512
-        target_chars = int(estimated_tokens * settings.chars_per_token)
+        from cfl.core.budget import cap_tool_output
+
+        target_tokens = settings.num_ctx - settings.template_overhead - 512
         unit = "The quick brown fox jumps over the lazy dog. "
-        repeats = max(1, target_chars // len(unit) + 1)
-        padded_prompt = (unit * repeats)[:target_chars]
-
-        resp = client._client.post(
-            "/api/generate",
-            json={
-                "model": settings.gen_model,
-                "prompt": padded_prompt,
-                "options": {
-                    "num_ctx": settings.num_ctx,
-                    "num_predict": 64,
-                },
-                "stream": False,
-                "keep_alive": -1,
-            },
+        padded_prompt = cap_tool_output(
+            unit * settings.num_ctx,
+            target_tokens,
+            counter=client.counter,
+            pointer="Benchmark padding omitted.",
         )
-        resp.raise_for_status()
-        data = resp.json()
-
-        prompt_eval_count: int = data.get("prompt_eval_count", 0)
-        prompt_eval_duration: float = data.get("prompt_eval_duration", 1)
-        eval_count: int = data.get("eval_count", 0)
-        eval_duration: float = data.get("eval_duration", 1)
-
-        prefill_tps = prompt_eval_count / (prompt_eval_duration / 1e9) if prompt_eval_duration else 0.0
+        result = client.generate(padded_prompt, "", num_predict=64, task="benchmark")
+        prompt_eval_count = result.prompt_tokens
+        prompt_eval_duration = result.prompt_eval_duration
+        eval_count = result.output_tokens
+        eval_duration = result.eval_duration
+        prefill_tps = (
+            prompt_eval_count / (prompt_eval_duration / 1e9) if prompt_eval_duration else 0.0
+        )
         gen_tps = eval_count / (eval_duration / 1e9) if eval_duration else 0.0
-
-        estimated_tokens_sent = len(padded_prompt) / settings.chars_per_token
-        truncation_warning = prompt_eval_count < 0.8 * estimated_tokens_sent
-
-        # Embedder warm-up
-        embed_resp = client._client.post(
-            "/api/embed",
-            json={"model": settings.embed_model, "input": ["hello world"]},
-        )
-        embed_resp.raise_for_status()
-        embed_data = embed_resp.json()
-        embed_dim = len(embed_data["embeddings"][0])
+        truncation_warning = prompt_eval_count < 0.8 * client.counter.count(padded_prompt)
+        embed_dim = len(client.embed(["hello world"])[0])
 
         bench = Bench(
             prefill_tps=round(prefill_tps, 1),
@@ -184,22 +164,8 @@ def check_db(settings: Settings) -> str:
         return f"Cannot connect to DB: {exc}"
 
     try:
-        exts = {
-            row[0]
-            for row in conn.execute(
-                "SELECT extname FROM pg_extension WHERE extname IN ('vector', 'pg_trgm')"
-            ).fetchall()
-        }
+        exts, schema_version = db.database_diagnostics(conn)
         missing = [e for e in ("vector", "pg_trgm") if e not in exts]
-
-        schema_version: str | None = None
-        meta_exists = conn.execute(
-            "SELECT 1 FROM information_schema.tables WHERE table_name = 'meta' LIMIT 1"
-        ).fetchone()
-        if meta_exists:
-            row = conn.execute("SELECT schema_version FROM meta LIMIT 1").fetchone()
-            if row:
-                schema_version = str(row[0])
 
         parts = ["Connected"]
         if missing:
@@ -287,7 +253,10 @@ def run_doctor(settings: Settings) -> int:
                 f"prefill {bench.prefill_tps:.0f} t/s · gen {bench.gen_tps:.0f} t/s",
             )
             if bench.truncation_warning:
-                warn("Truncation", "prompt was truncated — check num_ctx setting")
+                warn(
+                    "Token estimate",
+                    "reported prompt count is below estimate; verify tokenizer and num_ctx",
+                )
             ok("Embed dim", str(bench.embed_dim))
         else:
             warn("Throughput", "benchmark skipped (models not loaded or error)")

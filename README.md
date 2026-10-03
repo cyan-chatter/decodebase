@@ -48,3 +48,44 @@ To change the embedding dimension, run `cfl db reset-embeddings --dim N`, then u
 `CFL_EMBED_DIM` or `embed_dim` in `cfl.toml` to match. This explicitly clears the dense
 view and embedding hashes while preserving parsed symbols, summaries, and graph data.
 Migrations reject a dimension mismatch until the reset is performed.
+
+## Token budgets and Ollama calls
+
+Milestone 4 provides the native [Ollama client](https://docs.ollama.com/api/generate)
+for subsequent summary and answer stages. Every generation reserves `num_predict`
+and template overhead inside the configured `num_ctx`, checks the prompt before
+sending, and checks Ollama's reported prompt count afterward. A process-wide lock
+serializes generation, including stream consumption. Streaming callers must consume
+or close the iterator to release it. Connection failures, HTTP 5xx, and OOM payloads
+retry at most three attempts; HTTP 4xx fails immediately.
+
+Prompt assembly removes or truncates lower-priority context first. Oversized functions
+can be split at complete AST statements; a single statement that cannot fit raises
+`BudgetExceeded`. Tool output caps retain the head, tail, an omission marker, and a
+pointer. Embeddings use batches of 32 with server truncation disabled and dimension
+validation.
+
+Without an exact tokenizer, counts use the configured character ratio plus a 15%
+default margin. Calibration persists under `state_dir/calibration.json` and ignores
+suspected prompt-cache hits. Call metadata appends to
+`state_dir/logs/calls-YYYYMMDD.jsonl`; prompts and source text are not stored.
+`GenResult` reports native duration fields in nanoseconds and wall latency in seconds.
+
+For optional exact counting with the default generator, download its
+[Qwen tokenizer](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/blob/main/tokenizer.json):
+
+```sh
+mkdir -p .cfl/tokenizers/gen
+curl --fail --location \
+  https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/resolve/main/tokenizer.json \
+  --output .cfl/tokenizers/gen/tokenizer.json
+export CFL_TOKENIZER_FILE="$PWD/.cfl/tokenizers/gen/tokenizer.json"
+```
+
+Choose a matching tokenizer when changing `gen_model`. Milestone 4 tests use a small
+local tokenizer and `FakeOllama`, and require no GPU or running Ollama server:
+
+```sh
+pytest tests/test_budget.py tests/test_client.py tests/test_trace_log.py
+pytest  # Full regression suite also requires the PostgreSQL container.
+```
