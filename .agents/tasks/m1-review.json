@@ -1,0 +1,26 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "label": "Missing db.py repository functions",
+      "description": "db.py contains only connect(). All data access (files, symbols, edges) must be implemented before pipeline can store results.",
+      "severity": "blocking"
+    },
+    {
+      "label": "Missing FakeOllama",
+      "description": "tests/fakes.py does not exist. FakeOllama with fail_next, call_log, max_in_flight tracking, and deterministic embeddings is required for testing.",
+      "severity": "blocking"
+    },
+    {
+      "label": "Missing scan.py",
+      "description": "cfl/pipeline/scan.py does not exist. File discovery with .gitignore respect and binary/secret filtering is required.",
+      "severity": "blocking"
+    },
+    {
+      "label": "Missing conftest.py",
+      "description": "tests/conftest.py does not exist. Test fixtures for pytest isolation are needed.",
+      "severity": "minor"
+    }
+  ],
+  "reviewDoc": "/home/cyan/shelf/cs/CodeFlowLens/.agents/tasks/m1-review.md"
+}
