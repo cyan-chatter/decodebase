@@ -1,0 +1,100 @@
+[
+  {
+    "caller": "aliases.run",
+    "callee_expr": "proc",
+    "callee_qualname": "process",
+    "resolution": "import",
+    "min_confidence": 0.95
+  },
+  {
+    "caller": "services.create_task",
+    "callee_expr": "repo.save",
+    "callee_qualname": "Repository.save",
+    "resolution": "typed",
+    "min_confidence": 0.8
+  },
+  {
+    "caller": "services.create_task",
+    "callee_expr": "r.save",
+    "callee_qualname": "Repository.save",
+    "resolution": "typed",
+    "min_confidence": 0.8
+  },
+  {
+    "caller": "recursion.is_even",
+    "callee_expr": "is_odd",
+    "callee_qualname": "is_odd",
+    "resolution": "local",
+    "min_confidence": 0.9
+  },
+  {
+    "caller": "recursion.is_odd",
+    "callee_expr": "is_even",
+    "callee_qualname": "is_even",
+    "resolution": "local",
+    "min_confidence": 0.9
+  },
+  {
+    "caller": "recursion.factorial",
+    "callee_expr": "factorial",
+    "callee_qualname": "factorial",
+    "resolution": "local",
+    "min_confidence": 0.9
+  },
+  {
+    "caller": "models.Repository.save",
+    "callee_expr": "self.conn.execute",
+    "callee_qualname": null,
+    "resolution": "external",
+    "min_confidence": 0.0
+  },
+  {
+    "caller": "external.do_work",
+    "callee_expr": "os.path.join",
+    "callee_qualname": null,
+    "resolution": "external",
+    "min_confidence": 0.0
+  },
+  {
+    "caller": "external.do_work",
+    "callee_expr": "len",
+    "callee_qualname": null,
+    "resolution": "external",
+    "min_confidence": 0.0
+  },
+  {
+    "caller": "external.do_work",
+    "callee_expr": "d.get",
+    "callee_qualname": null,
+    "resolution": "external",
+    "min_confidence": 0.0
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Base().save",
+    "callee_qualname": "Base.save",
+    "resolution": "ambiguous",
+    "min_confidence": 0.4
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Base().save",
+    "callee_qualname": "Repository.save",
+    "resolution": "ambiguous",
+    "min_confidence": 0.4
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Repository(None).save",
+    "callee_qualname": "Base.save",
+    "resolution": "ambiguous",
+    "min_confidence": 0.4
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Repository(None).save",
+    "callee_qualname": "Repository.save",
+    "resolution": "ambiguous",
+    "min_confidence": 0.4
+  }
+]

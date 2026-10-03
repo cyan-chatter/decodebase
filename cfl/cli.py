@@ -49,6 +49,24 @@ def build(
 
 
 @app.command()
+def scan(
+    repo: str = typer.Argument(".", help="Path to the repository to scan"),
+) -> None:
+    """Scan a repository: parse files (Stage 1) and resolve call graph (Stage 2)."""
+    from cfl.core.db import connect
+    from cfl.pipeline.scan import run_stage1, run_stage2
+
+    settings = get_settings()
+    conn = connect(settings.dsn)
+    try:
+        run_stage1(conn, settings, repo)
+        run_stage2(conn, settings, repo)
+        console.print("[green]Scan complete.[/green]")
+    finally:
+        conn.close()
+
+
+@app.command()
 def status(
     repo: str = typer.Argument(".", help="Repository path"),
 ) -> None:

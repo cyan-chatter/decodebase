@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import pathlib
 from collections.abc import Iterator
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING
 
 import pathspec
@@ -211,5 +211,64 @@ def register_files(
 def run_stage1(conn: Connection, settings: Settings, repo_root: str) -> None:
     """Stage 1: scan files and register in DB."""
     root = pathlib.Path(repo_root)
+    if not root.is_dir():
+        raise ValueError(f"Repository directory does not exist: {repo_root}")
     files = list(discover_files(root, settings))
     register_files(conn, files, repo_root)
+
+    import tokenize
+
+    from cfl.core.db import ParsedRow, files_needing_parse, mark_parsed, sync_symbols
+    from cfl.core.hashing import code_hash
+    from cfl.parser import python_adapter  # noqa: F401 — registers the Python adapter
+    from cfl.parser.base import get_adapter
+
+    for file in files_needing_parse(conn):
+        path = file["path"]
+        try:
+            adapter = get_adapter(file["language"])
+        except KeyError:
+            mark_parsed(conn, path, "unsupported", None, [], [])
+            continue
+        try:
+            with tokenize.open(root / path) as source_file:
+                source = source_file.read()
+            parsed = adapter.parse(pathlib.Path(path), source)
+        except (OSError, UnicodeError, SyntaxError) as exc:
+            with conn.transaction():
+                sync_symbols(conn, path, [])
+                mark_parsed(conn, path, "parse_failed", str(exc), [], [])
+            continue
+        rows = []
+        for symbol in parsed.symbols:
+            data = asdict(symbol)
+            extra = {
+                key: data.pop(key) for key in ("bases", "init_attrs", "param_types", "local_types")
+            }
+            rows.append(
+                ParsedRow(
+                    **data,
+                    extra=extra,
+                    code_hash=code_hash(symbol.raw_code),
+                    token_est=(len(symbol.raw_code) + 3) // 4,
+                )
+            )
+        with conn.transaction():
+            sync_symbols(conn, path, rows)
+            mark_parsed(
+                conn,
+                path,
+                "parse_failed" if parsed.parse_error else "parsed",
+                parsed.parse_error,
+                [asdict(i) for i in parsed.imports],
+                parsed.exports,
+            )
+
+
+def run_stage2(conn: Connection, settings: Settings, repo_root: str) -> None:
+    """Stage 2: resolve call-graph edges and compute graph metrics."""
+    from cfl.parser.graph import run_graph_stage
+    from cfl.parser.resolver import run_resolution
+
+    run_resolution(conn, settings)
+    run_graph_stage(conn, settings)

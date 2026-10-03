@@ -191,7 +191,7 @@ def upsert_file(
     if existing[0] != sha256:
         # sha256 changed, update
         conn.execute(
-            "UPDATE files SET sha256 = %s, language = %s, size_bytes = %s, token_est = %s "
+            "UPDATE files SET sha256 = %s, language = %s, size_bytes = %s, token_est = %s, parse_status = 'pending' "
             "WHERE path = %s",
             (sha256, language, size_bytes, token_est, path),
         )
@@ -203,8 +203,6 @@ def upsert_file(
 
 def delete_missing_files(conn: psycopg.Connection, present_paths: set[str]) -> int:
     """Delete files not in present_paths. Returns rowcount."""
-    if not present_paths:
-        return 0
     result = conn.execute(
         "DELETE FROM files WHERE path != ALL(%s)",
         (list(present_paths),),
@@ -338,8 +336,10 @@ def sync_symbols(
             else:
                 # Unchanged, just update basic fields
                 conn.execute(
-                    "UPDATE symbols SET start_line = %s, end_line = %s, token_est = %s WHERE id = %s",
-                    (row.start_line, row.end_line, row.token_est, symbol_id),
+                    "UPDATE symbols SET start_line = %s, end_line = %s, token_est = %s, "
+                    "raw_code = %s, call_sites = %s, extra = %s WHERE id = %s",
+                    (row.start_line, row.end_line, row.token_est, row.raw_code,
+                     json.dumps(row.call_sites), json.dumps(row.extra), symbol_id),
                 )
                 result.unchanged += 1
 
@@ -367,22 +367,15 @@ def replace_edges(
     rows: list[dict],
 ) -> None:
     """Replace edges for given source with new rows."""
-    if not rows:
-        return
-
-    caller_ids = [row["caller_id"] for row in rows if row.get("caller_id")]
-
-    # Delete existing edges
-    conn.execute(
-        "DELETE FROM edges WHERE caller_id = ANY(%s) AND source = %s",
-        (caller_ids, source),
-    )
+    # Each invocation supplies the complete edge set for this source.
+    conn.execute("DELETE FROM edges WHERE source = %s", (source,))
 
     # Insert new edges
     for row in rows:
         conn.execute(
             """INSERT INTO edges (caller_id, callee_id, callee_expr, line, kind, resolution, source, confidence, control_ctx)
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+               ON CONFLICT DO NOTHING""",
             (row.get("caller_id"), row.get("callee_id"), row.get("callee_expr"),
              row.get("line"), row.get("kind"), row.get("resolution"), source,
              row.get("confidence"), row.get("control_ctx")),
@@ -396,7 +389,9 @@ def fetch_edges(conn: psycopg.Connection, min_conf: float) -> list[dict]:
            FROM edges WHERE confidence >= %s""",
         (min_conf,),
     ).fetchall()
-    return [dict(r) for r in rows]
+    columns = ["caller_id", "callee_id", "callee_expr", "line", "kind", "resolution",
+               "source", "confidence", "control_ctx"]
+    return [dict(zip(columns, row)) for row in rows]
 
 
 def set_graph_metrics(conn: psycopg.Connection, rows: list[dict]) -> None:
@@ -906,3 +901,19 @@ def save_eval_metrics(
            config = EXCLUDED.config""",
         (run_id, question_id, json.dumps(metrics), json.dumps(config)),
     )
+
+
+def get_all_symbols(conn: psycopg.Connection) -> list[dict]:
+    """Load symbols through the central DB access layer."""
+    ids = [row[0] for row in conn.execute("SELECT id FROM symbols ORDER BY id").fetchall()]
+    return get_symbols(conn, ids)
+
+
+def set_entrypoints(conn: psycopg.Connection, rows: list[dict]) -> None:
+    """Replace detected entrypoints, clearing flags that no longer apply."""
+    conn.execute("UPDATE symbols SET is_entrypoint = FALSE, entry_kind = NULL")
+    for row in rows:
+        conn.execute(
+            "UPDATE symbols SET is_entrypoint = TRUE, entry_kind = %s WHERE id = %s",
+            (row["entry_kind"], row["id"]),
+        )

@@ -67,3 +67,41 @@ def fixture_repo_path() -> pathlib.Path:
     p = pathlib.Path(__file__).parent / "fixtures" / "resolution_repo"
     p.mkdir(parents=True, exist_ok=True)
     return p
+
+
+@pytest.fixture
+def resolution_data(fixture_repo_path):
+    """Parsed fixture records in the same shape as the DB helpers return."""
+    from dataclasses import asdict
+
+    from cfl.core.hashing import file_sha256, symbol_id
+    from cfl.parser.python_adapter import PythonAdapter
+
+    symbols, files = [], []
+    for path in sorted(fixture_repo_path.glob("*.py")):
+        parsed = PythonAdapter().parse(path, path.read_text())
+        assert parsed.parse_error is None
+        files.append(
+            {
+                "path": path.name,
+                "sha256": file_sha256(path),
+                "imports": [asdict(i) for i in parsed.imports],
+                "exports": parsed.exports,
+            }
+        )
+        for symbol in parsed.symbols:
+            data = asdict(symbol)
+            extra = {
+                key: data.pop(key) for key in ("bases", "init_attrs", "param_types", "local_types")
+            }
+            parent = data.pop("parent_qualname")
+            symbols.append(
+                {
+                    **data,
+                    "extra": extra,
+                    "file_path": path.name,
+                    "id": symbol_id(path.name, symbol.qualname, symbol.start_line, False),
+                    "parent_id": f"{path.name}::{parent}" if parent else None,
+                }
+            )
+    return symbols, files

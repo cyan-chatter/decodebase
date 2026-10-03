@@ -54,7 +54,8 @@ def test_delete_missing_files(pg_conn):
 def test_delete_missing_empty_set(pg_conn):
     upsert_file(pg_conn, "src/a.py", "abc", "python", 100, None)
     removed = delete_missing_files(pg_conn, set())
-    assert removed == 0
+    assert removed == 1
+    assert list_files(pg_conn) == []
 
 
 def test_sync_symbols(pg_conn):
