@@ -40,6 +40,7 @@ def test_discover_files_excludes_lockfile(sample_repo):
     assert "package-lock.json" not in paths
 
 
+@pytest.mark.db
 def test_register_files(pg_conn, sample_repo):
     settings = Settings()
     files = list(discover_files(sample_repo, settings))

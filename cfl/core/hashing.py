@@ -21,11 +21,11 @@ def file_sha256(path: pathlib.Path) -> str:
 
 
 def normalize_code(s: str) -> str:
-    """Normalize code string: replace CRLF, rstrip each line, strip outer blank lines."""
+    """Normalize code string: replace CRLF, strip each line, strip outer blank lines."""
     # Replace CRLF with LF
     s = s.replace("\r\n", "\n")
-    # Rstrip each line
-    lines = [line.rstrip() for line in s.splitlines()]
+    # Strip each line (both leading and trailing whitespace)
+    lines = [line.strip() for line in s.splitlines()]
     # Strip outer blank lines
     while lines and not lines[0]:
         lines.pop(0)
