@@ -87,28 +87,55 @@ def run_migrations(
     Reads all .sql files sorted by filename, applies them in order.
     For files containing :EMBED_DIM placeholder, replaces with actual embed_dim.
     """
+    from cfl.core.errors import CflError
+
+    _validate_embed_dim(embed_dim)
     migrations_path = pathlib.Path(migrations_dir)
-    if not migrations_path.exists():
+    if not migrations_path.is_dir():
         raise FileNotFoundError(f"Migrations directory not found: {migrations_dir}")
+    if conn.execute("SELECT to_regclass('public.meta')").fetchone()[0]:
+        stored = get_meta(conn, "embed_dim")
+        if stored is not None and int(stored) != embed_dim:
+            raise CflError(f"Embedding dimension differs; run cfl db reset-embeddings --dim {embed_dim}")
+    actual = embedding_dimension(conn)
+    if actual is not None and actual != embed_dim:
+        raise CflError(f"Embedding dimension differs; run cfl db reset-embeddings --dim {embed_dim}")
+    for sql_file in sorted(migrations_path.glob("*.sql")):
+        content = sql_file.read_text(encoding="utf-8").replace(":EMBED_DIM", str(embed_dim))
+        with conn.transaction():
+            conn.execute(content)
+    with conn.transaction():
+        set_meta(conn, "schema_version", "1")
+        set_meta(conn, "embed_dim", str(embed_dim))
 
-    # Get all SQL files sorted by name
-    sql_files = sorted(migrations_path.glob("*.sql"))
 
-    for sql_file in sql_files:
-        content = sql_file.read_text(encoding="utf-8")
+def _validate_embed_dim(dim: int) -> None:
+    if isinstance(dim, bool) or not isinstance(dim, int) or dim < 1:
+        raise ValueError("Embedding dimension must be a positive integer")
 
-        # Replace :EMBED_DIM placeholder for embedding migrations
-        if ":EMBED_DIM" in content:
-            content = content.replace(":EMBED_DIM", str(embed_dim))
 
-        # Execute the migration
-        conn.execute(content)
+def embedding_dimension(conn: psycopg.Connection) -> int | None:
+    row = conn.execute(
+        """SELECT atttypmod FROM pg_attribute
+           WHERE attrelid = to_regclass('public.embeddings') AND attname = 'vec'
+             AND NOT attisdropped"""
+    ).fetchone()
+    return row[0] if row else None
 
-    # Insert schema_version if not present
-    conn.execute(
-        "INSERT INTO meta (key, value) VALUES ('schema_version', '1') "
-        "ON CONFLICT (key) DO NOTHING"
-    )
+
+def reset_embeddings(conn: psycopg.Connection, dim: int) -> None:
+    """Explicitly reset the dense view and its cached hashes to a new dimension."""
+    from psycopg import sql
+
+    _validate_embed_dim(dim)
+    with conn.transaction():
+        conn.execute("TRUNCATE TABLE embeddings")
+        conn.execute(sql.SQL("ALTER TABLE embeddings ALTER COLUMN vec TYPE vector({})")
+                     .format(sql.Literal(dim)))
+        conn.execute("UPDATE symbols SET embed_hash = NULL")
+        conn.execute("UPDATE files SET embed_hash = NULL")
+        set_meta(conn, "embed_dim", str(dim))
+        set_view_status(conn, "dense", "stale", {"embed_dim": dim})
 
 
 # -----------------------------------------------------------------------------
@@ -337,9 +364,9 @@ def sync_symbols(
                 # Unchanged, just update basic fields
                 conn.execute(
                     "UPDATE symbols SET start_line = %s, end_line = %s, token_est = %s, "
-                    "raw_code = %s, call_sites = %s, extra = %s WHERE id = %s",
+                    "raw_code = %s, call_sites = %s, extra = %s, signature = %s WHERE id = %s",
                     (row.start_line, row.end_line, row.token_est, row.raw_code,
-                     json.dumps(row.call_sites), json.dumps(row.extra), symbol_id),
+                     json.dumps(row.call_sites), json.dumps(row.extra), row.signature, symbol_id),
                 )
                 result.unchanged += 1
 
@@ -408,80 +435,6 @@ def set_graph_metrics(conn: psycopg.Connection, rows: list[dict]) -> None:
 # -----------------------------------------------------------------------------
 
 
-def callers_rows(
-    conn: psycopg.Connection,
-    id: str,
-    depth: int,
-    min_conf: float,
-) -> list[dict]:
-    """Find all callers of a symbol up to given depth."""
-    # Recursive CTE to find all callers
-    cte_query = """WITH RECURSIVE cte AS (
-        SELECT caller_id, callee_id, 1 as d FROM edges
-        WHERE callee_id = %s AND confidence >= %s
-        UNION ALL
-        SELECT e.caller_id, e.callee_id, cte.d + 1 FROM edges e
-        JOIN cte ON e.callee_id = cte.caller_id
-        WHERE cte.d < %s AND e.confidence >= %s
-    )
-    SELECT DISTINCT caller_id FROM cte"""
-
-    caller_ids = conn.execute(cte_query, (id, min_conf, depth, min_conf)).fetchall()
-    if not caller_ids:
-        return []
-
-    ids = [row[0] for row in caller_ids]
-    symbol_rows = conn.execute(
-        "SELECT * FROM symbols WHERE id = ANY(%s)",
-        (ids,),
-    ).fetchall()
-
-    columns = ["id", "file_path", "kind", "qualname", "name", "parent_id", "signature",
-               "decorators", "docstring", "start_line", "end_line", "raw_code", "code_hash",
-               "token_est", "pagerank", "summary_short", "summary_json", "summary_long",
-               "ctx_hash", "status", "attempts", "error", "search_text", "search", "embed_hash",
-               "call_sites", "extra", "is_async", "is_entrypoint", "entry_kind", "scc_id", "layer"]
-    return [dict(zip(columns, row)) for row in symbol_rows]
-
-
-def callees_rows(
-    conn: psycopg.Connection,
-    id: str,
-    depth: int,
-    min_conf: float,
-) -> list[dict]:
-    """Find all callees of a symbol up to given depth."""
-    cte_query = """WITH RECURSIVE cte AS (
-        SELECT callee_id, 1 as d FROM edges
-        WHERE caller_id = %s AND confidence >= %s AND callee_id IS NOT NULL
-        UNION ALL
-        SELECT e.callee_id, cte.d + 1 FROM edges e
-        JOIN cte ON e.caller_id = cte.callee_id
-        WHERE cte.d < %s AND e.confidence >= %s AND e.callee_id IS NOT NULL
-    )
-    SELECT DISTINCT callee_id FROM cte"""
-
-    callee_ids = conn.execute(cte_query, (id, min_conf, depth, min_conf)).fetchall()
-    if not callee_ids:
-        return []
-
-    ids = [row[0] for row in callee_ids if row[0] is not None]
-    if not ids:
-        return []
-
-    symbol_rows = conn.execute(
-        "SELECT * FROM symbols WHERE id = ANY(%s)",
-        (ids,),
-    ).fetchall()
-
-    columns = ["id", "file_path", "kind", "qualname", "name", "parent_id", "signature",
-               "decorators", "docstring", "start_line", "end_line", "raw_code", "code_hash",
-               "token_est", "pagerank", "summary_short", "summary_json", "summary_long",
-               "ctx_hash", "status", "attempts", "error", "search_text", "search", "embed_hash",
-               "call_sites", "extra", "is_async", "is_entrypoint", "entry_kind", "scc_id", "layer"]
-    return [dict(zip(columns, row)) for row in symbol_rows]
-
-
 def reach_rows(
     conn: psycopg.Connection,
     seed: str,
@@ -489,57 +442,100 @@ def reach_rows(
     depth: int,
     min_conf: float,
 ) -> list[dict]:
-    """Find reachable symbols in given direction."""
-    if direction == "callers":
-        return callers_rows(conn, seed, depth, min_conf)
-    elif direction == "callees":
-        return callees_rows(conn, seed, depth, min_conf)
-    return []
+    """Walk bounded simple paths and retain edge evidence for Python backtracking.
+
+    A direct self-call is returned once; recursive expansion never revisits a symbol.
+    External callees are returned as terminal rows and cannot be expanded.
+    """
+    if direction not in {"callers", "callees"}:
+        raise ValueError("direction must be callers or callees")
+    if depth < 1:
+        return []
+    endpoint = "caller_id" if direction == "callers" else "callee_id"
+    anchor = "callee_id" if direction == "callers" else "caller_id"
+    query = f"""WITH RECURSIVE walk AS (
+        SELECT e.*, e.{endpoint} AS node_id, %s::text AS parent_id, 1 AS depth,
+               ARRAY[%s::text, e.{endpoint}] AS path_ids
+        FROM edges e WHERE e.{anchor} = %s AND e.confidence >= %s
+        UNION ALL
+        SELECT e.*, e.{endpoint}, w.node_id, w.depth + 1,
+               w.path_ids || e.{endpoint}
+        FROM walk w JOIN edges e ON e.{anchor} = w.node_id
+        WHERE w.depth < %s AND e.confidence >= %s
+          AND (e.{endpoint} IS NULL OR NOT e.{endpoint} = ANY(w.path_ids))
+    )
+    SELECT s.id, s.qualname, s.name, s.kind, s.file_path, s.start_line, s.end_line,
+           w.caller_id, w.callee_id, w.callee_expr, w.line, w.resolution, w.confidence,
+           w.source, w.control_ctx, w.depth, w.parent_id, w.path_ids,
+           caller.file_path AS callsite_file
+    FROM walk w LEFT JOIN symbols s ON s.id = w.node_id
+    JOIN symbols caller ON caller.id = w.caller_id
+    ORDER BY w.depth, s.id, w.line, w.confidence DESC, w.source"""
+    rows = conn.execute(query, (seed, seed, seed, min_conf, depth, min_conf)).fetchall()
+    columns = ["id", "qualname", "name", "kind", "file_path", "start_line", "end_line",
+               "caller_id", "callee_id", "callee_expr", "line", "resolution", "confidence",
+               "source", "control_ctx", "depth", "parent_id", "path_ids", "callsite_file"]
+    return [dict(zip(columns, row)) for row in rows]
 
 
-def top_pagerank(conn: psycopg.Connection, n: int) -> list[dict]:
-    """Get top N symbols by pagerank."""
+def callers_rows(conn: psycopg.Connection, id: str, depth: int, min_conf: float) -> list[dict]:
+    return reach_rows(conn, id, "callers", depth, min_conf)
+
+
+def callees_rows(conn: psycopg.Connection, id: str, depth: int, min_conf: float) -> list[dict]:
+    return reach_rows(conn, id, "callees", depth, min_conf)
+
+
+def top_pagerank(conn: psycopg.Connection, n: int, min_conf: float = 0.6) -> list[dict]:
+    """Rank hubs and count distinct incoming/outgoing project neighbours."""
     rows = conn.execute(
-        """SELECT id, qualname, file_path, pagerank, summary_short FROM symbols
-           WHERE pagerank IS NOT NULL ORDER BY pagerank DESC LIMIT %s""",
-        (n,),
+        """SELECT s.id, s.qualname, s.file_path, s.pagerank, s.summary_short,
+           (SELECT count(DISTINCT e.caller_id) FROM edges e
+            WHERE e.callee_id = s.id AND e.confidence >= %s) AS fan_in,
+           (SELECT count(DISTINCT e.callee_id) FROM edges e
+            WHERE e.caller_id = s.id AND e.confidence >= %s) AS fan_out
+           FROM symbols s WHERE s.pagerank IS NOT NULL
+           ORDER BY s.pagerank DESC, s.id LIMIT %s""",
+        (min_conf, min_conf, n),
     ).fetchall()
-    return [{"id": r[0], "qualname": r[1], "file_path": r[2],
-             "pagerank": r[3], "summary_short": r[4]} for r in rows]
+    columns = ["id", "qualname", "file_path", "pagerank", "summary_short", "fan_in", "fan_out"]
+    return [dict(zip(columns, row)) for row in rows]
 
 
-def dead_candidates(
-    conn: psycopg.Connection,
-    min_conf: float,
-    include_tests: bool,
-) -> list[dict]:
-    """Find symbols that are never called (dead code candidates)."""
-    query = """SELECT s.id, s.qualname, s.file_path, s.kind FROM symbols s
-               WHERE s.is_entrypoint = FALSE AND NOT EXISTS (
+def dead_candidates(conn: psycopg.Connection, min_conf: float, include_tests: bool) -> list[dict]:
+    """Return uncalled, non-entrypoint symbols; semantic exclusions live in the engine."""
+    query = """SELECT s.id, s.qualname, s.name, s.file_path, s.kind, s.parent_id,
+                      s.start_line, s.end_line
+               FROM symbols s WHERE NOT coalesce(s.is_entrypoint, FALSE) AND NOT EXISTS (
                    SELECT 1 FROM edges e WHERE e.callee_id = s.id AND e.confidence >= %s
                )"""
     if not include_tests:
-        query += """ AND s.file_path NOT LIKE 'tests/%' AND s.file_path NOT LIKE '%/test_%'
-                     AND s.file_path NOT LIKE '%_test.py'"""
-
+        query += """ AND s.file_path !~ '(^|/)(tests?|test_[^/]*|[^/]*_test\\.py)(/|$)'"""
+    query += " ORDER BY s.file_path, s.start_line, s.id"
     rows = conn.execute(query, (min_conf,)).fetchall()
-    return [{"id": r[0], "qualname": r[1], "file_path": r[2], "kind": r[3]} for r in rows]
+    columns = ["id", "qualname", "name", "file_path", "kind", "parent_id", "start_line", "end_line"]
+    return [dict(zip(columns, row)) for row in rows]
 
 
-def lookup_symbols(
-    conn: psycopg.Connection,
-    query: str,
-    limit: int,
-) -> list[dict]:
-    """Search symbols by qualname or name."""
-    pattern = f"%{query}%"
-    rows = conn.execute(
-        """SELECT id, qualname, name, file_path, kind, summary_short FROM symbols
-           WHERE qualname ILIKE %s OR name ILIKE %s LIMIT %s""",
-        (pattern, pattern, limit),
-    ).fetchall()
-    return [{"id": r[0], "qualname": r[1], "name": r[2],
-             "file_path": r[3], "kind": r[4], "summary_short": r[5]} for r in rows]
+def lookup_symbols(conn: psycopg.Connection, query: str, limit: int) -> list[dict]:
+    """Look up names or path-qualified names, ranking exact matches before substrings."""
+    file_path, sep, name = query.partition("::")
+    if not sep:
+        name = query
+    pattern = "%" + name.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+    sql = """SELECT id, qualname, name, file_path, kind, summary_short, start_line, end_line
+             FROM symbols WHERE (qualname ILIKE %s OR name ILIKE %s)"""
+    params: list = [pattern, pattern]
+    if sep:
+        sql += " AND file_path = %s"
+        params.append(file_path.removeprefix("./"))
+    sql += """ ORDER BY CASE WHEN id = %s THEN 0 WHEN qualname = %s THEN 1
+               WHEN name = %s THEN 2 WHEN qualname LIKE %s THEN 3 ELSE 4 END, id LIMIT %s"""
+    suffix = "%." + pattern[1:-1]
+    params.extend([query, name, name, suffix, limit])
+    rows = conn.execute(sql, params).fetchall()
+    columns = ["id", "qualname", "name", "file_path", "kind", "summary_short", "start_line", "end_line"]
+    return [dict(zip(columns, row)) for row in rows]
 
 
 def symbols_in_file(conn: psycopg.Connection, path: str) -> list[dict]:
@@ -681,20 +677,17 @@ def lexical_search(
              "summary_short": r[3], "rank": r[4]} for r in rows]
 
 
-def trigram_search(
-    conn: psycopg.Connection,
-    q: str,
-    limit: int,
-) -> list[dict]:
-    """Search using PostgreSQL trigram similarity."""
+def trigram_search(conn: psycopg.Connection, q: str, limit: int) -> list[dict]:
+    """Fuzzy symbol locations ordered by trigram similarity."""
     rows = conn.execute(
-        """SELECT id, qualname, file_path, summary_short,
-           similarity(qualname, %s) as sim
-           FROM symbols WHERE qualname %% %s ORDER BY sim DESC LIMIT %s""",
-        (q, q, limit),
+        """SELECT id, qualname, name, file_path, kind, summary_short, start_line, end_line,
+                  greatest(similarity(qualname, %s), similarity(name, %s)) AS rank
+           FROM symbols WHERE qualname %% %s OR name %% %s
+           ORDER BY rank DESC, id LIMIT %s""",
+        (q, q, q, q, limit),
     ).fetchall()
-    return [{"id": r[0], "qualname": r[1], "file_path": r[2],
-             "summary_short": r[3], "sim": r[4]} for r in rows]
+    columns = ["id", "qualname", "name", "file_path", "kind", "summary_short", "start_line", "end_line", "rank"]
+    return [dict(zip(columns, row)) for row in rows]
 
 
 def existing_embedding_hashes(conn: psycopg.Connection, hashes: list[str]) -> set[str]:
@@ -917,3 +910,8 @@ def set_entrypoints(conn: psycopg.Connection, rows: list[dict]) -> None:
             "UPDATE symbols SET is_entrypoint = TRUE, entry_kind = %s WHERE id = %s",
             (row["entry_kind"], row["id"]),
         )
+
+
+def invalidate_parsed_files(conn: psycopg.Connection, language: str) -> None:
+    """Reparse cached source when its adapter implementation changes."""
+    conn.execute("UPDATE files SET parse_status = 'pending' WHERE language = %s", (language,))

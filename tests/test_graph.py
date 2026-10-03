@@ -45,8 +45,7 @@ def test_expected_sccs_match_fixture(resolution_data, fixture_repo_path):
     calls.add_nodes_from(by_name.values())
     for edge in json.loads((fixture_repo_path / "expected_edges.json").read_text()):
         if edge["callee_qualname"] is not None:
-            module, name = edge["caller"].split(".", 1)
-            calls.add_edge(f"{module}.py::{name}", by_name[edge["callee_qualname"]])
+            calls.add_edge(edge["caller_id"], edge["callee_id"])
     result = graph.condense(calls)
     qualnames = {s["id"]: s["qualname"] for s in symbols}
     actual = {
@@ -133,3 +132,45 @@ def test_run_graph_stage_persists_isolated_symbols(monkeypatch):
         {"id": "alone", "pagerank": 0.0, "scc_id": "scc-0", "layer": 0}
     ]
     status.assert_called_once_with(conn, "graph", "fresh", {"threshold": 0.6})
+
+
+def test_processing_order_uses_file_maximum_pagerank(monkeypatch):
+    symbols = [
+        {"id": node, "kind": "function", "file_path": file}
+        for node, file in [("a_high", "a.py"), ("a_low", "a.py"), ("b_medium", "b.py")]
+    ]
+    calls = nx.DiGraph()
+    calls.add_nodes_from(s["id"] for s in symbols)
+    monkeypatch.setattr(graph, "get_all_symbols", lambda conn: symbols)
+    monkeypatch.setattr(graph, "build_call_graph", lambda conn, threshold: calls)
+    monkeypatch.setattr(
+        graph, "compute_pagerank", lambda graph: {"a_high": 0.9, "a_low": 0.01, "b_medium": 0.8}
+    )
+    items = graph.processing_order(None)
+    assert [item.symbol_ids for item in items] == [["a_high"], ["a_low"], ["b_medium"]]
+
+
+def test_expected_sccs_from_actual_resolver(resolution_data, fixture_repo_path, monkeypatch):
+    from cfl.parser.resolver import Resolver
+
+    symbols, files = resolution_data
+    calls = nx.DiGraph()
+    calls.add_nodes_from(symbol["id"] for symbol in symbols)
+    calls.add_edges_from(
+        (edge["caller_id"], edge["callee_id"])
+        for edge in Resolver(symbols, files).resolve_all()
+        if edge["callee_id"] is not None
+    )
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("SCC construction must never enumerate simple cycles")
+
+    monkeypatch.setattr(nx, "simple_cycles", forbidden)
+    result = graph.condense(graph.build_order_graph(calls, symbols))
+    names = {symbol["id"]: symbol["qualname"] for symbol in symbols}
+    actual = {frozenset(names[sid] for sid in members) for members in result["__sccs__"].values()}
+    expected = {
+        frozenset(group)
+        for group in json.loads((fixture_repo_path / "expected_sccs.json").read_text())
+    }
+    assert actual == expected

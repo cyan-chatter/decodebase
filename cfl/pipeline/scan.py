@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 import pathlib
 from collections.abc import Iterator
@@ -12,6 +13,17 @@ if TYPE_CHECKING:
     from psycopg import Connection
 
     from cfl.config import Settings
+
+logger = logging.getLogger(__name__)
+PARSER_VERSION = "python_v2"
+
+
+@dataclass
+class ScanResult:
+    parsed: int = 0
+    failed: int = 0
+    unsupported: int = 0
+
 
 # Default directories to exclude
 DEFAULT_EXCLUDES = {
@@ -208,7 +220,7 @@ def register_files(
     return result
 
 
-def run_stage1(conn: Connection, settings: Settings, repo_root: str) -> None:
+def run_stage1(conn: Connection, settings: Settings, repo_root: str) -> ScanResult:
     """Stage 1: scan files and register in DB."""
     root = pathlib.Path(repo_root)
     if not root.is_dir():
@@ -216,29 +228,45 @@ def run_stage1(conn: Connection, settings: Settings, repo_root: str) -> None:
     files = list(discover_files(root, settings))
     register_files(conn, files, repo_root)
 
-    import tokenize
-
-    from cfl.core.db import ParsedRow, files_needing_parse, mark_parsed, sync_symbols
+    from cfl.core.db import (
+        ParsedRow,
+        files_needing_parse,
+        get_meta,
+        invalidate_parsed_files,
+        mark_parsed,
+        set_meta,
+        sync_symbols,
+    )
     from cfl.core.hashing import code_hash
-    from cfl.parser import python_adapter  # noqa: F401 — registers the Python adapter
     from cfl.parser.base import get_adapter
+    from cfl.parser.python_adapter import decode_source
 
+    result = ScanResult()
+    if get_meta(conn, "parser_version") != PARSER_VERSION:
+        invalidate_parsed_files(conn, "python")
     for file in files_needing_parse(conn):
         path = file["path"]
         try:
             adapter = get_adapter(file["language"])
         except KeyError:
             mark_parsed(conn, path, "unsupported", None, [], [])
+            result.unsupported += 1
             continue
         try:
-            with tokenize.open(root / path) as source_file:
-                source = source_file.read()
+            source = decode_source((root / path).read_bytes())
             parsed = adapter.parse(pathlib.Path(path), source)
         except (OSError, UnicodeError, SyntaxError) as exc:
             with conn.transaction():
                 sync_symbols(conn, path, [])
                 mark_parsed(conn, path, "parse_failed", str(exc), [], [])
+            result.failed += 1
+            logger.warning("Parse failed for %s: %s", path, exc)
             continue
+        if parsed.parse_error:
+            result.failed += 1
+            logger.warning("Parse failed for %s: %s", path, parsed.parse_error)
+        else:
+            result.parsed += 1
         rows = []
         for symbol in parsed.symbols:
             data = asdict(symbol)
@@ -263,6 +291,15 @@ def run_stage1(conn: Connection, settings: Settings, repo_root: str) -> None:
                 [asdict(i) for i in parsed.imports],
                 parsed.exports,
             )
+
+    set_meta(conn, "parser_version", PARSER_VERSION)
+    logger.info(
+        "Parsing complete: %d parsed, %d failed, %d unsupported",
+        result.parsed,
+        result.failed,
+        result.unsupported,
+    )
+    return result
 
 
 def run_stage2(conn: Connection, settings: Settings, repo_root: str) -> None:

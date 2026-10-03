@@ -7,3 +7,11 @@ def helper() -> str:
 
 def process(data: str) -> str:
     return data.strip()
+
+
+def unique_action() -> None:
+    pass
+
+
+def get() -> None:
+    pass

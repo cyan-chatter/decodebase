@@ -4,97 +4,278 @@
     "callee_expr": "proc",
     "callee_qualname": "process",
     "resolution": "import",
-    "min_confidence": 0.95
+    "min_confidence": 0.95,
+    "caller_id": "aliases.py::run",
+    "callee_id": "utils.py::process"
   },
   {
     "caller": "services.create_task",
     "callee_expr": "repo.save",
     "callee_qualname": "Repository.save",
     "resolution": "typed",
-    "min_confidence": 0.8
+    "min_confidence": 0.8,
+    "caller_id": "services.py::create_task",
+    "callee_id": "models.py::Repository.save"
   },
   {
     "caller": "services.create_task",
     "callee_expr": "r.save",
     "callee_qualname": "Repository.save",
     "resolution": "typed",
-    "min_confidence": 0.8
+    "min_confidence": 0.8,
+    "caller_id": "services.py::create_task",
+    "callee_id": "models.py::Repository.save"
   },
   {
     "caller": "recursion.is_even",
     "callee_expr": "is_odd",
     "callee_qualname": "is_odd",
     "resolution": "local",
-    "min_confidence": 0.9
+    "min_confidence": 0.9,
+    "caller_id": "recursion.py::is_even",
+    "callee_id": "recursion.py::is_odd"
   },
   {
     "caller": "recursion.is_odd",
     "callee_expr": "is_even",
     "callee_qualname": "is_even",
     "resolution": "local",
-    "min_confidence": 0.9
+    "min_confidence": 0.9,
+    "caller_id": "recursion.py::is_odd",
+    "callee_id": "recursion.py::is_even"
   },
   {
     "caller": "recursion.factorial",
     "callee_expr": "factorial",
     "callee_qualname": "factorial",
     "resolution": "local",
-    "min_confidence": 0.9
+    "min_confidence": 0.9,
+    "caller_id": "recursion.py::factorial",
+    "callee_id": "recursion.py::factorial"
   },
   {
     "caller": "models.Repository.save",
     "callee_expr": "self.conn.execute",
     "callee_qualname": null,
     "resolution": "external",
-    "min_confidence": 0.0
+    "min_confidence": 0.0,
+    "caller_id": "models.py::Repository.save",
+    "callee_id": null
   },
   {
     "caller": "external.do_work",
     "callee_expr": "os.path.join",
     "callee_qualname": null,
     "resolution": "external",
-    "min_confidence": 0.0
+    "min_confidence": 0.0,
+    "caller_id": "external.py::do_work",
+    "callee_id": null
   },
   {
     "caller": "external.do_work",
     "callee_expr": "len",
     "callee_qualname": null,
     "resolution": "external",
-    "min_confidence": 0.0
+    "min_confidence": 0.0,
+    "caller_id": "external.py::do_work",
+    "callee_id": null
   },
   {
     "caller": "external.do_work",
     "callee_expr": "d.get",
     "callee_qualname": null,
     "resolution": "external",
-    "min_confidence": 0.0
+    "min_confidence": 0.0,
+    "caller_id": "external.py::do_work",
+    "callee_id": null
   },
   {
     "caller": "models.save_record",
     "callee_expr": "Base().save",
     "callee_qualname": "Base.save",
     "resolution": "ambiguous",
-    "min_confidence": 0.4
+    "min_confidence": 0.4,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Base.save"
   },
   {
     "caller": "models.save_record",
     "callee_expr": "Base().save",
     "callee_qualname": "Repository.save",
     "resolution": "ambiguous",
-    "min_confidence": 0.4
+    "min_confidence": 0.4,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Repository.save"
   },
   {
     "caller": "models.save_record",
     "callee_expr": "Repository(None).save",
     "callee_qualname": "Base.save",
     "resolution": "ambiguous",
-    "min_confidence": 0.4
+    "min_confidence": 0.4,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Base.save"
   },
   {
     "caller": "models.save_record",
     "callee_expr": "Repository(None).save",
     "callee_qualname": "Repository.save",
     "resolution": "ambiguous",
-    "min_confidence": 0.4
+    "min_confidence": 0.4,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Repository.save"
+  },
+  {
+    "caller": "models.Repository.inherited",
+    "callee_expr": "self.load",
+    "callee_qualname": "Base.load",
+    "resolution": "self",
+    "min_confidence": 0.9,
+    "caller_id": "models.py::Repository.inherited",
+    "callee_id": "models.py::Base.load"
+  },
+  {
+    "caller": "models.Manager.commit",
+    "callee_expr": "self.repo.save",
+    "callee_qualname": "Repository.save",
+    "resolution": "typed",
+    "min_confidence": 0.8,
+    "caller_id": "models.py::Manager.commit",
+    "callee_id": "models.py::Repository.save"
+  },
+  {
+    "caller": "models.Manager.__init__",
+    "callee_expr": "Repository",
+    "callee_qualname": "Repository",
+    "resolution": "local",
+    "min_confidence": 0.9,
+    "caller_id": "models.py::Manager.__init__",
+    "callee_id": "models.py::Repository"
+  },
+  {
+    "caller": "models.Manager.__init__",
+    "callee_expr": "Repository",
+    "callee_qualname": "Repository.__init__",
+    "resolution": "local",
+    "min_confidence": 0.9,
+    "caller_id": "models.py::Manager.__init__",
+    "callee_id": "models.py::Repository.__init__"
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Base",
+    "callee_qualname": "Base",
+    "resolution": "local",
+    "min_confidence": 0.9,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Base"
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Repository",
+    "callee_qualname": "Repository",
+    "resolution": "local",
+    "min_confidence": 0.9,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Repository"
+  },
+  {
+    "caller": "models.save_record",
+    "callee_expr": "Repository",
+    "callee_qualname": "Repository.__init__",
+    "resolution": "local",
+    "min_confidence": 0.9,
+    "caller_id": "models.py::save_record",
+    "callee_id": "models.py::Repository.__init__"
+  },
+  {
+    "caller": "services.create_task",
+    "callee_expr": "Repository",
+    "callee_qualname": "Repository",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "services.py::create_task",
+    "callee_id": "models.py::Repository"
+  },
+  {
+    "caller": "services.create_task",
+    "callee_expr": "Repository",
+    "callee_qualname": "Repository.__init__",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "services.py::create_task",
+    "callee_id": "models.py::Repository.__init__"
+  },
+  {
+    "caller": "entrypoint.entrypoint::<module>",
+    "callee_expr": "run",
+    "callee_qualname": "run",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "entrypoint.py::entrypoint::<module>",
+    "callee_id": "aliases.py::run"
+  },
+  {
+    "caller": "import_cases.exercise_imports",
+    "callee_expr": "m.leaf",
+    "callee_qualname": "leaf",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "import_cases.py::exercise_imports",
+    "callee_id": "pkg/mod.py::leaf"
+  },
+  {
+    "caller": "import_cases.exercise_imports",
+    "callee_expr": "pkg.mod.leaf",
+    "callee_qualname": "leaf",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "import_cases.py::exercise_imports",
+    "callee_id": "pkg/mod.py::leaf"
+  },
+  {
+    "caller": "import_cases.exercise_imports",
+    "callee_expr": "public_leaf",
+    "callee_qualname": "leaf",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "import_cases.py::exercise_imports",
+    "callee_id": "pkg/mod.py::leaf"
+  },
+  {
+    "caller": "import_cases.exercise_imports",
+    "callee_expr": "run_relative",
+    "callee_qualname": "run_relative",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "import_cases.py::exercise_imports",
+    "callee_id": "pkg/relative.py::run_relative"
+  },
+  {
+    "caller": "pkg.relative.run_relative",
+    "callee_expr": "leaf",
+    "callee_qualname": "leaf",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "pkg/relative.py::run_relative",
+    "callee_id": "pkg/mod.py::leaf"
+  },
+  {
+    "caller": "pkg.relative.run_relative",
+    "callee_expr": "sibling.leaf",
+    "callee_qualname": "leaf",
+    "resolution": "import",
+    "min_confidence": 0.95,
+    "caller_id": "pkg/relative.py::run_relative",
+    "callee_id": "pkg/mod.py::leaf"
+  },
+  {
+    "caller": "import_cases.call_unknown",
+    "callee_expr": "obj.unique_action",
+    "callee_qualname": "unique_action",
+    "resolution": "name-unique",
+    "min_confidence": 0.75,
+    "caller_id": "import_cases.py::call_unknown",
+    "callee_id": "utils.py::unique_action"
   }
 ]

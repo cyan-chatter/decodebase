@@ -78,12 +78,13 @@ def resolution_data(fixture_repo_path):
     from cfl.parser.python_adapter import PythonAdapter
 
     symbols, files = [], []
-    for path in sorted(fixture_repo_path.glob("*.py")):
-        parsed = PythonAdapter().parse(path, path.read_text())
+    for path in sorted(fixture_repo_path.rglob("*.py")):
+        relative_path = path.relative_to(fixture_repo_path).as_posix()
+        parsed = PythonAdapter().parse(pathlib.Path(relative_path), path.read_text())
         assert parsed.parse_error is None
         files.append(
             {
-                "path": path.name,
+                "path": relative_path,
                 "sha256": file_sha256(path),
                 "imports": [asdict(i) for i in parsed.imports],
                 "exports": parsed.exports,
@@ -99,9 +100,9 @@ def resolution_data(fixture_repo_path):
                 {
                     **data,
                     "extra": extra,
-                    "file_path": path.name,
-                    "id": symbol_id(path.name, symbol.qualname, symbol.start_line, False),
-                    "parent_id": f"{path.name}::{parent}" if parent else None,
+                    "file_path": relative_path,
+                    "id": symbol_id(relative_path, symbol.qualname, symbol.start_line, False),
+                    "parent_id": f"{relative_path}::{parent}" if parent else None,
                 }
             )
     return symbols, files

@@ -89,7 +89,7 @@ def _env_overrides() -> dict:
     result: dict = {}
     for key, val in os.environ.items():
         if key.startswith(prefix):
-            field = key[len(prefix):].lower()
+            field = key[len(prefix) :].lower()
             result[field] = val
     return result
 
@@ -100,7 +100,12 @@ def get_settings() -> Settings:
 
     Merge order: env vars > cfl.toml > defaults.
     """
-    toml_data = _load_toml(Path("cfl.toml"))
+    return load_settings()
+
+
+def load_settings(repo_root: str | Path = ".") -> Settings:
+    """Load repo configuration with environment overrides, without changing cwd."""
+    toml_data = _load_toml(Path(repo_root) / "cfl.toml")
     env_data = _env_overrides()
 
     merged: dict = {**toml_data, **env_data}

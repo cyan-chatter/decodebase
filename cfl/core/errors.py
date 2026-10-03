@@ -29,3 +29,11 @@ class AmbiguousSymbol(CflError):
         super().__init__(
             f"Ambiguous symbol: {len(candidates)} candidates found: {candidates}"
         )
+
+
+class SymbolNotFound(CflError):
+    """Raised when no indexed symbol matches a query."""
+
+    def __init__(self, query: str) -> None:
+        self.query = query
+        super().__init__(f"No symbol found for {query!r}. Run cfl scan to populate the index.")

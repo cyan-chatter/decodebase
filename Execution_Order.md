@@ -260,14 +260,14 @@ Test `tests/test_resolver.py`: compare against `expected_edges.json`; assert amb
 **M2.5 `cfl/parser/graph.py`** (spec 7.3, D4, D8)
 - `build_call_graph(conn, threshold) -> nx.DiGraph` (edges with `confidence >= threshold`, weight = max confidence, external edges excluded).
 - `build_order_graph(call_graph, symbols)`: call graph plus structural edges `class -> each method` and `module-symbol` nodes.
-- `condense(order_graph)`: `nx.strongly_connected_components` then `nx.condensation` (never `simple_cycles`); layer 0 = SCCs with no outgoing dependencies, `layer(n) = 1 + max(layer(dep))`; returns `scc_id` and `layer` per symbol and `scc_members`.
+- `condense(order_graph)`: `nx.strongly_connected_components` then `nx.condensation` (never `simple_cycles`); layer 0 = SCCs with no outgoing dependencies, `layer(n) = 1 + max(layer(dep))`; returns a flat mapping of symbol IDs to `scc_id` and `layer`, plus `__sccs__` mapping SCC IDs to sorted member IDs (the M2 task-plan API).
 - `compute_pagerank(call_graph)` with `alpha=0.85` (edges caller to callee, so widely called symbols rank high); `compute_communities(call_graph)` with `nx.community.louvain_communities(undirected, weight="weight", seed=42)`.
-- `processing_order(conn, *, priority=None) -> list[WorkItem]`: layers ascending; within a layer files sorted by max PageRank (D8); `priority="entrypoints-first"` places everything reachable from entrypoints (with its dependencies) before the rest. Each `WorkItem` is one SCC (singleton or multi-member).
+- `processing_order(conn, *, priority=None) -> list[WorkItem]`: layers ascending; within a layer files sorted by max PageRank (D8), keeping each SCC intact; `priority="entrypoints-first"` places reachable SCCs and their dependencies first within each layer, preserving callee-before-caller ordering. Each `WorkItem` is one SCC (singleton or multi-member).
 - `run_graph_stage(conn, settings)`: persist `pagerank`, `scc_id`, `layer`; `set_view_status('graph', 'fresh', ...)`.
 Test `tests/test_graph.py`: fixture SCCs equal `expected_sccs.json`; mutual recursion forms one SCC; layers respect callee-before-caller; a class sorts after its methods.
 
 **M2.6 Stage 1 and 2 runners in `cfl/pipeline/scan.py`**
-- `run_stage1(conn, settings)`: for each file whose sha changed run the adapter, `mark_parsed`, `sync_symbols` (computes `code_hash`, `token_est`, `symbol_id` with ambiguity rule, stores `call_sites` and `extra`); unchanged files are skipped without parsing; parse failures are recorded and counted.
+- `run_stage1(conn, settings)`: for each file whose sha changed run the adapter, `mark_parsed`, `sync_symbols` (computes `code_hash`, `token_est`, `symbol_id` with ambiguity rule, stores `call_sites` and `extra`); unchanged files are skipped without parsing; parse failures are recorded and counted in a returned `ScanResult(parsed, failed, unsupported)`; the scan CLI reports these counts.
 - `run_stage2(conn, settings)`: `run_resolution` then `run_graph_stage`.
 - Add CLI hidden command `cfl scan [REPO]` that runs Stages 1-2 (the first part of `cfl build`).
 Test: running Stage 1+2 twice on the fixture repo performs zero parses and zero edge writes the second time; touching one file reparses only that file.
@@ -289,7 +289,7 @@ Test: running Stage 1+2 twice on the fixture repo performs zero parses and zero 
 Rule: every function returns data; rendering happens in the CLI.
 
 **M3.2 CLI** (spec 14)
-Commands `callers`, `callees`, `path`, `impact`, `hubs`, `dead`, `where`, each with `--depth`, `--min-conf`, `--json`; rich tables show confidence and edge source; ambiguous/low-confidence edges are visually marked. Add `cfl db reset-embeddings --dim N` (D9) and `cfl db migrate`.
+Commands `callers`, `callees`, `path`, `impact`, `hubs`, `dead`, `where`, all with `--json`; traversal commands (`callers`, `callees`, `path`, `impact`) also accept `--depth` and `--min-conf`, while `hubs` and `dead` accept `--min-conf`. `hubs` uses `--top` and `dead` uses `--include-tests`; `where` needs no graph traversal options. Rich tables show confidence and edge source; ambiguous/low-confidence edges are visually marked. Add `cfl db reset-embeddings --dim N` (D9) and `cfl db migrate`.
 
 **M3.3 Tests `tests/test_graph_queries.py`**
 Exactness against the fixture: the caller set for a known function equals the expected set from `expected_edges.json`; `path` returns the expected hops on an acyclic and a cyclic graph; `impact` terminates on cycles; zero LLM calls (assert `FakeOllama.call_log` is empty).

@@ -106,28 +106,29 @@ def _resolve_module_path(
     return None
 
 
+def _json_value(raw, default):
+    if isinstance(raw, str):
+        try:
+            return json.loads(raw)
+        except (ValueError, TypeError):
+            return default
+    return raw or default
+
+
 def _build_module_index(files: list[dict]) -> dict[str, str]:
-    """Build dotted-module → file_path index from file records."""
     index: dict[str, str] = {}
-    for f in files:
-        path = f["path"]
+    for file in files:
+        path = file["path"]
         p = pathlib.PurePosixPath(path)
-        # stem key: foo/bar.py → foo/bar
-        stem_key = str(p.with_suffix(""))
-        index[stem_key] = path
-        # also dotted: foo/bar → foo.bar
-        dotted = stem_key.replace("/", ".")
-        index[dotted] = path
-        if stem_key.startswith("src/"):
-            short = stem_key.removeprefix("src/")
-            index[short] = path
-            index[short.replace("/", ".")] = path
-        # __init__.py → package key
-        if p.name == "__init__.py":
-            pkg_key = str(p.parent)
-            if pkg_key != ".":
-                index[pkg_key] = path
-                index[pkg_key.replace("/", ".")] = path
+        keys = [str(p.with_suffix(""))]
+        if p.name == "__init__.py" and str(p.parent) != ".":
+            keys.append(str(p.parent))
+        for key in list(keys):
+            if key.startswith("src/"):
+                keys.append(key.removeprefix("src/"))
+        for key in keys:
+            index[key] = path
+            index[key.replace("/", ".")] = path
     return index
 
 
@@ -156,168 +157,156 @@ def _build_import_maps(
             level = imp.get("level", 0)
 
             resolved_path = _resolve_module_path(module, level, file_path, module_index)
-            if resolved_path is None:
-                continue
-
             if is_from and name:
-                # from module import name [as alias]
-                key = alias if alias else name
-                alias_map[key] = (resolved_path, name)
-            elif not is_from:
-                # import module [as alias]
+                submodule = f"{module}.{name}" if module else name
+                submodule_path = _resolve_module_path(submodule, level, file_path, module_index)
+                if submodule_path:
+                    alias_map[alias or name] = (submodule_path, "")
+                elif resolved_path:
+                    alias_map[alias or name] = (resolved_path, name)
+            elif not is_from and resolved_path:
                 key = alias if alias else module.split(".")[0]
-                alias_map[key] = (resolved_path, module)
+                alias_map[key] = (resolved_path, "")
         maps[file_path] = alias_map
     return maps
 
 
 class Resolver:
-    """Pure in-memory call-site resolver.
-
-    Accepts symbol dicts and file dicts (as returned from db.py helpers),
-    builds internal lookup tables, and resolves call sites to edges.
-    """
+    """Resolve calls in memory, retaining every candidate at the first matching layer."""
 
     def __init__(self, symbols: list[dict], files: list[dict]) -> None:
         self.symbols = symbols
         self.files = files
-
+        self.by_id = {symbol["id"]: symbol for symbol in symbols}
         self.module_index = _build_module_index(files)
         self.import_maps = _build_import_maps(files, self.module_index)
-
-        # by_id: symbol_id → symbol dict
-        self.by_id: dict[str, dict] = {s["id"]: s for s in symbols}
-
-        # by_file_qualname: (file_path, qualname) → symbol_id
+        self.by_file_candidates: dict[tuple[str, str], list[str]] = {}
         self.by_file_qualname: dict[tuple[str, str], str] = {}
-        for s in symbols:
-            key = (s["file_path"], s["qualname"])
-            self.by_file_qualname[key] = s["id"]
-
-        # by_name: simple name → [symbol_ids]
         self.by_name: dict[str, list[str]] = {}
-        for s in symbols:
-            name = s["name"]
-            if name in COMMON_METHOD_BLOCKLIST or name.startswith("__"):
-                continue
-            self.by_name.setdefault(name, []).append(s["id"])
-
-        # class_bases: class_symbol_id → [resolved base class symbol_ids]
+        for symbol in symbols:
+            key = (symbol["file_path"], symbol["qualname"])
+            self.by_file_candidates.setdefault(key, []).append(symbol["id"])
+            # Retain the existing unique-ID index API; resolution uses the full candidate index.
+            self.by_file_qualname.setdefault(key, symbol["id"])
+            name = symbol["name"]
+            if name not in COMMON_METHOD_BLOCKLIST and not name.startswith("__"):
+                self.by_name.setdefault(name, []).append(symbol["id"])
+        self.module_alias_suffixes: dict[tuple[str, str], str] = {}
+        for file in files:
+            for entry in _json_value(file.get("imports"), []):
+                if not entry.get("is_from") and not entry.get("alias"):
+                    parts = entry["module"].split(".")
+                    self.module_alias_suffixes[file["path"], parts[0]] = ".".join(parts[1:])
         self.class_bases: dict[str, list[str]] = {}
-        for s in symbols:
-            if s["kind"] != "class":
-                continue
-            raw_extra = s.get("extra") or {}
-            if isinstance(raw_extra, str):
-                try:
-                    raw_extra = json.loads(raw_extra)
-                except (ValueError, TypeError):
-                    raw_extra = {}
-            bases_raw = raw_extra.get("bases", [])
-            if not bases_raw:
-                # Try from ParsedSymbol stored in extra or from direct field
-                # For dict symbols built directly from ParsedSymbol, check 'bases' key at top level
-                bases_raw = s.get("bases") or []
-            resolved_bases: list[str] = []
-            file_path = s["file_path"]
-            import_map = self.import_maps.get(file_path, {})
-            for base_str in bases_raw:
-                base_head = base_str.split(".")[0]
-                # Try import map first
-                if base_head in import_map:
-                    resolved_file, exported_name = import_map[base_head]
-                    candidate_key = (resolved_file, exported_name)
-                    if candidate_key in self.by_file_qualname:
-                        resolved_bases.append(self.by_file_qualname[candidate_key])
-                        continue
-                # Try same file
-                candidate_key = (file_path, base_str)
-                if candidate_key in self.by_file_qualname:
-                    resolved_bases.append(self.by_file_qualname[candidate_key])
-                    continue
-                # Try by_name
-                if base_head in self.by_name:
-                    candidates = self.by_name[base_head]
-                    if len(candidates) == 1:
-                        resolved_bases.append(candidates[0])
-            self.class_bases[s["id"]] = resolved_bases
+        for symbol in symbols:
+            if symbol["kind"] == "class":
+                bases = self._get_extra(symbol).get("bases", symbol.get("bases", []))
+                self.class_bases[symbol["id"]] = list(
+                    dict.fromkeys(
+                        candidate
+                        for base in bases
+                        for candidate in self._class_candidates(base, symbol["file_path"])
+                    )
+                )
+        self.per_class_init_attr_types: dict[str, dict[str, list[str]]] = {}
+        for symbol in symbols:
+            if symbol["name"] == "__init__" and symbol.get("parent_id"):
+                attributes = self.per_class_init_attr_types.setdefault(symbol["parent_id"], {})
+                for attr, type_name in (
+                    self._get_extra(symbol).get("init_attrs", symbol.get("init_attrs", {})).items()
+                ):
+                    if type_name:
+                        types = attributes.setdefault(attr, [])
+                        if type_name not in types:
+                            types.append(type_name)
 
-        # per_class_init_attr_types: class_sym_id → {attr: type}
-        # Gathered from __init__ method of each class
-        self.per_class_init_attr_types: dict[str, dict[str, str]] = {}
-        for s in symbols:
-            if s["kind"] == "class":
-                self.per_class_init_attr_types[s["id"]] = {}
+    def _get_extra(self, symbol: dict) -> dict:
+        return _json_value(symbol.get("extra"), {})
 
-        for s in symbols:
-            if s["name"] == "__init__" and s.get("parent_id"):
-                parent_id = s["parent_id"]
-                if parent_id in self.per_class_init_attr_types:
-                    # get init_attrs from extra or direct field
-                    raw_extra = s.get("extra") or {}
-                    if isinstance(raw_extra, str):
-                        try:
-                            raw_extra = json.loads(raw_extra)
-                        except (ValueError, TypeError):
-                            raw_extra = {}
-                    init_attrs = raw_extra.get("init_attrs", s.get("init_attrs", {}))
-                    self.per_class_init_attr_types[parent_id] = init_attrs
-
-    def _get_extra(self, sym: dict) -> dict:
-        """Return extra JSONB dict for a symbol."""
-        raw = sym.get("extra") or {}
-        if isinstance(raw, str):
-            try:
-                return json.loads(raw)
-            except (ValueError, TypeError):
-                return {}
-        return raw
-
-    def _get_call_sites(self, sym: dict) -> list[dict]:
-        """Return call_sites list for a symbol (from JSONB or direct)."""
-        raw = sym.get("call_sites") or []
-        if isinstance(raw, str):
-            try:
-                raw = json.loads(raw)
-            except (ValueError, TypeError):
-                return []
-        return raw
+    def _get_call_sites(self, symbol: dict) -> list[dict]:
+        return _json_value(symbol.get("call_sites"), [])
 
     def _enclosing_class_id(self, caller_id: str) -> str | None:
-        """Find the class symbol_id that contains the given symbol."""
-        sym = self.by_id.get(caller_id)
-        if sym is None:
-            return None
-        parent_id = sym.get("parent_id")
-        if parent_id is None:
-            return None
-        parent = self.by_id.get(parent_id)
-        if parent and parent.get("kind") == "class":
-            return parent_id
-        # Walk up further
-        return self._enclosing_class_id(parent_id)
-
-    def _mro_lookup(self, class_id: str, method_name: str) -> str | None:
-        """Look up method_name in class_id's MRO (BFS), return symbol_id or None."""
-        visited: set[str] = set()
-        queue = [class_id]
-        while queue:
-            cid = queue.pop(0)
-            if cid in visited:
-                continue
-            visited.add(cid)
-            cls = self.by_id.get(cid)
-            if cls is None:
-                continue
-            file_path = cls["file_path"]
-            qualname = cls["qualname"]
-            method_qn = f"{qualname}.{method_name}"
-            candidate = self.by_file_qualname.get((file_path, method_qn))
-            if candidate:
-                return candidate
-            # Walk bases
-            queue.extend(self.class_bases.get(cid, []))
+        visited = set()
+        while caller_id in self.by_id and caller_id not in visited:
+            visited.add(caller_id)
+            symbol = self.by_id[caller_id]
+            if symbol["kind"] == "class":
+                return caller_id
+            caller_id = symbol.get("parent_id")
         return None
+
+    def _import_target(self, file_path: str, expr: str) -> tuple[str, str] | None:
+        head, _, suffix = expr.partition(".")
+        imported = self.import_maps.get(file_path, {}).get(head)
+        if imported is None:
+            return None
+        target_file, exported = imported
+        if exported:
+            return target_file, exported + ("." + suffix if suffix else "")
+        prefix = self.module_alias_suffixes.get((file_path, head), "")
+        if prefix:
+            if not suffix.startswith(prefix + "."):
+                return None
+            suffix = suffix[len(prefix) + 1 :]
+        return target_file, suffix
+
+    def _file_candidates(
+        self, file_path: str, qualname: str, visited: set[tuple[str, str]] | None = None
+    ) -> list[str]:
+        key = (file_path, qualname)
+        if visited is None:
+            visited = set()
+        if key in visited:
+            return []
+        visited.add(key)
+        candidates = self.by_file_candidates.get(key, [])
+        if candidates:
+            return candidates
+        target = self._import_target(file_path, qualname)
+        return self._file_candidates(*target, visited) if target else []
+
+    def _class_candidates(self, type_name: str, file_path: str) -> list[str]:
+        candidates = self._file_candidates(file_path, type_name)
+        if not candidates:
+            candidates = self.by_name.get(type_name, [])
+        return [candidate for candidate in candidates if self.by_id[candidate]["kind"] == "class"]
+
+    def _method_candidates(
+        self, class_id: str, method: str, visited: set[str] | None = None
+    ) -> list[str]:
+        if visited is None:
+            visited = set()
+        if class_id in visited:
+            return []
+        visited.add(class_id)
+        cls = self.by_id[class_id]
+        candidates = self.by_file_candidates.get(
+            (cls["file_path"], f"{cls['qualname']}.{method}"), []
+        )
+        candidates = [
+            sid for sid in candidates if self.by_id[sid].get("parent_id") in {None, class_id}
+        ]
+        if candidates:
+            return candidates
+        for base in self.class_bases.get(class_id, []):
+            candidates = self._method_candidates(base, method, visited)
+            if candidates:
+                return candidates
+        return []
+
+    def _attribute_types(self, class_id: str, attr: str) -> list[str]:
+        pending, visited = [class_id], set()
+        while pending:
+            candidate = pending.pop(0)
+            if candidate in visited:
+                continue
+            visited.add(candidate)
+            types = self.per_class_init_attr_types.get(candidate, {}).get(attr, [])
+            if types:
+                return types
+            pending.extend(self.class_bases.get(candidate, []))
+        return []
 
     def _make_edge(
         self,
@@ -328,211 +317,126 @@ class Resolver:
         confidence: float,
         kind: str | None = None,
     ) -> dict:
-        cs_kind = kind or call_site.get("kind", "call")
         return {
             "caller_id": caller_id,
             "callee_id": callee_id,
             "callee_expr": call_site.get("expr", ""),
             "line": call_site.get("line", 0),
-            "kind": cs_kind,
+            "kind": kind or call_site.get("kind", "call"),
             "resolution": resolution,
             "source": "ast",
             "confidence": confidence,
             "control_ctx": call_site.get("control_ctx", ""),
         }
 
+    def _target_edges(
+        self,
+        caller_id: str,
+        targets: list[str],
+        call_site: dict,
+        resolution: str,
+        confidence: float,
+    ) -> list[dict]:
+        targets = sorted(set(targets))
+        if len(targets) > 1:
+            resolution, confidence = "ambiguous", 0.4
+        edges = []
+        for target in targets:
+            constructor = (
+                self.by_id[target]["kind"] == "class" and call_site.get("kind") != "decorator"
+            )
+            edges.append(
+                self._make_edge(
+                    caller_id,
+                    target,
+                    call_site,
+                    resolution,
+                    confidence,
+                    "constructor" if constructor else None,
+                )
+            )
+            if constructor:
+                initializers = self._method_candidates(target, "__init__")
+                init_resolution = "ambiguous" if len(initializers) > 1 else resolution
+                init_confidence = 0.4 if len(initializers) > 1 else confidence
+                edges.extend(
+                    self._make_edge(
+                        caller_id, init, call_site, init_resolution, init_confidence, "constructor"
+                    )
+                    for init in initializers
+                )
+        # Multiple class candidates may share the same inherited initializer.
+        return list({(e["callee_id"], e["kind"]): e for e in edges}.values())
+
     def resolve_call(self, caller_id: str, call_site: dict) -> list[dict]:
-        """Resolve a single call site to a list of edge-row dicts."""
-        sym = self.by_id.get(caller_id)
-        if sym is None:
-            return [self._make_edge(caller_id, None, call_site, "external", 0.0)]
-
-        expr: str = call_site.get("expr", "")
-        file_path: str = sym.get("file_path", "")
-        import_map = self.import_maps.get(file_path, {})
-        extra = self._get_extra(sym)
-        param_types: dict[str, str] = extra.get("param_types", sym.get("param_types") or {})
-        local_types: dict[str, str] = extra.get("local_types", sym.get("local_types") or {})
-
+        symbol = self.by_id.get(caller_id)
+        external = [self._make_edge(caller_id, None, call_site, "external", 0.0)]
+        if symbol is None:
+            return external
+        expr = call_site.get("expr", "")
+        file_path = symbol["file_path"]
         head = _head(expr)
-        method = _method_name(expr)
-        is_attribute_call = "." in expr
+        extra = self._get_extra(symbol)
 
-        # ------------------------------------------------------------------
-        # Layer 1: import resolution
-        # ------------------------------------------------------------------
-        if head in import_map:
-            resolved_file, exported_name = import_map[head]
-            suffix = expr[len(head) :]
-            # Module imports map their prefix to a file; from imports map to a symbol.
-            imported_symbol = self.by_file_qualname.get((resolved_file, exported_name))
-            target = exported_name + suffix if imported_symbol else suffix.lstrip(".")
-            callee_id = self.by_file_qualname.get((resolved_file, target))
-            if callee_id:
-                return self._target_edges(caller_id, callee_id, call_site, "import", 0.95)
-
-        # Layer 2: search lexical scopes from innermost to module scope.
-        if not is_attribute_call:
-            scopes = sym["qualname"].split(".")
+        imported = self._import_target(file_path, expr)
+        if imported:
+            candidates = self._file_candidates(*imported)
+            if candidates:
+                return self._target_edges(caller_id, candidates, call_site, "import", 0.95)
+        if "." not in expr:
+            scopes = symbol["qualname"].split(".")
             for depth in range(len(scopes), -1, -1):
                 qualname = ".".join([*scopes[:depth], head])
-                callee_id = self.by_file_qualname.get((file_path, qualname))
-                if callee_id:
-                    return self._target_edges(caller_id, callee_id, call_site, "local", 0.90)
-
-        # ------------------------------------------------------------------
-        # Layer 3: self/cls method resolution
-        # ------------------------------------------------------------------
-        if expr.startswith(("self.", "cls.")):
-            prefix_len = len("self.") if expr.startswith("self.") else len("cls.")
-            rest = expr[prefix_len:]
-            meth_name = rest.split(".")[0]  # first segment after self.
-            # But if there are further dots (self.conn.execute) → can't resolve
-            if "." not in rest:
-                class_id = self._enclosing_class_id(caller_id)
-                if class_id:
-                    callee_id = self._mro_lookup(class_id, meth_name)
-                    if callee_id:
-                        return [self._make_edge(caller_id, callee_id, call_site, "self", 0.90)]
-            # self.conn.execute and similar: method on unknown typed attr → external
-            if "." not in rest:
-                return [self._make_edge(caller_id, None, call_site, "self", 0.0)]
-
-        # ------------------------------------------------------------------
-        # Layer 4: constructor (head is a class name, no dots)
-        # ------------------------------------------------------------------
-        if not is_attribute_call:
-            candidates = self.by_name.get(head, [])
-            class_candidates = [c for c in candidates if self.by_id[c].get("kind") == "class"]
-            if len(class_candidates) == 1:
-                class_id = class_candidates[0]
-                cls_sym = self.by_id[class_id]
-                edges: list[dict] = [
-                    self._make_edge(caller_id, class_id, call_site, "ctor", 0.90, "constructor")
-                ]
-                init_key = (cls_sym["file_path"], f"{cls_sym['qualname']}.__init__")
-                init_id = self.by_file_qualname.get(init_key)
-                if init_id:
-                    edges.append(
-                        self._make_edge(caller_id, init_id, call_site, "ctor", 0.90, "constructor")
-                    )
-                return edges
-
-        # ------------------------------------------------------------------
-        # Layer 5: typed resolution (param type or local var type)
-        # ------------------------------------------------------------------
-        if is_attribute_call:
-            # head might be a typed variable
-            type_name: str | None = None
-            if head in param_types:
-                type_name = param_types[head]
-            elif head in local_types:
-                type_name = local_types[head]
-            elif head in {"self", "cls"} and expr.count(".") == 2:
-                class_id = self._enclosing_class_id(caller_id)
-                attr = expr.split(".")[1]
-                type_name = self.per_class_init_attr_types.get(class_id, {}).get(attr)
-                head = f"{head}.{attr}"
-
-            if type_name:
-                # Resolve type_name to a class symbol
-                class_id = self._resolve_type_to_class(type_name, file_path)
-                if class_id:
-                    meth_name = expr[len(head) + 1 :].split(".")[0]
-                    callee_id = self._mro_lookup(class_id, meth_name)
-                    if callee_id:
-                        return [self._make_edge(caller_id, callee_id, call_site, "typed", 0.80)]
-
-        # ------------------------------------------------------------------
-        # Layer 6: name-unique
-        # ------------------------------------------------------------------
-        last_seg = method
-        if last_seg not in COMMON_METHOD_BLOCKLIST:
-            candidates = self.by_name.get(last_seg, [])
-            if len(candidates) == 1:
-                return [self._make_edge(caller_id, candidates[0], call_site, "name-unique", 0.75)]
-
-        # ------------------------------------------------------------------
-        # Layer 7: ambiguous
-        # ------------------------------------------------------------------
-        if last_seg not in COMMON_METHOD_BLOCKLIST:
-            candidates = self.by_name.get(last_seg, [])
-            if len(candidates) > 1:
-                return [
-                    self._make_edge(caller_id, cid, call_site, "ambiguous", 0.40)
-                    for cid in candidates
-                ]
-
-        # ------------------------------------------------------------------
-        # Layer 8: external
-        # ------------------------------------------------------------------
-        return [self._make_edge(caller_id, None, call_site, "external", 0.0)]
-
-    def _target_edges(self, caller_id, callee_id, call_site, resolution, confidence):
-        symbol = self.by_id[callee_id]
-        is_constructor = symbol["kind"] == "class" and call_site.get("kind") != "decorator"
-        edges = [
-            self._make_edge(
-                caller_id,
-                callee_id,
-                call_site,
-                resolution,
-                confidence,
-                "constructor" if is_constructor else None,
+                candidates = self.by_file_candidates.get((file_path, qualname), [])
+                if candidates:
+                    return self._target_edges(caller_id, candidates, call_site, "local", 0.9)
+        class_id = self._enclosing_class_id(caller_id)
+        if head in {"self", "cls"} and expr.count(".") == 1:
+            candidates = self._method_candidates(class_id, _method_name(expr)) if class_id else []
+            if candidates:
+                return self._target_edges(caller_id, candidates, call_site, "self", 0.9)
+            return external
+        if "." not in expr:
+            candidates = [
+                sid for sid in self.by_name.get(head, []) if self.by_id[sid]["kind"] == "class"
+            ]
+            if candidates:
+                return self._target_edges(caller_id, candidates, call_site, "ctor", 0.9)
+        types = []
+        if expr.count(".") == 1:
+            type_name = extra.get("local_types", symbol.get("local_types", {})).get(head)
+            type_name = type_name or extra.get("param_types", symbol.get("param_types", {})).get(
+                head
             )
-        ]
-        if is_constructor:
-            init_id = self._mro_lookup(callee_id, "__init__")
-            if init_id:
-                edges.append(
-                    self._make_edge(
-                        caller_id, init_id, call_site, resolution, confidence, "constructor"
-                    )
-                )
-        return edges
-
-    def _resolve_type_to_class(self, type_name: str, file_path: str) -> str | None:
-        """Resolve a type name string to a class symbol_id."""
-        # Try same file first
-        candidate = self.by_file_qualname.get((file_path, type_name))
-        if candidate and self.by_id[candidate].get("kind") == "class":
-            return candidate
-        # Try import map
-        import_map = self.import_maps.get(file_path, {})
-        head = type_name.split(".")[0]
-        if head in import_map:
-            resolved_file, exported_name = import_map[head]
-            key = (resolved_file, exported_name)
-            candidate = self.by_file_qualname.get(key)
-            if candidate and self.by_id[candidate].get("kind") == "class":
-                return candidate
-        # Try by_name (unique)
-        candidates = self.by_name.get(type_name, [])
-        class_candidates = [c for c in candidates if self.by_id[c].get("kind") == "class"]
-        if len(class_candidates) == 1:
-            return class_candidates[0]
-        return None
+            if type_name:
+                types = [type_name]
+        elif head in {"self", "cls"} and expr.count(".") == 2 and class_id:
+            types = self._attribute_types(class_id, expr.split(".")[1])
+        if types:
+            candidates = [
+                method
+                for type_name in types
+                for cls in self._class_candidates(type_name, file_path)
+                for method in self._method_candidates(cls, _method_name(expr))
+            ]
+            if candidates:
+                return self._target_edges(caller_id, candidates, call_site, "typed", 0.8)
+        candidates = self.by_name.get(_method_name(expr), [])
+        if candidates:
+            return self._target_edges(caller_id, candidates, call_site, "name-unique", 0.75)
+        return external
 
     def resolve_all(self) -> list[dict]:
-        """Resolve all call sites for all symbols, return list of edge dicts."""
-        all_edges: list[dict] = []
-        for sym in self.symbols:
-            caller_id = sym["id"]
-            call_sites = self._get_call_sites(sym)
-            for cs in call_sites:
-                if isinstance(cs, dict):
-                    cs_dict = cs
-                else:
-                    # Handle CallSite dataclass (when used directly from parser)
-                    cs_dict = {
-                        "expr": cs.expr,
-                        "line": cs.line,
-                        "kind": cs.kind,
-                        "control_ctx": cs.control_ctx,
-                    }
-                edges = self.resolve_call(caller_id, cs_dict)
-                all_edges.extend(edges)
-        return all_edges
+        from dataclasses import asdict, is_dataclass
+
+        return [
+            edge
+            for symbol in self.symbols
+            for site in self._get_call_sites(symbol)
+            for edge in self.resolve_call(
+                symbol["id"], asdict(site) if is_dataclass(site) else site
+            )
+        ]
 
 
 def detect_entrypoints(symbols: list[dict]) -> dict[str, str]:
@@ -635,7 +539,12 @@ def run_resolution(conn: psycopg.Connection, settings: Settings) -> None:
     files = list_files(conn)
     # Compute fingerprint
     sha_parts = [f"{f['path']}:{f['sha256']}" for f in sorted(files, key=lambda f: f["path"])]
-    fingerprint = join_hash(*sha_parts, "resolver_v1", str(settings.edge_conf_threshold))
+    fingerprint = join_hash(
+        *sha_parts,
+        "resolver_v2",
+        get_meta(conn, "parser_version") or "",
+        str(settings.edge_conf_threshold),
+    )
 
     stored = get_meta(conn, "resolve_fingerprint")
     if stored == fingerprint:
@@ -650,6 +559,11 @@ def run_resolution(conn: psycopg.Connection, settings: Settings) -> None:
     entrypoints = detect_entrypoints(
         [{**s, "exports": exports.get(s["file_path"], [])} for s in symbols]
     )
+    # Public imports in package __init__ files designate their defining symbols too.
+    for file in files:
+        for exported in _json_value(file.get("exports"), []):
+            for sid in resolver._file_candidates(file["path"], exported):
+                entrypoints.setdefault(sid, "exported")
     with conn.transaction():
         replace_edges(conn, "ast", all_edges)
         set_entrypoints(conn, [{"id": sid, "entry_kind": ek} for sid, ek in entrypoints.items()])

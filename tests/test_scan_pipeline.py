@@ -50,7 +50,7 @@ def test_scan_fixture_incremental(pg_conn, settings, fixture_repo_path, tmp_path
     replace = mocker.spy(db, "replace_edges")
     scan.run_stage1(pg_conn, settings, str(repo))
     scan.run_stage2(pg_conn, settings, str(repo))
-    assert parse.call_count == len(list(repo.glob("*.py")))
+    assert parse.call_count == len(list(repo.rglob("*.py")))
     assert replace.call_count == 1
     symbols = {s["id"]: s for s in db.get_all_symbols(pg_conn)}
     assert all(s["scc_id"] and s["layer"] is not None for s in symbols.values())
@@ -184,3 +184,61 @@ def test_invalid_repository_does_not_register(monkeypatch, settings, tmp_path):
     with pytest.raises(ValueError, match="Repository directory does not exist"):
         scan.run_stage1(None, settings, str(tmp_path / "missing"))
     register.assert_not_called()
+
+
+@pytest.mark.db
+def test_encoding_fallback_and_failure_counts(pg_conn, settings, tmp_path):
+    (tmp_path / "bad.py").write_text("def f(:")
+    (tmp_path / "cookie.py").write_bytes(b'# coding: nonexistent\ndef f(): return "ok"\n')
+    (tmp_path / "bytes.py").write_bytes(b'def f(): return "caf\xff"\n')
+    result = scan.run_stage1(pg_conn, settings, str(tmp_path))
+    assert (result.parsed, result.failed) == (2, 1)
+    assert "caf�" in db.get_symbol(pg_conn, "bytes.py::f")["raw_code"]
+    second = scan.run_stage1(pg_conn, settings, str(tmp_path))
+    assert (second.parsed, second.failed) == (0, 0)
+
+
+@pytest.mark.db
+def test_parser_upgrade_invalidates_cached_symbols(pg_conn, settings, tmp_path, mocker):
+    (tmp_path / "a.py").write_text("async def f(): pass")
+    scan.run_stage1(pg_conn, settings, str(tmp_path))
+    # Simulate symbols parsed by the previous adapter, with unchanged source hashes.
+    db.set_meta(pg_conn, "parser_version", "python_v1")
+    pg_conn.execute("UPDATE symbols SET signature = ''")
+    parse = mocker.spy(PythonAdapter, "parse")
+    result = scan.run_stage1(pg_conn, settings, str(tmp_path))
+    assert result.parsed == 1
+    parse.assert_called_once()
+    assert db.get_symbol(pg_conn, "a.py::f")["signature"] == "async "
+    parse.reset_mock()
+    scan.run_stage1(pg_conn, settings, str(tmp_path))
+    parse.assert_not_called()
+
+
+@pytest.mark.db
+def test_package_exports_are_entrypoints(pg_conn, settings, fixture_repo_path):
+    scan.run_stage1(pg_conn, settings, str(fixture_repo_path))
+    scan.run_stage2(pg_conn, settings, str(fixture_repo_path))
+    assert db.get_symbol(pg_conn, "pkg/mod.py::leaf")["entry_kind"] == "exported"
+
+
+def test_scan_hidden_from_help():
+    result = CliRunner().invoke(app, ["--help"])
+    assert result.exit_code == 0
+    assert "│ scan " not in result.stdout
+    assert CliRunner().invoke(app, ["scan", "--help"]).exit_code == 0
+
+
+@pytest.mark.db
+def test_parser_version_invalidation_rebuilds_edges(
+    pg_conn, settings, tmp_path, mocker, monkeypatch
+):
+    (tmp_path / "a.py").write_text("def f(): g()\ndef g(): pass")
+    scan.run_stage1(pg_conn, settings, str(tmp_path))
+    scan.run_stage2(pg_conn, settings, str(tmp_path))
+    parse, replace = mocker.spy(PythonAdapter, "parse"), mocker.spy(db, "replace_edges")
+    monkeypatch.setattr(scan, "PARSER_VERSION", "python_next")
+    scan.run_stage1(pg_conn, settings, str(tmp_path))
+    scan.run_stage2(pg_conn, settings, str(tmp_path))
+    parse.assert_called_once()
+    replace.assert_called_once()

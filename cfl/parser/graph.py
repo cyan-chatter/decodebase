@@ -94,6 +94,10 @@ def processing_order(conn: Connection, *, priority: str | None = None) -> list[W
     order_graph = build_order_graph(call_graph, symbols)
     condensed = condense(order_graph)
     ranks = compute_pagerank(call_graph)
+    file_by_symbol = {symbol["id"]: symbol["file_path"] for symbol in symbols}
+    file_ranks: dict[str, float] = {}
+    for sid, file_path in file_by_symbol.items():
+        file_ranks[file_path] = max(file_ranks.get(file_path, 0.0), ranks.get(sid, 0.0))
     reachable: set[str] = set()
     if priority == "entrypoints-first":
         for symbol in symbols:
@@ -108,7 +112,8 @@ def processing_order(conn: Connection, *, priority: str | None = None) -> list[W
         key=lambda item: (
             item.layer,
             -int(bool(reachable.intersection(item.symbol_ids))),
-            -max((ranks.get(sid, 0.0) for sid in item.symbol_ids), default=0.0),
+            -max((file_ranks[file_by_symbol[sid]] for sid in item.symbol_ids), default=0.0),
+            min(file_by_symbol[sid] for sid in item.symbol_ids),
             item.scc_id,
         )
     )

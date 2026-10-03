@@ -1,7 +1,15 @@
 from __future__ import annotations
 
+import json
+import sys
+from dataclasses import asdict
+
+import click
+import psycopg
 import typer
 from rich.console import Console
+from rich.markup import escape
+from rich.table import Table
 
 from cfl.config import get_settings
 from cfl.core.errors import CflError
@@ -48,7 +56,7 @@ def build(
     console.print("[yellow]not implemented yet[/yellow]")
 
 
-@app.command()
+@app.command(hidden=True)
 def scan(
     repo: str = typer.Argument(".", help="Path to the repository to scan"),
 ) -> None:
@@ -59,7 +67,12 @@ def scan(
     settings = get_settings()
     conn = connect(settings.dsn)
     try:
-        run_stage1(conn, settings, repo)
+        result = run_stage1(conn, settings, repo)
+        if result is not None:
+            console.print(
+                f"Parsed {result.parsed} files; {result.failed} parse failures; "
+                f"{result.unsupported} unsupported files."
+            )
         run_stage2(conn, settings, repo)
         console.print("[green]Scan complete.[/green]")
     finally:
@@ -133,78 +146,339 @@ def chat(
 
 
 # ---------------------------------------------------------------------------
-# Graph queries
+# Graph queries: data comes from the engine; CLI owns selection and rendering.
 # ---------------------------------------------------------------------------
+
+
+def _resolve_query_symbol(conn, query, json_output):
+    from cfl.core.errors import AmbiguousSymbol
+    from cfl.engines.graph_queries import resolve_symbol
+
+    try:
+        return resolve_symbol(conn, query)
+    except AmbiguousSymbol as exc:
+        if json_output or not (sys.stdin.isatty() and console.is_terminal):
+            raise
+        table = Table(title=f"Choose a symbol for {query!r}")
+        for heading in ("#", "Symbol", "Location"):
+            table.add_column(heading)
+        for index, candidate in enumerate(exc.candidates, 1):
+            table.add_row(
+                str(index),
+                escape(candidate.qualname),
+                escape(f"{candidate.file_path}:{candidate.start_line}"),
+            )
+        console.print(table)
+        choice = typer.prompt("Symbol number", type=click.IntRange(1, len(exc.candidates)))
+        return exc.candidates[choice - 1]
+
+
+def _render_graph_result(command, result):
+    if result is None:
+        console.print("No call path found within the requested depth and confidence threshold.")
+        return
+    if command == "impact":
+        console.print(f"Affected symbols: {result['total']}")
+        if result["groups"]:
+            groups = Table(title="Impact by depth and file")
+            for heading in ("Depth", "File", "Count"):
+                groups.add_column(heading)
+            for group in result["groups"]:
+                groups.add_row(str(group["depth"]), escape(group["file_path"]), str(group["count"]))
+            console.print(groups)
+        rows = [symbol for group in result["groups"] for symbol in group["symbols"]]
+    else:
+        rows = result
+    if not rows:
+        console.print("No candidates found." if command == "dead" else "No results.")
+        return
+    table = Table(title="Dead-code candidates" if command == "dead" else command.capitalize())
+    if command == "hubs":
+        columns = [
+            ("Symbol", "qualname"),
+            ("File", "file_path"),
+            ("PageRank", "pagerank"),
+            ("Fan-in", "fan_in"),
+            ("Fan-out", "fan_out"),
+        ]
+    elif command in {"where", "dead"}:
+        columns = [("Symbol", "qualname"), ("Location", "location"), ("Kind", "kind")]
+    else:
+        columns = [
+            ("Symbol", "symbol"),
+            ("Call site", "location"),
+            ("Depth", "depth"),
+            ("Resolution", "resolution"),
+            ("Confidence", "confidence"),
+            ("Source", "source"),
+        ]
+    for title, _ in columns:
+        table.add_column(title)
+    for row in rows:
+        values = []
+        for _, key in columns:
+            value = row.get(key, "")
+            if key in {"pagerank", "confidence"}:
+                value = f"{value:.3f}"
+            if key == "resolution" and (
+                row["resolution"] == "ambiguous" or row["confidence"] < 0.6
+            ):
+                value = f"? {value}"
+            values.append(escape(str(value)))
+        style = (
+            "yellow"
+            if row.get("resolution") == "ambiguous" or row.get("confidence", 1) < 0.6
+            else ""
+        )
+        table.add_row(*values, style=style)
+    console.print(table)
+
+
+def _run_query(command, operation, repo, json_output):
+    from cfl.config import load_settings
+    from cfl.core.db import connect
+    from cfl.core.errors import AmbiguousSymbol
+
+    conn = None
+    try:
+        settings = get_settings() if repo == "." else load_settings(repo)
+        conn = connect(settings.dsn, statement_timeout_ms=settings.statement_timeout_ms)
+        result = operation(conn, settings)
+        if json_output:
+            typer.echo(json.dumps(result, ensure_ascii=False))
+        else:
+            _render_graph_result(command, result)
+    except AmbiguousSymbol as exc:
+        if json_output:
+            typer.echo(
+                json.dumps(
+                    {"error": "Ambiguous symbol", "candidates": [asdict(c) for c in exc.candidates]}
+                )
+            )
+        else:
+            console.print("[yellow]Ambiguous symbol; use an exact ID or path::name:[/yellow]")
+            for candidate in exc.candidates:
+                console.print(escape(candidate.id))
+        raise typer.Exit(2) from exc
+    except (CflError, psycopg.Error, OSError, ValueError) as exc:
+        if json_output:
+            typer.echo(json.dumps({"error": str(exc)}))
+        else:
+            console.print(f"[red]Error:[/red] {escape(str(exc))}")
+        raise typer.Exit(1) from exc
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 @app.command()
 def callers(
-    symbol: str = typer.Argument(..., help="Symbol to find callers of"),
-    depth: int = typer.Option(2, "--depth", "-d", help="Search depth"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    symbol: str = typer.Argument(..., help="Symbol or path::name"),
+    depth: int = typer.Option(1, "--depth", "-d", min=1, help="Maximum reverse-call depth"),
+    min_conf: float | None = typer.Option(None, "--min-conf", min=0.0, max=1.0),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """List functions that call the given symbol."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """List callers with call-site evidence, confidence and source."""
+    from cfl.engines import graph_queries as queries
+
+    _run_query(
+        "callers",
+        lambda conn, settings: queries.callers(
+            conn,
+            _resolve_query_symbol(conn, symbol, json_output),
+            depth,
+            settings.edge_conf_threshold if min_conf is None else min_conf,
+        ),
+        repo,
+        json_output,
+    )
 
 
 @app.command()
 def callees(
-    symbol: str = typer.Argument(..., help="Symbol to find callees of"),
-    depth: int = typer.Option(2, "--depth", "-d", help="Search depth"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    symbol: str = typer.Argument(..., help="Symbol or path::name"),
+    depth: int = typer.Option(1, "--depth", "-d", min=1, help="Maximum forward-call depth"),
+    min_conf: float | None = typer.Option(None, "--min-conf", min=0.0, max=1.0),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """List functions called by the given symbol."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """List callees with call-site evidence, confidence and source."""
+    from cfl.engines import graph_queries as queries
+
+    _run_query(
+        "callees",
+        lambda conn, settings: queries.callees(
+            conn,
+            _resolve_query_symbol(conn, symbol, json_output),
+            depth,
+            settings.edge_conf_threshold if min_conf is None else min_conf,
+        ),
+        repo,
+        json_output,
+    )
 
 
 @app.command()
 def path(
     source: str = typer.Argument(..., help="Source symbol"),
     target: str = typer.Argument(..., help="Target symbol"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    depth: int = typer.Option(8, "--depth", "-d", min=1, help="Maximum path length"),
+    min_conf: float | None = typer.Option(None, "--min-conf", min=0.0, max=1.0),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """Find call path between two symbols."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """Find a shortest call path and show each call site."""
+    from cfl.engines import graph_queries as queries
+
+    _run_query(
+        "path",
+        lambda conn, settings: queries.path(
+            conn,
+            _resolve_query_symbol(conn, source, json_output),
+            _resolve_query_symbol(conn, target, json_output),
+            depth,
+            settings.edge_conf_threshold if min_conf is None else min_conf,
+        ),
+        repo,
+        json_output,
+    )
 
 
 @app.command()
 def impact(
-    symbol: str = typer.Argument(..., help="Symbol to analyse for change impact"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    symbol: str = typer.Argument(..., help="Symbol or path::name"),
+    depth: int = typer.Option(4, "--depth", "-d", min=1, help="Maximum reverse-call depth"),
+    min_conf: float | None = typer.Option(None, "--min-conf", min=0.0, max=1.0),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """Show what would be affected if this symbol changed."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """Show distinct affected callers grouped by depth and file."""
+    from cfl.engines import graph_queries as queries
+
+    _run_query(
+        "impact",
+        lambda conn, settings: queries.impact(
+            conn,
+            _resolve_query_symbol(conn, symbol, json_output),
+            depth,
+            settings.edge_conf_threshold if min_conf is None else min_conf,
+        ),
+        repo,
+        json_output,
+    )
 
 
 @app.command()
 def hubs(
-    top_n: int = typer.Option(20, "--top", "-n", help="Number of hub symbols to show"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    top_n: int = typer.Option(20, "--top", "-n", min=1, help="Number of hubs"),
+    min_conf: float | None = typer.Option(None, "--min-conf", min=0.0, max=1.0),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """Show the most-connected hub symbols."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """Show PageRank hubs with distinct fan-in and fan-out counts."""
+    from cfl.engines import graph_queries as queries
+
+    _run_query(
+        "hubs",
+        lambda conn, settings: queries.hubs(
+            conn, top_n, settings.edge_conf_threshold if min_conf is None else min_conf
+        ),
+        repo,
+        json_output,
+    )
 
 
 @app.command()
 def dead(
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    min_conf: float | None = typer.Option(None, "--min-conf", min=0.0, max=1.0),
+    include_tests: bool = typer.Option(False, "--include-tests", help="Include test symbols"),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """Find likely dead code (unreachable symbols)."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """Find uncalled candidates, excluding exports, entrypoints and overrides."""
+    from cfl.engines import graph_queries as queries
 
-
-# ---------------------------------------------------------------------------
-# Source / tracing
-# ---------------------------------------------------------------------------
+    _run_query(
+        "dead",
+        lambda conn, settings: queries.dead(
+            conn, settings.edge_conf_threshold if min_conf is None else min_conf, include_tests
+        ),
+        repo,
+        json_output,
+    )
 
 
 @app.command()
 def where(
-    symbol: str = typer.Argument(..., help="Symbol to locate in source"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    symbol: str = typer.Argument(..., help="Symbol or fuzzy name"),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON on stdout"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
 ) -> None:
-    """Show source location of a symbol."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """Show matching definitions as path:start-end locations."""
+    from cfl.engines import graph_queries as queries
+
+    _run_query("where", lambda conn, settings: queries.where(conn, symbol), repo, json_output)
+
+
+# ---------------------------------------------------------------------------
+# Database maintenance
+# ---------------------------------------------------------------------------
+
+db_app = typer.Typer(no_args_is_help=True, help="Migrate the index or reset its dense view")
+app.add_typer(db_app, name="db")
+
+
+def _run_database(operation, repo):
+    from cfl.config import load_settings
+    from cfl.core.db import connect
+
+    conn = None
+    try:
+        settings = get_settings() if repo == "." else load_settings(repo)
+        conn = connect(settings.dsn, statement_timeout_ms=settings.statement_timeout_ms)
+        message = operation(conn, settings)
+        console.print(f"[green]{escape(message)}[/green]")
+    except (CflError, psycopg.Error, OSError, ValueError) as exc:
+        console.print(f"[red]Error:[/red] {escape(str(exc))}")
+        raise typer.Exit(1) from exc
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+@db_app.command("migrate")
+def db_migrate(
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
+) -> None:
+    """Apply database migrations with an embedding dimension guard."""
+    from pathlib import Path
+
+    from cfl.core.db import run_migrations
+
+    def migrate(conn, settings):
+        directory = Path(settings.migrations_dir)
+        if not directory.is_absolute():
+            directory = Path(repo) / directory
+        run_migrations(conn, settings.embed_dim, str(directory))
+        return "Database migrations complete."
+
+    _run_database(migrate, repo)
+
+
+@db_app.command("reset-embeddings")
+def db_reset_embeddings(
+    dim: int = typer.Option(..., "--dim", min=1, help="New vector dimension; clears embeddings"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
+) -> None:
+    """Clear embeddings and their hashes, preserving symbols, summaries and graph."""
+    from cfl.core.db import reset_embeddings
+
+    def reset(conn, settings):
+        reset_embeddings(conn, dim)
+        return f"Embeddings reset to dimension {dim}; update CFL_EMBED_DIM or cfl.toml to match."
+
+    _run_database(reset, repo)
 
 
 @app.command()

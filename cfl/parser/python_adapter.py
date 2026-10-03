@@ -16,21 +16,22 @@ from cfl.parser.base import (
 )
 
 
-def _detect_source_encoding(source_bytes: bytes) -> str:
-    """Detect encoding using tokenize.detect_encoding, fall back to utf-8."""
+def decode_source(source_bytes: bytes) -> str:
+    """Decode Python encoding cookies, falling back to UTF-8 replacement on failure."""
     try:
-        enc, _ = tokenize.detect_encoding(io.BytesIO(source_bytes).readline)
-        return enc
-    except (SyntaxError, ValueError, TypeError, RecursionError):
-        return "utf-8"
+        encoding, _ = tokenize.detect_encoding(io.BytesIO(source_bytes).readline)
+        return source_bytes.decode(encoding)
+    except (SyntaxError, UnicodeError, LookupError):
+        return source_bytes.decode("utf-8", errors="replace")
 
 
 def _unwrap_optional(annotation_str: str) -> str:
     """Unwrap Optional[X] or X | None to just X."""
     s = annotation_str.strip()
     # Optional[X]
-    if s.startswith("Optional[") and s.endswith("]"):
-        return s[len("Optional[") : -1]
+    optional = s.split("[", 1)[0]
+    if optional in {"Optional", "typing.Optional"} and s.endswith("]"):
+        return s[len(optional) + 1 : -1]
     # X | None
     if " | None" in s:
         return s.replace(" | None", "").strip()
@@ -44,6 +45,8 @@ def _annotation_str(node: ast.expr | None) -> str | None:
     if node is None:
         return None
     try:
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
         return ast.unparse(node)
     except (SyntaxError, ValueError, TypeError, RecursionError):
         return None
@@ -95,6 +98,8 @@ class _CallVisitor(ast.NodeVisitor):
         self.generic_visit(node)
         self._ctrl_stack.pop()
 
+    visit_AsyncFor = visit_For
+
     def visit_While(self, node: ast.While) -> None:
         self._ctrl_stack.append("while")
         self.generic_visit(node)
@@ -114,6 +119,8 @@ class _CallVisitor(ast.NodeVisitor):
         self._ctrl_stack.append("with")
         self.generic_visit(node)
         self._ctrl_stack.pop()
+
+    visit_AsyncWith = visit_With
 
     # Comprehensions — push 'comp' context
     def _visit_comp(self, node: ast.AST) -> None:
@@ -155,11 +162,20 @@ def _extract_decorator_call_sites(decorator_list: list[ast.expr]) -> list[CallSi
     return sites
 
 
+def _scope_nodes(nodes):
+    """Visit control blocks in one lexical scope, excluding nested definitions."""
+    for node in nodes:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            continue
+        yield node
+        yield from _scope_nodes(ast.iter_child_nodes(node))
+
+
 def _extract_init_attrs(init_node: ast.FunctionDef) -> dict[str, str]:
     """Extract self.x = ... assignments from __init__, return {attr: type}."""
     attrs: dict[str, str] = {}
     param_types = _extract_param_types(init_node.args)
-    for stmt in ast.walk(init_node):
+    for stmt in _scope_nodes(init_node.body):
         if isinstance(stmt, ast.Assign):
             for target in stmt.targets:
                 if (
@@ -185,7 +201,7 @@ def _extract_init_attrs(init_node: ast.FunctionDef) -> dict[str, str]:
         ):
             attr = stmt.target.attr
             ann = _annotation_str(stmt.annotation) or ""
-            attrs[attr] = ann
+            attrs[attr] = _unwrap_optional(ann)
     return attrs
 
 
@@ -209,7 +225,7 @@ def _extract_param_types(args: ast.arguments) -> dict[str, str]:
 def _extract_local_types(body: list[ast.stmt]) -> dict[str, str]:
     """Extract x = Foo(...) assignments (local var → type)."""
     types: dict[str, str] = {}
-    for stmt in body:
+    for stmt in _scope_nodes(body):
         if isinstance(stmt, ast.Assign):
             if isinstance(stmt.value, ast.Call):
                 type_str = ""
@@ -251,6 +267,8 @@ def _build_signature(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
     sig = args_str
     if ret:
         sig = f"{sig} -> {ret}"
+    if isinstance(node, ast.AsyncFunctionDef):
+        sig = "async " + sig
     return sig
 
 
@@ -270,10 +288,6 @@ class PythonAdapter:
 
     def parse(self, path: pathlib.Path, source: str) -> ParsedFile:
         """Parse Python source and return a ParsedFile."""
-        # Detect encoding (informational; source is already a str)
-        source_bytes = source.encode("latin-1", errors="replace")
-        _detect_source_encoding(source_bytes)
-
         try:
             tree = ast.parse(source, filename=str(path))
         except (SyntaxError, ValueError, RecursionError, MemoryError) as exc:
@@ -290,7 +304,7 @@ class PythonAdapter:
 
         # Collect imports
         imports: list[ImportEntry] = []
-        for node in ast.iter_child_nodes(tree):
+        for node in _scope_nodes(tree.body):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     imports.append(
@@ -336,12 +350,14 @@ class PythonAdapter:
             for imp in imports:
                 if imp.is_from:
                     exported_name = imp.alias if imp.alias else imp.name
-                    if (
-                        exported_name
-                        and not exported_name.startswith("_")
-                        and exported_name not in exports
-                    ):
-                        exports.append(exported_name)
+                else:
+                    exported_name = imp.alias or imp.module.split(".")[0]
+                if (
+                    exported_name
+                    and not exported_name.startswith("_")
+                    and exported_name not in exports
+                ):
+                    exports.append(exported_name)
 
         # Walk AST to collect symbols
         symbols: list[ParsedSymbol] = []
@@ -415,9 +431,12 @@ class PythonAdapter:
                 self._handle_class(node, lines, path, symbols, scope_stack)
             else:
                 # Control statements do not introduce a new lexical scope.
-                children = [
-                    child for child in ast.iter_child_nodes(node) if isinstance(child, ast.stmt)
-                ]
+                children = []
+                for child in ast.iter_child_nodes(node):
+                    if isinstance(child, ast.stmt):
+                        children.append(child)
+                    elif isinstance(child, (ast.ExceptHandler, ast.match_case)):
+                        children.extend(child.body)
                 self._walk_scope(children, lines, path, symbols, scope_stack)
 
     def _qualname_from_stack(self, stack: list[ast.AST], current_name: str) -> str:
@@ -597,7 +616,8 @@ class PythonAdapter:
                 lines.append(f"# module {sym.qualname}")
             else:
                 prefix = "async def" if sym.is_async else "def"
-                args, sep, returns = sym.signature.partition(" -> ")
+                signature = sym.signature.removeprefix("async ") if sym.is_async else sym.signature
+                args, sep, returns = signature.partition(" -> ")
                 suffix = f" -> {returns}" if sep else ""
                 lines.append(f"{prefix} {sym.qualname}({args}){suffix}:")
         return "\n".join(lines)

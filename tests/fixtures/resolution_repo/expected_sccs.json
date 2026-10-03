@@ -13,7 +13,16 @@
     "do_work"
   ],
   [
+    "exercise_imports"
+  ],
+  [
+    "call_unknown"
+  ],
+  [
     "Base"
+  ],
+  [
+    "Base.load"
   ],
   [
     "Base.save"
@@ -25,10 +34,28 @@
     "Repository.__init__"
   ],
   [
+    "Repository.inherited"
+  ],
+  [
     "Repository.save"
   ],
   [
     "save_record"
+  ],
+  [
+    "Manager"
+  ],
+  [
+    "Manager.__init__"
+  ],
+  [
+    "Manager.commit"
+  ],
+  [
+    "leaf"
+  ],
+  [
+    "run_relative"
   ],
   [
     "factorial"
@@ -41,5 +68,11 @@
   ],
   [
     "process"
+  ],
+  [
+    "unique_action"
+  ],
+  [
+    "get"
   ]
 ]

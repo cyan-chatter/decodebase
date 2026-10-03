@@ -88,3 +88,49 @@ def test_optional_types_and_exports():
     parsed = parse("__all__ = ['f']\ndef f(x: Optional[C], y: C | None): pass")
     assert parsed.exports == ["f"]
     assert parsed.symbols[0].param_types == {"x": "C", "y": "C"}
+
+
+def test_async_signature_has_one_prefix():
+    parsed = parse("async def f(x: int) -> int:\n return x")
+    assert parsed.symbols[0].signature == "async x: int -> int"
+    assert PythonAdapter().skeleton(parsed) == "async def f(x: int) -> int:"
+
+
+def test_source_encoding_fallback():
+    from cfl.parser.python_adapter import decode_source
+
+    assert "café" in decode_source(b'# coding: latin-1\nvalue = "caf\xe9"\n')
+    assert "caf�" in decode_source(b'value = "caf\xff"\n')
+    assert "ok" in decode_source(b'# coding: nonexistent\nvalue = "ok"\n')
+
+
+def test_nested_types_do_not_leak_across_scopes():
+    parsed = parse(
+        "class C:\n def __init__(self):\n  if True:\n   self.repo = Repo()\n"
+        "  def nested(): self.repo = Other()\n"
+        "def f():\n if True:\n  x = Repo()\n def nested(): y = Other()"
+    )
+    by_name = {symbol.qualname: symbol for symbol in parsed.symbols}
+    assert by_name["C.__init__"].init_attrs == {"repo": "Repo"}
+    assert by_name["f"].local_types == {"x": "Repo"}
+
+
+def test_try_and_match_definitions_and_async_control_contexts():
+    parsed = parse(
+        "try:\n g()\nexcept Exception:\n def f(): pass\n"
+        "match value:\n case 0:\n  def h(): pass\n"
+        "async def a():\n async for x in items:\n  async with x:\n   g()"
+    )
+    by_name = {symbol.qualname: symbol for symbol in parsed.symbols}
+    assert {"f", "h", "a"} <= set(by_name)
+    assert by_name["a"].call_sites[0].control_ctx == "for>with"
+
+
+def test_conditional_imports_and_forward_optional_annotations():
+    parsed = parse(
+        'if TYPE_CHECKING:\n from package import Repo\ndef f(x: "typing.Optional[Repo]"): pass'
+    )
+    assert parsed.imports[0].name == "Repo"
+    assert parsed.symbols[0].param_types == {"x": "Repo"}
+    parsed = PythonAdapter().parse(Path("__init__.py"), "import package.mod as public_module")
+    assert parsed.exports == ["public_module"]
