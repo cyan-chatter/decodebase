@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
+
+if TYPE_CHECKING:
+    from typing import Self
 
 from cfl.config import Settings
 
@@ -55,8 +58,8 @@ class OllamaClient:
         """Close the underlying HTTP connection pool."""
         self._client.close()
 
-    def __enter__(self) -> OllamaClient:
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, *_: Any) -> None:
+    def __exit__(self, *_: object) -> None:
         self.close()

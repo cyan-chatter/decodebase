@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from rich.console import Console
-from rich.panel import Panel
 from rich.table import Table
 
 if TYPE_CHECKING:
@@ -140,7 +139,7 @@ def check_residency(client: OllamaClient, settings: Settings) -> list[str]:
     warnings: list[str] = []
     try:
         loaded = client.ps()
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return [f"Cannot check model residency: {exc}"]
 
     if not loaded:
@@ -150,12 +149,11 @@ def check_residency(client: OllamaClient, settings: Settings) -> list[str]:
 
     # Generator check
     gen = by_name.get(settings.gen_model) or by_name.get(settings.gen_model.split(":")[0])
-    if gen:
-        if gen.get("size_vram", 0) < gen.get("size", 1):
-            raise PreflightError(
-                f"Generator model not fully on GPU (size_vram={gen.get('size_vram')}, "
-                f"size={gen.get('size')}). CPU spill is ~10x slower — abort."
-            )
+    if gen and gen.get("size_vram", 0) < gen.get("size", 1):
+        raise PreflightError(
+            f"Generator model not fully on GPU (size_vram={gen.get('size_vram')}, "
+            f"size={gen.get('size')}). CPU spill is ~10x slower — abort."
+        )
 
     # Embedder check (warn only)
     emb = by_name.get(settings.embed_model) or by_name.get(settings.embed_model.split(":")[0])
@@ -182,7 +180,7 @@ def check_db(settings: Settings) -> str:
 
     try:
         conn = db.connect(settings.dsn)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return f"Cannot connect to DB: {exc}"
 
     try:
@@ -212,7 +210,7 @@ def check_db(settings: Settings) -> str:
             parts.append(f"schema_version={schema_version}")
 
         return "; ".join(parts)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return f"DB query error: {exc}"
     finally:
         conn.close()
@@ -269,7 +267,7 @@ def run_doctor(settings: Settings) -> int:
             fail("Ollama", str(exc))
             console.print(table)
             return 1
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             fail("Ollama", f"unreachable: {exc}")
             console.print(table)
             return 1
