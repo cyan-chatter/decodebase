@@ -71,15 +71,15 @@ suspected prompt-cache hits. Call metadata appends to
 `state_dir/logs/calls-YYYYMMDD.jsonl`; prompts and source text are not stored.
 `GenResult` reports native duration fields in nanoseconds and wall latency in seconds.
 
-For optional exact counting with the default generator, download its
-[Qwen tokenizer](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/blob/main/tokenizer.json):
+For exact counting with the milestone 6 selected generator, download its
+[Qwen tokenizer](https://huggingface.co/Qwen/Qwen3.5-9B/blob/main/tokenizer.json):
 
 ```sh
-mkdir -p .cfl/tokenizers/gen
+mkdir -p .cfl/tokenizers/qwen3.5-9b
 curl --fail --location \
-  https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/resolve/main/tokenizer.json \
-  --output .cfl/tokenizers/gen/tokenizer.json
-export CFL_TOKENIZER_FILE="$PWD/.cfl/tokenizers/gen/tokenizer.json"
+  https://huggingface.co/Qwen/Qwen3.5-9B/resolve/main/tokenizer.json \
+  --output .cfl/tokenizers/qwen3.5-9b/tokenizer.json
+export CFL_TOKENIZER_FILE="$PWD/.cfl/tokenizers/qwen3.5-9b/tokenizer.json"
 ```
 
 Choose a matching tokenizer when changing `gen_model`. Milestone 4 tests use a small
@@ -148,3 +148,69 @@ def fetch_data():
 `max_retries` counts retries after the initial call, so `3` permits four total
 attempts and `0` runs once. The default retry exception is `RuntimeError`; other
 exceptions propagate immediately. Exhaustion re-raises the last exception.
+
+## Cache, memory, and optional KV quantization
+
+Generation metrics now retain cached prompt tokens and native durations.
+`cfl cache-benchmark --repetitions 3` measures fresh prompts, repetitions, shared
+prefixes, and changed prefixes separately. Doctor reports uncached prefill throughput;
+when cache metrics are unavailable or almost no tokens were evaluated, it does not
+claim a fresh-input rate. Cached tokens still count toward the context limit.
+
+Code fingerprints preserve Python indentation and string whitespace. Summary keys
+include callee identities, resolved model digests, prompt/schema versions, and
+generation settings. Index revisions include repository identity and the scan epoch;
+content edits advance the epoch, while unchanged scans keep it stable. The parser
+version bump reparses old fingerprints on the next scan.
+
+Run `cfl db migrate` for the additive memory migration. `KnowledgeMemory` in
+`cfl/core/memory.py` provides validated structured summary reuse and cached embeddings,
+including duplicate-text batching. `SessionMemory` persists recent turns, user
+constraints, and bounded source references; it rehydrates current source, clears old
+answers when the index changes, and budgets source before discussion history.
+These APIs support the upcoming ingestion and chat stages; the build/ask/chat CLI
+pipelines remain scheduled for their milestones. Answer-cache entries require
+explicit verification and unchanged source evidence.
+
+KV quantization defaults to **off**, using `f16`. Enable it explicitly through
+`kv_quantization = true` in `cfl.toml` or `CFL_KV_QUANTIZATION=true`. The optional
+`kv_quantization_type` / `CFL_KV_QUANTIZATION_TYPE` accepts `q8_0` (default choice
+when enabled) or `q4_0`. These settings generate **Ollama server environment variables**,
+not per-request options; the server must be restarted to apply a change.
+
+For a manually launched server:
+
+```sh
+eval "$(cfl runtime-env --kv-quantization)"
+ollama serve
+# Switch off before the next server launch:
+eval "$(cfl runtime-env --no-kv-quantization)"
+```
+
+For the existing systemd service, write the drop-in with
+`sudo scripts/ollama_env.sh --apply --kv-quantization`, then run
+`sudo systemctl daemon-reload` and `sudo systemctl restart ollama`. Use
+`--no-kv-quantization` in the same sequence to disable it. `cfl runtime-env --format
+systemd` prints a reviewable drop-in without applying it.
+
+The live comparison harness is `scripts/validate_kv_cache.py`. It needs an existing
+model directory and GPU access; it temporarily unloads resident models, launches
+an isolated server, and restores the original model names and context sizes.
+See `docs/validation/cache-and-memory.md` for measured memory and performance,
+quality review, and repeat commands. `q8_0` was live-tested; `q4_0` is selectable
+but was not included in this comparison.
+
+## Milestone 6 model decision
+
+The measured repository configuration selects `qwen3.5:9b` and
+`nomic-embed-text` (768 dimensions), with an 8,192-token generator context and KV
+quantization off. See [the decision and measurements](docs/decisions/0001-model-choice.md)
+for the three-generator comparison, dense-only embedding recall, source-review
+rationales, and final GPU validation. `scripts/bakeoff.py --help` exposes candidate
+lists, exact tokenizers, and archived prompt-contract replay. The script uses the
+fixture without changing the production index and restores previous residency.
+
+All 40 selected-model summaries pass the corrected JSON contract. Their content
+still requires the later evidence verification pipeline; contract validity alone
+is not semantic correctness. M7's build-time estimator remains pending, so M6
+records a measured per-symbol projection rather than a completed build estimate.

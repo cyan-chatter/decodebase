@@ -1,0 +1,56 @@
+{
+  "prompt_version": "1",
+  "schema_version": "1",
+  "system": "You are a precise code documentation engine. Describe only what the provided code and context show. Never invent symbols, files or behavior not present.",
+  "summary_prefix": "Summarize the supplied code as a JSON object matching this schema. Do not infer missing implementations.\n[SCHEMA]\n{\"additionalProperties\":false,\"properties\":{\"inputs\":{\"title\":\"Inputs\",\"type\":\"string\"},\"notable_logic\":{\"title\":\"Notable Logic\",\"type\":\"string\"},\"one_liner\":{\"title\":\"One Liner\",\"type\":\"string\"},\"purpose\":{\"title\":\"Purpose\",\"type\":\"string\"},\"raises\":{\"items\":{\"type\":\"string\"},\"title\":\"Raises\",\"type\":\"array\"},\"returns\":{\"title\":\"Returns\",\"type\":\"string\"},\"side_effects\":{\"items\":{\"type\":\"string\"},\"title\":\"Side Effects\",\"type\":\"array\"}},\"required\":[\"one_liner\",\"purpose\",\"inputs\",\"returns\",\"side_effects\",\"raises\",\"notable_logic\"],\"title\":\"SymbolSummary\",\"type\":\"object\"}",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "one_liner": {
+        "title": "One Liner",
+        "type": "string"
+      },
+      "purpose": {
+        "title": "Purpose",
+        "type": "string"
+      },
+      "inputs": {
+        "title": "Inputs",
+        "type": "string"
+      },
+      "returns": {
+        "title": "Returns",
+        "type": "string"
+      },
+      "side_effects": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Side Effects",
+        "type": "array"
+      },
+      "raises": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Raises",
+        "type": "array"
+      },
+      "notable_logic": {
+        "title": "Notable Logic",
+        "type": "string"
+      }
+    },
+    "required": [
+      "one_liner",
+      "purpose",
+      "inputs",
+      "returns",
+      "side_effects",
+      "raises",
+      "notable_logic"
+    ],
+    "title": "SymbolSummary",
+    "type": "object"
+  }
+}

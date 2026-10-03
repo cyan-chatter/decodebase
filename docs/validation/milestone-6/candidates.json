@@ -1,0 +1,10 @@
+{
+  "verified_at": "2026-10-04",
+  "models": {
+    "qwen2.5-coder:7b": {"library_url": "https://ollama.com/library/qwen2.5-coder:7b", "download_size": "4.7 GB", "parameters": "7.62B", "weight_type": "Q4_K_M", "license": "Apache-2.0", "license_url": "https://ollama.com/library/qwen2.5-coder:7b"},
+    "qwen3.5:9b": {"library_url": "https://ollama.com/library/qwen3.5:9b", "download_size": "6.6 GB", "parameters": "9.65B", "weight_type": "Q4_K_M", "license": "Apache-2.0", "license_url": "https://ollama.com/library/qwen3.5:9b"},
+    "qwen3:8b": {"library_url": "https://ollama.com/library/qwen3:8b", "download_size": "5.2 GB", "parameters": "8.19B", "weight_type": "Q4_K_M", "license": "Apache-2.0", "license_url": "https://ollama.com/library/qwen3:8b"},
+    "nomic-embed-text:latest": {"library_url": "https://ollama.com/library/nomic-embed-text:latest", "download_size": "274 MB", "parameters": "137M", "weight_type": "F16", "license": "Apache-2.0", "license_url": "https://ollama.com/library/nomic-embed-text:latest", "retrieval_instructions_url": "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5"},
+    "qwen3-embedding:0.6b": {"library_url": "https://ollama.com/library/qwen3-embedding:0.6b", "download_size": "639 MB", "parameters": "596M", "weight_type": "Q8_0", "license": "Apache-2.0", "license_url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B", "license_note": "The Ollama library page does not expose a license blob for this tag; the upstream publisher model card supplies the license.", "retrieval_instructions_url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B"}
+  }
+}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -49,14 +50,15 @@ def check_models_pulled(client: OllamaClient, settings: Settings) -> None:
     except Exception as exc:
         raise PreflightError(f"Cannot list Ollama models: {exc}") from exc
 
-    missing = []
-    for model in (settings.gen_model, settings.embed_model):
-        # Ollama tags may include a digest suffix; match on prefix.
-        if not any(t == model or t.startswith(model + ":") for t in available):
-            # Also accept the base name without a tag.
-            base = model.split(":")[0]
-            if not any(t == base or t.startswith(base + ":") for t in available):
-                missing.append(model)
+    def canonical(tag: str) -> str:
+        return tag if ":" in tag else tag + ":latest"
+
+    available = {canonical(tag) for tag in available}
+    missing = [
+        model
+        for model in (settings.gen_model, settings.embed_model)
+        if canonical(model) not in available
+    ]
 
     if missing:
         raise PreflightError(f"Models not pulled: {missing}. Run scripts/pull_models.sh")
@@ -70,18 +72,21 @@ def warm_and_benchmark(client: OllamaClient, settings: Settings) -> Bench:
         target_tokens = settings.num_ctx - settings.template_overhead - 512
         unit = "The quick brown fox jumps over the lazy dog. "
         padded_prompt = cap_tool_output(
-            unit * settings.num_ctx,
+            "Uncached benchmark " + uuid.uuid4().hex + "\n" + unit * settings.num_ctx,
             target_tokens,
             counter=client.counter,
             pointer="Benchmark padding omitted.",
         )
         result = client.generate(padded_prompt, "", num_predict=64, task="benchmark")
         prompt_eval_count = result.prompt_tokens
+        uncached = result.uncached_prompt_tokens
         prompt_eval_duration = result.prompt_eval_duration
         eval_count = result.output_tokens
         eval_duration = result.eval_duration
         prefill_tps = (
-            prompt_eval_count / (prompt_eval_duration / 1e9) if prompt_eval_duration else 0.0
+            uncached / (prompt_eval_duration / 1e9)
+            if prompt_eval_duration and uncached is not None and uncached >= 32
+            else 0.0
         )
         gen_tps = eval_count / (eval_duration / 1e9) if eval_duration else 0.0
         truncation_warning = prompt_eval_count < 0.8 * client.counter.count(padded_prompt)
@@ -92,6 +97,13 @@ def warm_and_benchmark(client: OllamaClient, settings: Settings) -> Bench:
             gen_tps=round(gen_tps, 1),
             embed_dim=embed_dim,
             truncation_warning=truncation_warning,
+            extra={
+                "prompt_tokens": prompt_eval_count,
+                "cached_prompt_tokens": result.cached_prompt_tokens,
+                "uncached_prompt_tokens": uncached,
+                "load_duration": result.load_duration,
+                "cache_metrics_available": result.cached_prompt_tokens is not None,
+            },
         )
 
         # Persist to .cfl/bench.json
@@ -104,6 +116,7 @@ def warm_and_benchmark(client: OllamaClient, settings: Settings) -> Bench:
                     "gen_tps": bench.gen_tps,
                     "embed_dim": bench.embed_dim,
                     "truncation_warning": bench.truncation_warning,
+                    **bench.extra,
                 }
             )
         )
@@ -122,33 +135,28 @@ def check_residency(client: OllamaClient, settings: Settings) -> list[str]:
     except Exception as exc:  # noqa: BLE001
         return [f"Cannot check model residency: {exc}"]
 
-    if not loaded:
-        return ["Models not loaded yet — run cfl doctor after warming models"]
+    def canonical(tag: str) -> str:
+        return tag if ":" in tag else tag + ":latest"
 
-    by_name: dict[str, dict] = {m["name"]: m for m in loaded}
+    by_name = {canonical(m["name"]): m for m in loaded}
+    for role, tag in (("Generator", settings.gen_model), ("Embedder", settings.embed_model)):
+        model = by_name.get(canonical(tag))
+        if model is None:
+            raise PreflightError(f"{role} model not resident: {tag}")
+        if model.get("size_vram", 0) < model.get("size", 1):
+            raise PreflightError(
+                f"{role} model not fully on GPU (size_vram={model.get('size_vram')}, "
+                f"size={model.get('size')}). CPU spill is ~10x slower — abort."
+            )
+        if role == "Generator" and model.get("context_length") != settings.num_ctx:
+            raise PreflightError(
+                f"Generator context {model.get('context_length')} differs from NUM_CTX={settings.num_ctx}"
+            )
 
-    # Generator check
-    gen = by_name.get(settings.gen_model) or by_name.get(settings.gen_model.split(":")[0])
-    if gen and gen.get("size_vram", 0) < gen.get("size", 1):
-        raise PreflightError(
-            f"Generator model not fully on GPU (size_vram={gen.get('size_vram')}, "
-            f"size={gen.get('size')}). CPU spill is ~10x slower — abort."
-        )
-
-    # Embedder check (warn only)
-    emb = by_name.get(settings.embed_model) or by_name.get(settings.embed_model.split(":")[0])
-    if emb and emb.get("size_vram", 0) < emb.get("size", 1):
-        warnings.append(
-            f"Embedder model not fully on GPU "
-            f"(size_vram={emb.get('size_vram')}, size={emb.get('size')})"
-        )
-
-    # Total VRAM check
     total_vram = sum(m.get("size_vram", 0) for m in loaded)
-    limit_bytes = settings.vram_limit_gb * 1e9
-    if total_vram > limit_bytes:
-        warnings.append(
-            f"Total VRAM used {total_vram / 1e9:.1f} GB exceeds limit {settings.vram_limit_gb} GB"
+    if total_vram >= settings.vram_limit_gb * 1e9:
+        raise PreflightError(
+            f"Total VRAM used {total_vram / 1e9:.2f} GB exceeds limit {settings.vram_limit_gb} GB"
         )
 
     return warnings

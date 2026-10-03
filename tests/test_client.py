@@ -122,6 +122,49 @@ def test_native_options_metrics_and_trace(client, fake_ollama, method):
     assert "source" not in str(record)
 
 
+@pytest.mark.parametrize("stream", [False, True])
+def test_cached_tokens_are_preserved_in_metrics_and_trace(client, fake_ollama, stream):
+    fake_ollama.cached_prompt_tokens = 75
+    result = client.generate("source", "system", num_predict=64, task="cache", stream=stream)
+    if stream:
+        list(result)
+    else:
+        assert result.prompt_tokens == 100 and result.cached_prompt_tokens == 75
+        assert result.uncached_prompt_tokens == 25
+    record = logs(client)[-1]
+    assert record["actual_prompt_tokens"] == 100 and record["cached_prompt_tokens"] == 75
+    assert record["prompt_eval_duration"] == 1000000000
+
+
+@pytest.mark.parametrize("cached", [-1, 101, True, "75"])
+def test_invalid_cached_token_metric_rejected(client, fake_ollama, cached):
+    from cfl.core.errors import LLMValidationError
+
+    fake_ollama.cached_prompt_tokens = cached
+    with pytest.raises(LLMValidationError, match="prompt_eval_cached_count"):
+        client.generate("source", "", num_predict=64, task="cache")
+
+
+def test_unknown_and_nearly_complete_cache_do_not_inflate_benchmark(client, fake_ollama):
+    from cfl.core.preflight import warm_and_benchmark
+
+    for cached in [None, 99]:
+        fake_ollama.cached_prompt_tokens = cached
+        assert warm_and_benchmark(client, client.settings).prefill_tps == 0
+    fake_ollama.cached_prompt_tokens = 60
+    bench = warm_and_benchmark(client, client.settings)
+    assert bench.prefill_tps == 40 and bench.extra["cached_prompt_tokens"] == 60
+
+
+def test_cached_tokens_still_count_toward_context_budget(client, fake_ollama):
+    from cfl.core.errors import BudgetExceeded
+
+    fake_ollama.prompt_tokens = client.settings.num_ctx
+    fake_ollama.cached_prompt_tokens = client.settings.num_ctx - 1
+    with pytest.raises(BudgetExceeded):
+        client.generate("small", "", num_predict=64, task="cache")
+
+
 @pytest.mark.parametrize("failures", [2, 3])
 @pytest.mark.parametrize("stream", [False, True])
 def test_retries(client, fake_ollama, failures, stream):

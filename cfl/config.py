@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import os
 from pathlib import Path
+from typing import Literal
 
 try:
     import tomllib
@@ -29,6 +30,9 @@ class Settings(BaseModel):
     gen_model: str = "qwen2.5-coder:7b"
     embed_model: str = "nomic-embed-text"
     embed_dim: int = 768
+    # Ollama server environment, not per-request options. Restart to apply.
+    kv_quantization: bool = False
+    kv_quantization_type: Literal["q8_0", "q4_0"] = "q8_0"
 
     # Generation
     num_ctx: int = 8192

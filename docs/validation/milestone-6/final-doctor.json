@@ -1,0 +1,72 @@
+{
+  "doctor_exit": 0,
+  "num_ctx": 8192,
+  "kv_quantization": false,
+  "ps": [
+    {
+      "name": "qwen3.5:9b",
+      "model": "qwen3.5:9b",
+      "size": 5729167604,
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "9.7B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2319-01-14T02:56:44.338728592+05:30",
+      "size_vram": 5729167604,
+      "context_length": 8192
+    },
+    {
+      "name": "nomic-embed-text:latest",
+      "model": "nomic-embed-text:latest",
+      "size": 323150151,
+      "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "nomic-bert",
+        "families": [
+          "nomic-bert"
+        ],
+        "parameter_size": "137M",
+        "quantization_level": "F16"
+      },
+      "expires_at": "2319-01-14T02:56:44.882203959+05:30",
+      "size_vram": 323150151,
+      "context_length": 2048
+    }
+  ],
+  "total_model_vram_bytes": 6052317755,
+  "peak_gpu_mib": 7996,
+  "benchmark": {
+    "prefill_tps": 3666.7,
+    "gen_tps": 72.7,
+    "embed_dim": 768,
+    "truncation_warning": false,
+    "prompt_tokens": 7628,
+    "cached_prompt_tokens": 0,
+    "uncached_prompt_tokens": 7628,
+    "load_duration": 8447096887,
+    "cache_metrics_available": true
+  },
+  "metadata": {
+    "gen_model_tag": "qwen3.5:9b",
+    "embed_model_tag": "nomic-embed-text",
+    "gen_model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "embed_model_digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+    "num_ctx": "8192",
+    "embed_dim": "768",
+    "prompt_version": "2",
+    "summary_schema_version": "2",
+    "generation_options": "{\"gen_disable_thinking\": true, \"kv_quantization\": false, \"kv_quantization_type\": \"q8_0\", \"num_ctx\": 8192, \"num_predict_symbol\": 350, \"seed\": 42, \"temperature\": 0.1}"
+  },
+  "dimension_reset_required": false,
+  "tokenizer_url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/main/tokenizer.json",
+  "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+}

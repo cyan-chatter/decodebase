@@ -1,37 +1,28 @@
 #!/usr/bin/env bash
-# CodeFlowLens – recommended Ollama environment variables
-# Usage: source scripts/ollama_env.sh          # just print
-#        source scripts/ollama_env.sh --apply  # write systemd drop-in (requires root)
-
+# Print settings; quantization is OFF unless opted into via config or --kv-quantization.
+# eval "$(scripts/ollama_env.sh --kv-quantization)"; then restart Ollama.
+# --apply writes the existing systemd drop-in and requires root.
 set -euo pipefail
-
-OLLAMA_NUM_PARALLEL=1
-OLLAMA_MAX_LOADED_MODELS=2
-OLLAMA_KEEP_ALIVE=-1
-OLLAMA_FLASH_ATTENTION=1
-OLLAMA_KV_CACHE_TYPE=q8_0
-
-echo "Recommended Ollama environment variables:"
-echo "  OLLAMA_NUM_PARALLEL=1"
-echo "  OLLAMA_MAX_LOADED_MODELS=2"
-echo "  OLLAMA_KEEP_ALIVE=-1"
-echo "  OLLAMA_FLASH_ATTENTION=1"
-echo "  OLLAMA_KV_CACHE_TYPE=q8_0"
-
-if [[ "${1:-}" == "--apply" ]]; then
-    DROP_IN=/etc/systemd/system/ollama.service.d/cfl.conf
+TASK_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+TASK_APPLY=0
+TASK_ARGS=()
+for TASK_ARG in "$@"; do
+    if [[ "${TASK_ARG}" == "--apply" ]]; then
+        TASK_APPLY=1
+    else
+        TASK_ARGS+=("${TASK_ARG}")
+    fi
+done
+if [[ "${TASK_APPLY}" == 1 ]]; then
+    TASK_DROP_IN=/etc/systemd/system/ollama.service.d/cfl.conf
     if [[ "$(id -u)" -ne 0 ]]; then
-        echo "WARNING: --apply requires root. Run with sudo to write ${DROP_IN}" >&2
+        echo "--apply requires root to write ${TASK_DROP_IN}" >&2
         exit 1
     fi
-    mkdir -p "$(dirname "${DROP_IN}")"
-    cat > "${DROP_IN}" <<EOF
-[Service]
-Environment="OLLAMA_NUM_PARALLEL=1"
-Environment="OLLAMA_MAX_LOADED_MODELS=2"
-Environment="OLLAMA_KEEP_ALIVE=-1"
-Environment="OLLAMA_FLASH_ATTENTION=1"
-Environment="OLLAMA_KV_CACHE_TYPE=q8_0"
-EOF
-    echo "Written ${DROP_IN}. Run: systemctl daemon-reload && systemctl restart ollama"
+    TASK_CONFIG="$("${TASK_ROOT}/.venv/bin/cfl" runtime-env "${TASK_ARGS[@]}" --format systemd)"
+    mkdir -p "$(dirname -- "${TASK_DROP_IN}")"
+    printf '%s\n' "${TASK_CONFIG}" > "${TASK_DROP_IN}"
+    echo "Written ${TASK_DROP_IN}. Run systemctl daemon-reload and restart ollama to apply."
+else
+    "${TASK_ROOT}/.venv/bin/cfl" runtime-env "${TASK_ARGS[@]}"
 fi

@@ -1,0 +1,10 @@
+ALTER TABLE answer_cache ADD COLUMN IF NOT EXISTS verified BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE answer_cache ADD COLUMN IF NOT EXISTS evidence JSONB NOT NULL DEFAULT '[]';
+
+CREATE TABLE IF NOT EXISTS chat_sessions (
+    id TEXT PRIMARY KEY,
+    repo_root TEXT NOT NULL,
+    index_version TEXT NOT NULL,
+    state JSONB NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

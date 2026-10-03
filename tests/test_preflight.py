@@ -29,3 +29,61 @@ def test_doctor_reports_connection_failure(monkeypatch):
 
     monkeypatch.setattr(db, "connect", fail)
     assert check_db(Settings()) == "Cannot connect to DB: unreachable"
+
+
+def test_preflight_requires_exact_candidate_tag():
+    from types import SimpleNamespace
+
+    from cfl.core.errors import PreflightError
+    from cfl.core.preflight import check_models_pulled
+
+    client = SimpleNamespace(
+        tags=lambda: [{"name": "qwen3:4b"}, {"name": "nomic-embed-text:latest"}]
+    )
+    with pytest.raises(PreflightError, match="qwen3:8b"):
+        check_models_pulled(client, Settings(gen_model="qwen3:8b"))
+
+
+@pytest.mark.parametrize("failure", ["missing", "spill", "budget", "context"])
+def test_preflight_rejects_invalid_gpu_or_context(failure):
+    from types import SimpleNamespace
+
+    from cfl.core.errors import PreflightError
+    from cfl.core.preflight import check_residency
+
+    rows = [
+        {
+            "name": "qwen2.5-coder:7b",
+            "size": 5_000_000_000,
+            "size_vram": 5_000_000_000,
+            "context_length": 8192,
+        },
+        {
+            "name": "nomic-embed-text:latest",
+            "size": 300_000_000,
+            "size_vram": 300_000_000,
+            "context_length": 2048,
+        },
+    ]
+    if failure == "missing":
+        rows.pop()
+    elif failure == "spill":
+        rows[1]["size_vram"] = 0
+    elif failure == "budget":
+        rows[0].update(size=10_000_000_000, size_vram=10_000_000_000)
+    else:
+        rows[0]["context_length"] = 4096
+    with pytest.raises(PreflightError):
+        check_residency(SimpleNamespace(ps=lambda: rows), Settings())
+
+
+def test_preflight_accepts_untagged_latest_alias():
+    from types import SimpleNamespace
+
+    from cfl.core.preflight import check_residency
+
+    rows = [
+        {"name": "qwen2.5-coder:7b", "size": 5, "size_vram": 5, "context_length": 8192},
+        {"name": "nomic-embed-text:latest", "size": 1, "size_vram": 1},
+    ]
+    assert check_residency(SimpleNamespace(ps=lambda: rows), Settings()) == []

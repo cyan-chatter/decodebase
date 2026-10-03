@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import pathlib
 
 
@@ -21,15 +22,14 @@ def file_sha256(path: pathlib.Path) -> str:
 
 
 def normalize_code(s: str) -> str:
-    """Normalize code string: replace CRLF, strip each line, strip outer blank lines."""
+    """Normalize line endings and outer blank lines, preserving semantic whitespace."""
     # Replace CRLF with LF
     s = s.replace("\r\n", "\n")
-    # Strip each line (both leading and trailing whitespace)
-    lines = [line.strip() for line in s.splitlines()]
+    lines = s.split("\n")
     # Strip outer blank lines
-    while lines and not lines[0]:
+    while lines and not lines[0].strip():
         lines.pop(0)
-    while lines and not lines[-1]:
+    while lines and not lines[-1].strip():
         lines.pop()
     return "\n".join(lines)
 
@@ -49,6 +49,10 @@ def ctx_hash(
     callee_pairs: list[tuple[str, str]],
     prompt_version: str,
     gen_model_tag: str,
+    *,
+    gen_model_digest: str | None = None,
+    generation_options: dict | None = None,
+    schema_version: str = "1",
 ) -> str:
     """Compute context hash from code hash and callee summaries.
 
@@ -61,21 +65,30 @@ def ctx_hash(
     Returns:
         SHA256 hex of the combined context
     """
-    # Hash each summary_short
-    hashes = [sha256_hex(summary) for _, summary in callee_pairs]
-    # Sort by callee_id
-    sorted_pairs = sorted(
-        [(cid, h) for (cid, _), h in zip(callee_pairs, hashes)],
-        key=lambda x: x[0],
+    return fingerprint(
+        {
+            "version": 2,
+            "code_hash": code_hash,
+            "callees": sorted(callee_pairs),
+            "prompt_version": prompt_version,
+            "schema_version": schema_version,
+            "model": gen_model_tag,
+            "model_digest": gen_model_digest,
+            "generation_options": generation_options or {},
+        }
     )
-    sorted_hashes = [h for _, h in sorted_pairs]
-    # Join and hash with code_hash, prompt_version, gen_model_tag
-    return join_hash(code_hash, *sorted_hashes, prompt_version, gen_model_tag)
 
 
-def embed_key(embed_text: str, embed_model_tag: str) -> str:
+def embed_key(embed_text: str, embed_model_tag: str, model_digest: str | None = None) -> str:
     """Generate embedding key from text and model tag."""
-    return sha256_hex(embed_text + "\x1f" + embed_model_tag)
+    return fingerprint(
+        {"version": 2, "text": embed_text, "model": embed_model_tag, "digest": model_digest}
+    )
+
+
+def fingerprint(value: object) -> str:
+    """Hash structured cache inputs with canonical, unambiguous serialization."""
+    return sha256_hex(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":")))
 
 
 def member_hash(symbol_ids: list[str]) -> str:

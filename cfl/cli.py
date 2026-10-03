@@ -24,6 +24,71 @@ def _callback() -> None:
     """CodeFlowLens top-level callback — catches CflError and exits cleanly."""
 
 
+@app.command("runtime-env")
+def runtime_env(
+    kv_quantization: bool | None = typer.Option(
+        None, "--kv-quantization/--no-kv-quantization", help="Opt into KV cache quantization"
+    ),
+    kv_type: str | None = typer.Option(None, "--kv-type", help="q8_0 or q4_0"),
+    output_format: str = typer.Option("shell", "--format", help="shell or systemd"),
+) -> None:
+    """Print Ollama server settings. Restart Ollama to apply them."""
+    from cfl.config import Settings
+    from cfl.core.runtime import ollama_environment
+
+    values = get_settings().model_dump()
+    if kv_quantization is not None:
+        values["kv_quantization"] = kv_quantization
+    if kv_type is not None:
+        values["kv_quantization_type"] = kv_type
+    try:
+        settings = Settings(**values)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    if output_format not in {"shell", "systemd"}:
+        raise typer.BadParameter("format must be shell or systemd")
+    if output_format == "systemd":
+        typer.echo("[Service]")
+    for name, value in ollama_environment(settings).items():
+        typer.echo(
+            f'Environment="{name}={value}"'
+            if output_format == "systemd"
+            else f'export {name}="{value}"'
+        )
+
+
+@app.command("cache-benchmark")
+def cache_benchmark(
+    repetitions: int = typer.Option(3, min=1, max=20),
+    out: str = typer.Option(".cfl/cache-benchmark.json", "--out"),
+) -> None:
+    """Measure fresh, repeated and shared-prefix prompts separately."""
+    from pathlib import Path
+
+    import httpx
+
+    from cfl.core.benchmark import cache_workloads
+    from cfl.core.client import OllamaClient
+
+    settings = get_settings()
+    try:
+        with OllamaClient(settings) as client:
+            tags = client.tags()
+            rows = cache_workloads(client, repetitions=repetitions)
+        report = {
+            "gen_model": settings.gen_model,
+            "num_ctx": settings.num_ctx,
+            "tags": tags,
+            "rows": rows,
+        }
+        path = Path(out)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        typer.echo(json.dumps(report))
+    except (CflError, httpx.HTTPError, OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+
 # ---------------------------------------------------------------------------
 # doctor
 # ---------------------------------------------------------------------------

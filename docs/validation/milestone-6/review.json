@@ -1,0 +1,981 @@
+{
+  "kind": "agent",
+  "reviewer": "Codex",
+  "method": "Independent comparison of every generated summary against supplied source; no model judges or human sign-off. Scores use eval/rubric.md adapted to source summaries (citations not part of summary schema).",
+  "rubric": "1 incorrect/unsupported; 2 major errors; 3 important omissions; 4 grounded minor omissions; 5 precise complete supplied-code account. Unknown callee implementations are not grounds for inventing behavior.",
+  "models": {
+    "qwen2.5-coder:7b": [
+      {
+        "id": "api/routes.py::route",
+        "source_sha256": "3e9477aedfe15bfb3d0322187b1b24b6d7911b3ff38cecd2ae653c55fac7eab9",
+        "score": 5,
+        "notes": "Accurate factory and deferred handler mutation."
+      },
+      {
+        "id": "api/routes.py::route.decorate",
+        "source_sha256": "441475b48a802e265d09be0d8e7999dbf16c4be645dfd2af1b10b5f61be3bc77",
+        "score": 4,
+        "notes": "Captures mutation; omits captured path value."
+      },
+      {
+        "id": "api/routes.py::create_handler",
+        "source_sha256": "01c5365b638453f368886afe1d87af351f2a60a978d8a6f6d2f4d83075101daf",
+        "score": 4,
+        "notes": "Accurate call order; supplied callee implementations absent."
+      },
+      {
+        "id": "api/routes.py::complete_handler",
+        "source_sha256": "dd41407f3104b1ef5ca37a0acce1558f029980cdf7196ac0f44f0619d688a7ff",
+        "score": 4,
+        "notes": "Accurate call order and return."
+      },
+      {
+        "id": "auth/passwords.py::hash_password",
+        "source_sha256": "5b34a88ef9b8ad1739d10c5aa33cc10ab59ccd6cd16186166cb2d2168cbc4a94",
+        "score": 5,
+        "notes": "Correct algorithm, salt, encoding, and iteration count."
+      },
+      {
+        "id": "auth/passwords.py::verify_password",
+        "source_sha256": "8cf5a563e5afea352723e0e32a88316bf05a1711f87e56e4da4de0ce70e662d3",
+        "score": 5,
+        "notes": "Correct constant-time comparison."
+      },
+      {
+        "id": "auth/tokens.py::TokenError",
+        "source_sha256": "1debfc8e9a55c6f65c387067d1eba688492088ff2933a947f3087d017fe65b8c",
+        "score": 3,
+        "notes": "Correct exception inheritance; empty fields violate summary contract."
+      },
+      {
+        "id": "auth/tokens.py::issue_token",
+        "source_sha256": "0ab20a0bc0fc5de61e5e4ac28e7212b522ef1df1067519ae3a93fd91ec8e2805",
+        "score": 5,
+        "notes": "Correct HMAC algorithm and token composition."
+      },
+      {
+        "id": "auth/tokens.py::validate_token",
+        "source_sha256": "93d85c9ab24c945bc91be65e9e624861d5aa27ccc78e2b7891b733cfaa814632",
+        "score": 5,
+        "notes": "Correct delimiter check, comparison and explicit TokenError."
+      },
+      {
+        "id": "cli.py::main",
+        "source_sha256": "ae23639262bd1c97e4431e54dede6f71c0c8746cce7fdf68488547015317eba2",
+        "score": 4,
+        "notes": "Correct orchestration; no fabricated resource cleanup."
+      },
+      {
+        "id": "db/connection.py::Connection",
+        "source_sha256": "cafda637187b2a2fe169bf8ac485d2d14d142a8c08e37d43123355af7cd59d8d",
+        "score": 4,
+        "notes": "Correct in-memory storage and close check; initialization omitted."
+      },
+      {
+        "id": "db/connection.py::Connection.__init__",
+        "source_sha256": "928c17fbecc3912579fc395ce9d6bf5675f978804f5c0a562030e80cd07a9b48",
+        "score": 4,
+        "notes": "Correct state initialization."
+      },
+      {
+        "id": "db/connection.py::Connection.execute",
+        "source_sha256": "2149d2f49e3ef1295d6e997f34570fb096a91b5b3a8a78c0b6dd4d98baece89d",
+        "score": 5,
+        "notes": "Correct conditional write, closed guard and read return."
+      },
+      {
+        "id": "db/connection.py::Connection.close",
+        "source_sha256": "35f2311464fe5756f6a69c8e7e8c93e4a00ad90e7ce32287f13a3b99d169a3a4",
+        "score": 5,
+        "notes": "Correct closed flag mutation."
+      },
+      {
+        "id": "db/repository.py::Repository",
+        "source_sha256": "1359ec2f34335bee53364fc56d9748afb1d8e196853929f834d7efc836870813",
+        "score": 2,
+        "notes": "Invents SQL queries; source only invokes a connection method."
+      },
+      {
+        "id": "db/repository.py::Repository.__init__",
+        "source_sha256": "0c762a246b48f6f23c0d9f382ebc9718f79b20806945223e91ec82e35720ddeb",
+        "score": 4,
+        "notes": "Correct retained connection; repository role is generic."
+      },
+      {
+        "id": "db/repository.py::Repository.save",
+        "source_sha256": "73413562c85b0a833220f1b07ff7969ebdcedb5f9eee450af1d1fb3adb88c319",
+        "score": 4,
+        "notes": "Correct id validation, connection write and task return."
+      },
+      {
+        "id": "db/repository.py::Repository.get",
+        "source_sha256": "ee8caa159df2f3faac3e9f4a53c12899ce66feaf3a76c6c64f32938313154d7c",
+        "score": 3,
+        "notes": "Invents query behavior not shown in supplied method."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository",
+        "source_sha256": "473e7f28d4429fff70f6bfb82328600412bce0bd101a7dbfcd1dd97e5e686737",
+        "score": 2,
+        "notes": "Incorrectly says input dictionary is modified; dict(task, audited=True) creates a copy."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository.save",
+        "source_sha256": "1073563c7a5d4e6854796326ca30ae2e0e039f1f75b657ac7f22f2f44a642600",
+        "score": 4,
+        "notes": "Delegation correct; fails to distinguish copying from mutation."
+      },
+      {
+        "id": "exports.py::save",
+        "source_sha256": "0d83f5c6859dbcc731b3ce3c72425269cd2a9db8372c0d6c7891e586bd9d02b3",
+        "score": 5,
+        "notes": "Correct UTF-8 JSON file write."
+      },
+      {
+        "id": "exports.py::process",
+        "source_sha256": "d4b812a385f8ba943a17cdf3f139b2c2f45c11ae2e5265cd607e2ebf4253afae",
+        "score": 2,
+        "notes": "Invents json.JSONEncodeError and JSONDecodeError for serialization."
+      },
+      {
+        "id": "pipeline.py::transform",
+        "source_sha256": "ce0adcd86785b40dd5a8b9cd3d040c5d7b1342633096aa751f160f28361e5fc8",
+        "score": 3,
+        "notes": "Correct normalization and persistence call; direct KeyError omitted."
+      },
+      {
+        "id": "pipeline.py::write_to_db",
+        "source_sha256": "46af8108116da3fb5ac868cfe63ad72c8d3699c382b4e86e44ce6236688dd0e4",
+        "score": 5,
+        "notes": "Correct repository delegation."
+      },
+      {
+        "id": "pipeline.py::run_pipeline",
+        "source_sha256": "0fd83ab73b570da7416a09e3a0314322fd994042bf33dba684420f09105ff8a6",
+        "score": 4,
+        "notes": "Correct comprehension and transformation."
+      },
+      {
+        "id": "services/notifications.py::format_notification",
+        "source_sha256": "b839a8455feb801dceb203e07bd060e5eacd663d3dbe7f6a8e49cece3999bc27",
+        "score": 4,
+        "notes": "Correct title concatenation; missing-title KeyError omitted."
+      },
+      {
+        "id": "services/notifications.py::send_email",
+        "source_sha256": "a53e2c48c0a85993a708730be2a756f629c482438dc068c4a66df42caa2af295",
+        "score": 2,
+        "notes": "Claims actual email delivery, although implementation only returns message."
+      },
+      {
+        "id": "services/notifications.py::notify",
+        "source_sha256": "845393bd70c59db06d072d0aad5fd5d926835f5a403bfe37de493db345a97c4e",
+        "score": 3,
+        "notes": "Call composition correct; actual email side effect not established by supplied code."
+      },
+      {
+        "id": "services/tasks.py::create_task",
+        "source_sha256": "f8fb0d123051bdef7c27dbc0084fb88f894006805b987792a536a08b178e02d9",
+        "score": 3,
+        "notes": "Correct broad behavior; id lowercasing/replacement omitted."
+      },
+      {
+        "id": "services/tasks.py::complete_task",
+        "source_sha256": "63c8f1ba093d3c1e281a69622b0b66e525248d341fd3fe78b84d3bb54d93519a",
+        "score": 5,
+        "notes": "Correct missing guard, mutation and save."
+      },
+      {
+        "id": "services/tasks.py::process",
+        "source_sha256": "aff7c954308ee1bd1d5a0f78f02bfa8b9e675eb3cabe8816fc983ca6718b5505",
+        "score": 5,
+        "notes": "Correct list-comprehension mapping."
+      },
+      {
+        "id": "tests/test_tasks.py::test_create_and_complete",
+        "source_sha256": "98ea2da9ddd3451fc62f2198124a61e587ab9b6ca19a71da0cc46a51c243f8da",
+        "score": 4,
+        "notes": "Correct assertion workflow; assertion failure omitted."
+      },
+      {
+        "id": "trees.py::walk_tree",
+        "source_sha256": "8f7e8580d14e7dfdb841c22929e6cb90a4eb02355841df9b35db82829293b547",
+        "score": 4,
+        "notes": "Correct preorder recursion; name is required rather than optional."
+      },
+      {
+        "id": "trees.py::is_even",
+        "source_sha256": "5528d32555efa8edd076b6ecd10bd2c23c0f29856730217d2b6ef3eddc7597d2",
+        "score": 4,
+        "notes": "Correct recurrence; nonnegative input limitation omitted."
+      },
+      {
+        "id": "trees.py::is_odd",
+        "source_sha256": "608dbce2edb89f76ee9adc0e1f3b681e5d4dd7143e595051ef522e4d316a0b7e",
+        "score": 4,
+        "notes": "Correct mutual recursion; negative-input limitation omitted."
+      },
+      {
+        "id": "utils/config.py::parse_config",
+        "source_sha256": "119f9daa94df2605b3a7caa02f7c13db480cd532e43f1e893246338966b0bab7",
+        "score": 3,
+        "notes": "Omits JSON decoding errors and conflates parsed object validation with input validation."
+      },
+      {
+        "id": "utils/config.py::load_config",
+        "source_sha256": "98f1b7c43ff088ee183b9c3dc0bea1ebd7993f52072f50b9b50e3d5e962232c3",
+        "score": 4,
+        "notes": "Correct file read and parse delegation."
+      },
+      {
+        "id": "utils/retry.py::with_retries",
+        "source_sha256": "e1ab87dc3c2a253b623351c257b11d7aa99fa8ff2f25c4a2fa5166211e2defc3",
+        "score": 4,
+        "notes": "Correct RuntimeError-only attempts and validation; raises list omits exhaustion RuntimeError."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate",
+        "source_sha256": "c720b8c727be0832e96d0e68770b68f1bf120f6e299cb65dbc3271cc990f04a7",
+        "score": 2,
+        "notes": "Incorrectly describes decorate as returning the called result; it returns wrapped without executing it."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate.wrapped",
+        "source_sha256": "aa2d24d72fdc5abb78b66c6b9b7cb3e7e0a7ce5fcc236e8af3820c794db310d3",
+        "score": 3,
+        "notes": "Retry logic correct; treats captured function/attempts as parameters and omits *args/**kwargs."
+      }
+    ],
+    "qwen3.5:9b": [
+      {
+        "id": "api/routes.py::route",
+        "source_sha256": "3e9477aedfe15bfb3d0322187b1b24b6d7911b3ff38cecd2ae653c55fac7eab9",
+        "score": 5,
+        "notes": "Precise factory and deferred mutation."
+      },
+      {
+        "id": "api/routes.py::route.decorate",
+        "source_sha256": "441475b48a802e265d09be0d8e7999dbf16c4be645dfd2af1b10b5f61be3bc77",
+        "score": 5,
+        "notes": "Identifies captured path and returned same handler."
+      },
+      {
+        "id": "api/routes.py::create_handler",
+        "source_sha256": "01c5365b638453f368886afe1d87af351f2a60a978d8a6f6d2f4d83075101daf",
+        "score": 4,
+        "notes": "Correct call order and return; callee effects unknown."
+      },
+      {
+        "id": "api/routes.py::complete_handler",
+        "source_sha256": "dd41407f3104b1ef5ca37a0acce1558f029980cdf7196ac0f44f0619d688a7ff",
+        "score": 3,
+        "notes": "Invents authentication against a repository; authenticate receives token and secret only."
+      },
+      {
+        "id": "auth/passwords.py::hash_password",
+        "source_sha256": "5b34a88ef9b8ad1739d10c5aa33cc10ab59ccd6cd16186166cb2d2168cbc4a94",
+        "score": 5,
+        "notes": "Correct PBKDF2 algorithm, encodings, salt and 100000 iterations."
+      },
+      {
+        "id": "auth/passwords.py::verify_password",
+        "source_sha256": "8cf5a563e5afea352723e0e32a88316bf05a1711f87e56e4da4de0ce70e662d3",
+        "score": 5,
+        "notes": "Correct constant-time digest comparison."
+      },
+      {
+        "id": "auth/tokens.py::TokenError",
+        "source_sha256": "1debfc8e9a55c6f65c387067d1eba688492088ff2933a947f3087d017fe65b8c",
+        "score": 3,
+        "notes": "Accurate inheritance; empty inputs/returns violate contract."
+      },
+      {
+        "id": "auth/tokens.py::issue_token",
+        "source_sha256": "0ab20a0bc0fc5de61e5e4ac28e7212b522ef1df1067519ae3a93fd91ec8e2805",
+        "score": 5,
+        "notes": "Correct HMAC and composition; colon delimiter not explicit."
+      },
+      {
+        "id": "auth/tokens.py::validate_token",
+        "source_sha256": "93d85c9ab24c945bc91be65e9e624861d5aa27ccc78e2b7891b733cfaa814632",
+        "score": 4,
+        "notes": "Correct comparison and partition; missing delimiter rejection omitted."
+      },
+      {
+        "id": "cli.py::main",
+        "source_sha256": "ae23639262bd1c97e4431e54dede6f71c0c8746cce7fdf68488547015317eba2",
+        "score": 4,
+        "notes": "Correct orchestration; generic parsing side effects unsupported."
+      },
+      {
+        "id": "db/connection.py::Connection",
+        "source_sha256": "cafda637187b2a2fe169bf8ac485d2d14d142a8c08e37d43123355af7cd59d8d",
+        "score": 5,
+        "notes": "Precise in-memory semantics and close guard."
+      },
+      {
+        "id": "db/connection.py::Connection.__init__",
+        "source_sha256": "928c17fbecc3912579fc395ce9d6bf5675f978804f5c0a562030e80cd07a9b48",
+        "score": 3,
+        "notes": "Initialization correct but empty inputs/notable_logic violate contract."
+      },
+      {
+        "id": "db/connection.py::Connection.execute",
+        "source_sha256": "2149d2f49e3ef1295d6e997f34570fb096a91b5b3a8a78c0b6dd4d98baece89d",
+        "score": 4,
+        "notes": "Correct write/read and closed guard; exception incorrectly also listed as side effect."
+      },
+      {
+        "id": "db/connection.py::Connection.close",
+        "source_sha256": "35f2311464fe5756f6a69c8e7e8c93e4a00ad90e7ce32287f13a3b99d169a3a4",
+        "score": 3,
+        "notes": "Flag mutation correct; empty inputs violate contract."
+      },
+      {
+        "id": "db/repository.py::Repository",
+        "source_sha256": "1359ec2f34335bee53364fc56d9748afb1d8e196853929f834d7efc836870813",
+        "score": 4,
+        "notes": "Correct connection delegation and id validation; class-wide returns underspecified."
+      },
+      {
+        "id": "db/repository.py::Repository.__init__",
+        "source_sha256": "0c762a246b48f6f23c0d9f382ebc9718f79b20806945223e91ec82e35720ddeb",
+        "score": 5,
+        "notes": "Correct retained connection."
+      },
+      {
+        "id": "db/repository.py::Repository.save",
+        "source_sha256": "73413562c85b0a833220f1b07ff7969ebdcedb5f9eee450af1d1fb3adb88c319",
+        "score": 2,
+        "notes": "Invents stored procedure/query keyed by task id."
+      },
+      {
+        "id": "db/repository.py::Repository.get",
+        "source_sha256": "ee8caa159df2f3faac3e9f4a53c12899ce66feaf3a76c6c64f32938313154d7c",
+        "score": 3,
+        "notes": "Invents database query; supplied code only delegates execute."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository",
+        "source_sha256": "473e7f28d4429fff70f6bfb82328600412bce0bd101a7dbfcd1dd97e5e686737",
+        "score": 5,
+        "notes": "Correctly distinguishes a new dictionary from input mutation."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository.save",
+        "source_sha256": "1073563c7a5d4e6854796326ca30ae2e0e039f1f75b657ac7f22f2f44a642600",
+        "score": 2,
+        "notes": "Contradicts itself: side_effects says input is modified, notable_logic correctly says a copy is made."
+      },
+      {
+        "id": "exports.py::save",
+        "source_sha256": "0d83f5c6859dbcc731b3ce3c72425269cd2a9db8372c0d6c7891e586bd9d02b3",
+        "score": 5,
+        "notes": "Precise JSON write and overwrite behavior."
+      },
+      {
+        "id": "exports.py::process",
+        "source_sha256": "d4b812a385f8ba943a17cdf3f139b2c2f45c11ae2e5265cd607e2ebf4253afae",
+        "score": 5,
+        "notes": "Correct JSON serialization with sorted keys; no invented exceptions."
+      },
+      {
+        "id": "pipeline.py::transform",
+        "source_sha256": "ce0adcd86785b40dd5a8b9cd3d040c5d7b1342633096aa751f160f28361e5fc8",
+        "score": 3,
+        "notes": "Normalization correct; direct missing-key errors omitted."
+      },
+      {
+        "id": "pipeline.py::write_to_db",
+        "source_sha256": "46af8108116da3fb5ac868cfe63ad72c8d3699c382b4e86e44ce6236688dd0e4",
+        "score": 4,
+        "notes": "Correct delegation; persistence side effects unspecified."
+      },
+      {
+        "id": "pipeline.py::run_pipeline",
+        "source_sha256": "0fd83ab73b570da7416a09e3a0314322fd994042bf33dba684420f09105ff8a6",
+        "score": 4,
+        "notes": "Correct comprehension and transform delegation."
+      },
+      {
+        "id": "services/notifications.py::format_notification",
+        "source_sha256": "b839a8455feb801dceb203e07bd060e5eacd663d3dbe7f6a8e49cece3999bc27",
+        "score": 5,
+        "notes": "Precise concatenation and KeyError."
+      },
+      {
+        "id": "services/notifications.py::send_email",
+        "source_sha256": "a53e2c48c0a85993a708730be2a756f629c482438dc068c4a66df42caa2af295",
+        "score": 5,
+        "notes": "Correctly recognizes a no-op return rather than actual email delivery."
+      },
+      {
+        "id": "services/notifications.py::notify",
+        "source_sha256": "845393bd70c59db06d072d0aad5fd5d926835f5a403bfe37de493db345a97c4e",
+        "score": 3,
+        "notes": "Composition correct; real email side effect unsupported by provided code."
+      },
+      {
+        "id": "services/tasks.py::create_task",
+        "source_sha256": "f8fb0d123051bdef7c27dbc0084fb88f894006805b987792a536a08b178e02d9",
+        "score": 3,
+        "notes": "Correct id derivation; claims potential exceptions are handled by retry decorator without supplied decorator implementation."
+      },
+      {
+        "id": "services/tasks.py::complete_task",
+        "source_sha256": "63c8f1ba093d3c1e281a69622b0b66e525248d341fd3fe78b84d3bb54d93519a",
+        "score": 5,
+        "notes": "Precise in-place done flag, missing guard and delegation."
+      },
+      {
+        "id": "services/tasks.py::process",
+        "source_sha256": "aff7c954308ee1bd1d5a0f78f02bfa8b9e675eb3cabe8816fc983ca6718b5505",
+        "score": 4,
+        "notes": "Correct mapping; storage side effect from docstring omitted."
+      },
+      {
+        "id": "tests/test_tasks.py::test_create_and_complete",
+        "source_sha256": "98ea2da9ddd3451fc62f2198124a61e587ab9b6ca19a71da0cc46a51c243f8da",
+        "score": 3,
+        "notes": "Invents repository/task_id inputs although test takes no arguments."
+      },
+      {
+        "id": "trees.py::walk_tree",
+        "source_sha256": "8f7e8580d14e7dfdb841c22929e6cb90a4eb02355841df9b35db82829293b547",
+        "score": 4,
+        "notes": "Correct preorder and required name; direct KeyError omitted."
+      },
+      {
+        "id": "trees.py::is_even",
+        "source_sha256": "5528d32555efa8edd076b6ecd10bd2c23c0f29856730217d2b6ef3eddc7597d2",
+        "score": 4,
+        "notes": "Correct recurrence; negative-input limitation omitted."
+      },
+      {
+        "id": "trees.py::is_odd",
+        "source_sha256": "608dbce2edb89f76ee9adc0e1f3b681e5d4dd7143e595051ef522e4d316a0b7e",
+        "score": 4,
+        "notes": "Correct base case and recurrence; negative-input limitation omitted."
+      },
+      {
+        "id": "utils/config.py::parse_config",
+        "source_sha256": "119f9daa94df2605b3a7caa02f7c13db480cd532e43f1e893246338966b0bab7",
+        "score": 4,
+        "notes": "Correct dict/truthy-secret validation; JSON decoding failure not discussed."
+      },
+      {
+        "id": "utils/config.py::load_config",
+        "source_sha256": "98f1b7c43ff088ee183b9c3dc0bea1ebd7993f52072f50b9b50e3d5e962232c3",
+        "score": 5,
+        "notes": "Precise file read, UTF-8 and parsing delegation."
+      },
+      {
+        "id": "utils/retry.py::with_retries",
+        "source_sha256": "e1ab87dc3c2a253b623351c257b11d7aa99fa8ff2f25c4a2fa5166211e2defc3",
+        "score": 5,
+        "notes": "Precise RuntimeError-only bounded total attempts, validation and exhaustion."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate",
+        "source_sha256": "c720b8c727be0832e96d0e68770b68f1bf120f6e299cb65dbc3271cc990f04a7",
+        "score": 4,
+        "notes": "Returned wrapper and retry logic correct; closure dependency misclassified as side effect."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate.wrapped",
+        "source_sha256": "aa2d24d72fdc5abb78b66c6b9b7cb3e7e0a7ce5fcc236e8af3820c794db310d3",
+        "score": 3,
+        "notes": "Correct retry/exhaustion; captured callable/attempts presented as arguments, repeated calls not noted."
+      }
+    ],
+    "qwen3:8b": [
+      {
+        "id": "api/routes.py::route",
+        "source_sha256": "3e9477aedfe15bfb3d0322187b1b24b6d7911b3ff38cecd2ae653c55fac7eab9",
+        "score": 2,
+        "notes": "Wrong return: route returns a decorator; also invents web-framework registration."
+      },
+      {
+        "id": "api/routes.py::route.decorate",
+        "source_sha256": "441475b48a802e265d09be0d8e7999dbf16c4be645dfd2af1b10b5f61be3bc77",
+        "score": 4,
+        "notes": "Correct handler mutation; closure details omitted."
+      },
+      {
+        "id": "api/routes.py::create_handler",
+        "source_sha256": "01c5365b638453f368886afe1d87af351f2a60a978d8a6f6d2f4d83075101daf",
+        "score": 2,
+        "notes": "Invents AuthenticationError absent from supplied code/context."
+      },
+      {
+        "id": "api/routes.py::complete_handler",
+        "source_sha256": "dd41407f3104b1ef5ca37a0acce1558f029980cdf7196ac0f44f0619d688a7ff",
+        "score": 2,
+        "notes": "Invents AuthenticationError and unspecified additional completion processes."
+      },
+      {
+        "id": "auth/passwords.py::hash_password",
+        "source_sha256": "5b34a88ef9b8ad1739d10c5aa33cc10ab59ccd6cd16186166cb2d2168cbc4a94",
+        "score": 4,
+        "notes": "Algorithm correct; byte encoding mislabeled as side effect."
+      },
+      {
+        "id": "auth/passwords.py::verify_password",
+        "source_sha256": "8cf5a563e5afea352723e0e32a88316bf05a1711f87e56e4da4de0ce70e662d3",
+        "score": 4,
+        "notes": "Comparison correct; pure hash computation mislabeled side effect."
+      },
+      {
+        "id": "auth/tokens.py::TokenError",
+        "source_sha256": "1debfc8e9a55c6f65c387067d1eba688492088ff2933a947f3087d017fe65b8c",
+        "score": 3,
+        "notes": "Inheritance correct; implies class itself detects and raises invalid-token errors."
+      },
+      {
+        "id": "auth/tokens.py::issue_token",
+        "source_sha256": "0ab20a0bc0fc5de61e5e4ac28e7212b522ef1df1067519ae3a93fd91ec8e2805",
+        "score": 4,
+        "notes": "Correct HMAC; encodings mislabeled side effects, composition delimiter omitted."
+      },
+      {
+        "id": "auth/tokens.py::validate_token",
+        "source_sha256": "93d85c9ab24c945bc91be65e9e624861d5aa27ccc78e2b7891b733cfaa814632",
+        "score": 4,
+        "notes": "Comparison correct; delimiter rejection omitted, exception mislabeled side effect."
+      },
+      {
+        "id": "cli.py::main",
+        "source_sha256": "ae23639262bd1c97e4431e54dede6f71c0c8746cce7fdf68488547015317eba2",
+        "score": 3,
+        "notes": "Invents invalid-config ValueError without supplied parse implementation; broad workflow correct."
+      },
+      {
+        "id": "db/connection.py::Connection",
+        "source_sha256": "cafda637187b2a2fe169bf8ac485d2d14d142a8c08e37d43123355af7cd59d8d",
+        "score": 4,
+        "notes": "Correct in-memory close/read/write; initialization omitted."
+      },
+      {
+        "id": "db/connection.py::Connection.__init__",
+        "source_sha256": "928c17fbecc3912579fc395ce9d6bf5675f978804f5c0a562030e80cd07a9b48",
+        "score": 5,
+        "notes": "Precise initialization state."
+      },
+      {
+        "id": "db/connection.py::Connection.execute",
+        "source_sha256": "2149d2f49e3ef1295d6e997f34570fb096a91b5b3a8a78c0b6dd4d98baece89d",
+        "score": 4,
+        "notes": "Read/write/guard correct; does not explain return after write."
+      },
+      {
+        "id": "db/connection.py::Connection.close",
+        "source_sha256": "35f2311464fe5756f6a69c8e7e8c93e4a00ad90e7ce32287f13a3b99d169a3a4",
+        "score": 3,
+        "notes": "Claims termination of a database connection; only flag assignment shown."
+      },
+      {
+        "id": "db/repository.py::Repository",
+        "source_sha256": "1359ec2f34335bee53364fc56d9748afb1d8e196853929f834d7efc836870813",
+        "score": 4,
+        "notes": "Repository role and validation correct; class method inputs/returns collapsed."
+      },
+      {
+        "id": "db/repository.py::Repository.__init__",
+        "source_sha256": "0c762a246b48f6f23c0d9f382ebc9718f79b20806945223e91ec82e35720ddeb",
+        "score": 2,
+        "notes": "Claims constructor establishes a DB connection; it only retains provided object."
+      },
+      {
+        "id": "db/repository.py::Repository.save",
+        "source_sha256": "73413562c85b0a833220f1b07ff7969ebdcedb5f9eee450af1d1fb3adb88c319",
+        "score": 2,
+        "notes": "Invents database query/insert/update instead of supplied execute delegation."
+      },
+      {
+        "id": "db/repository.py::Repository.get",
+        "source_sha256": "ee8caa159df2f3faac3e9f4a53c12899ce66feaf3a76c6c64f32938313154d7c",
+        "score": 2,
+        "notes": "Invents query behavior instead of only delegation."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository",
+        "source_sha256": "473e7f28d4429fff70f6bfb82328600412bce0bd101a7dbfcd1dd97e5e686737",
+        "score": 2,
+        "notes": "Incorrectly claims modification of original task; dict() creates copy."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository.save",
+        "source_sha256": "1073563c7a5d4e6854796326ca30ae2e0e039f1f75b657ac7f22f2f44a642600",
+        "score": 2,
+        "notes": "Incorrectly claims modification of original task; dict() creates copy."
+      },
+      {
+        "id": "exports.py::save",
+        "source_sha256": "0d83f5c6859dbcc731b3ce3c72425269cd2a9db8372c0d6c7891e586bd9d02b3",
+        "score": 5,
+        "notes": "Accurate JSON file write."
+      },
+      {
+        "id": "exports.py::process",
+        "source_sha256": "d4b812a385f8ba943a17cdf3f139b2c2f45c11ae2e5265cd607e2ebf4253afae",
+        "score": 2,
+        "notes": "Invents json.JSONEncodeError and input mutation during serialization."
+      },
+      {
+        "id": "pipeline.py::transform",
+        "source_sha256": "ce0adcd86785b40dd5a8b9cd3d040c5d7b1342633096aa751f160f28361e5fc8",
+        "score": 3,
+        "notes": "Normalization correct; direct missing-key errors omitted."
+      },
+      {
+        "id": "pipeline.py::write_to_db",
+        "source_sha256": "46af8108116da3fb5ac868cfe63ad72c8d3699c382b4e86e44ce6236688dd0e4",
+        "score": 4,
+        "notes": "Correct save delegation; effects depend on unknown callee implementation."
+      },
+      {
+        "id": "pipeline.py::run_pipeline",
+        "source_sha256": "0fd83ab73b570da7416a09e3a0314322fd994042bf33dba684420f09105ff8a6",
+        "score": 3,
+        "notes": "Claims records are modified though comprehension alone creates a new result list."
+      },
+      {
+        "id": "services/notifications.py::format_notification",
+        "source_sha256": "b839a8455feb801dceb203e07bd060e5eacd663d3dbe7f6a8e49cece3999bc27",
+        "score": 4,
+        "notes": "Correct title concatenation; direct KeyError omitted."
+      },
+      {
+        "id": "services/notifications.py::send_email",
+        "source_sha256": "a53e2c48c0a85993a708730be2a756f629c482438dc068c4a66df42caa2af295",
+        "score": 4,
+        "notes": "Recognizes simulation without actual sending, but one_liner misleadingly says sends email."
+      },
+      {
+        "id": "services/notifications.py::notify",
+        "source_sha256": "845393bd70c59db06d072d0aad5fd5d926835f5a403bfe37de493db345a97c4e",
+        "score": 3,
+        "notes": "Composition correct; real email side effect unsupported."
+      },
+      {
+        "id": "services/tasks.py::create_task",
+        "source_sha256": "f8fb0d123051bdef7c27dbc0084fb88f894006805b987792a536a08b178e02d9",
+        "score": 3,
+        "notes": "Correct broad workflow; id derivation omitted and raises vague transient errors."
+      },
+      {
+        "id": "services/tasks.py::complete_task",
+        "source_sha256": "63c8f1ba093d3c1e281a69622b0b66e525248d341fd3fe78b84d3bb54d93519a",
+        "score": 5,
+        "notes": "Precise missing guard, mutation and save."
+      },
+      {
+        "id": "services/tasks.py::process",
+        "source_sha256": "aff7c954308ee1bd1d5a0f78f02bfa8b9e675eb3cabe8816fc983ca6718b5505",
+        "score": 5,
+        "notes": "Correct mapping and docstring storage behavior."
+      },
+      {
+        "id": "tests/test_tasks.py::test_create_and_complete",
+        "source_sha256": "98ea2da9ddd3451fc62f2198124a61e587ab9b6ca19a71da0cc46a51c243f8da",
+        "score": 3,
+        "notes": "Invents test inputs although it takes no arguments."
+      },
+      {
+        "id": "trees.py::walk_tree",
+        "source_sha256": "8f7e8580d14e7dfdb841c22929e6cb90a4eb02355841df9b35db82829293b547",
+        "score": 2,
+        "notes": "Incorrectly claims that accessing dictionary keys mutates the node."
+      },
+      {
+        "id": "trees.py::is_even",
+        "source_sha256": "5528d32555efa8edd076b6ecd10bd2c23c0f29856730217d2b6ef3eddc7597d2",
+        "score": 4,
+        "notes": "Correct mutual recursion; negative-input limitation omitted."
+      },
+      {
+        "id": "trees.py::is_odd",
+        "source_sha256": "608dbce2edb89f76ee9adc0e1f3b681e5d4dd7143e595051ef522e4d316a0b7e",
+        "score": 4,
+        "notes": "Correct mutual recursion; base case and negative limitation omitted."
+      },
+      {
+        "id": "utils/config.py::parse_config",
+        "source_sha256": "119f9daa94df2605b3a7caa02f7c13db480cd532e43f1e893246338966b0bab7",
+        "score": 4,
+        "notes": "Correct validation; pure JSON parsing mislabeled as side effect."
+      },
+      {
+        "id": "utils/config.py::load_config",
+        "source_sha256": "98f1b7c43ff088ee183b9c3dc0bea1ebd7993f52072f50b9b50e3d5e962232c3",
+        "score": 4,
+        "notes": "Correct read and delegation; exceptions also listed as side effects."
+      },
+      {
+        "id": "utils/retry.py::with_retries",
+        "source_sha256": "e1ab87dc3c2a253b623351c257b11d7aa99fa8ff2f25c4a2fa5166211e2defc3",
+        "score": 3,
+        "notes": "Incorrect factory signature and return; accepts attempts then returns decorator."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate",
+        "source_sha256": "c720b8c727be0832e96d0e68770b68f1bf120f6e299cb65dbc3271cc990f04a7",
+        "score": 2,
+        "notes": "Incorrectly says decorate returns the called result rather than a wrapped callable."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate.wrapped",
+        "source_sha256": "aa2d24d72fdc5abb78b66c6b9b7cb3e7e0a7ce5fcc236e8af3820c794db310d3",
+        "score": 3,
+        "notes": "Retry/exhaustion correct; captured variables presented as inputs and *args/**kwargs omitted."
+      }
+    ]
+  },
+  "selected_validation": {
+    "model": "qwen3.5:9b",
+    "prompt_version": "2",
+    "schema_version": "2",
+    "rows": [
+      {
+        "id": "api/routes.py::route",
+        "source_sha256": "3e9477aedfe15bfb3d0322187b1b24b6d7911b3ff38cecd2ae653c55fac7eab9",
+        "score": 5,
+        "notes": "Precise factory and returned decorator."
+      },
+      {
+        "id": "api/routes.py::route.decorate",
+        "source_sha256": "441475b48a802e265d09be0d8e7999dbf16c4be645dfd2af1b10b5f61be3bc77",
+        "score": 3,
+        "notes": "Calls decorate a factory and treats captured path as local/input; mutation correct."
+      },
+      {
+        "id": "api/routes.py::create_handler",
+        "source_sha256": "01c5365b638453f368886afe1d87af351f2a60a978d8a6f6d2f4d83075101daf",
+        "score": 4,
+        "notes": "Correct authentication then creation; unknown callee effects not invented."
+      },
+      {
+        "id": "api/routes.py::complete_handler",
+        "source_sha256": "dd41407f3104b1ef5ca37a0acce1558f029980cdf7196ac0f44f0619d688a7ff",
+        "score": 4,
+        "notes": "Correct authentication then completion."
+      },
+      {
+        "id": "auth/passwords.py::hash_password",
+        "source_sha256": "5b34a88ef9b8ad1739d10c5aa33cc10ab59ccd6cd16186166cb2d2168cbc4a94",
+        "score": 5,
+        "notes": "Precise PBKDF2 algorithm, salt, encodings and iteration count."
+      },
+      {
+        "id": "auth/passwords.py::verify_password",
+        "source_sha256": "8cf5a563e5afea352723e0e32a88316bf05a1711f87e56e4da4de0ce70e662d3",
+        "score": 5,
+        "notes": "Correct constant-time comparison."
+      },
+      {
+        "id": "auth/tokens.py::TokenError",
+        "source_sha256": "1debfc8e9a55c6f65c387067d1eba688492088ff2933a947f3087d017fe65b8c",
+        "score": 4,
+        "notes": "Correct inheritance and role; nonempty not-applicable markers accepted."
+      },
+      {
+        "id": "auth/tokens.py::issue_token",
+        "source_sha256": "0ab20a0bc0fc5de61e5e4ac28e7212b522ef1df1067519ae3a93fd91ec8e2805",
+        "score": 5,
+        "notes": "Correct token HMAC and colon format."
+      },
+      {
+        "id": "auth/tokens.py::validate_token",
+        "source_sha256": "93d85c9ab24c945bc91be65e9e624861d5aa27ccc78e2b7891b733cfaa814632",
+        "score": 4,
+        "notes": "Correct comparison and partition; explicit missing-delimiter rejection omitted."
+      },
+      {
+        "id": "cli.py::main",
+        "source_sha256": "ae23639262bd1c97e4431e54dede6f71c0c8746cce7fdf68488547015317eba2",
+        "score": 4,
+        "notes": "Correct ordered orchestration; parser external effects marked unknown."
+      },
+      {
+        "id": "db/connection.py::Connection",
+        "source_sha256": "cafda637187b2a2fe169bf8ac485d2d14d142a8c08e37d43123355af7cd59d8d",
+        "score": 3,
+        "notes": "Correct in-memory role and guard; side effects/input/output method detail omitted."
+      },
+      {
+        "id": "db/connection.py::Connection.__init__",
+        "source_sha256": "928c17fbecc3912579fc395ce9d6bf5675f978804f5c0a562030e80cd07a9b48",
+        "score": 4,
+        "notes": "Correct initialized rows and flag; mutation not listed as side effect."
+      },
+      {
+        "id": "db/connection.py::Connection.execute",
+        "source_sha256": "2149d2f49e3ef1295d6e997f34570fb096a91b5b3a8a78c0b6dd4d98baece89d",
+        "score": 2,
+        "notes": "Incorrectly says None when no value provided; read can return existing row."
+      },
+      {
+        "id": "db/connection.py::Connection.close",
+        "source_sha256": "35f2311464fe5756f6a69c8e7e8c93e4a00ad90e7ce32287f13a3b99d169a3a4",
+        "score": 4,
+        "notes": "Flag assignment correct; mutation not listed as side effect."
+      },
+      {
+        "id": "db/repository.py::Repository",
+        "source_sha256": "1359ec2f34335bee53364fc56d9748afb1d8e196853929f834d7efc836870813",
+        "score": 4,
+        "notes": "Correct class delegation and id guard; effects omitted."
+      },
+      {
+        "id": "db/repository.py::Repository.__init__",
+        "source_sha256": "0c762a246b48f6f23c0d9f382ebc9718f79b20806945223e91ec82e35720ddeb",
+        "score": 4,
+        "notes": "Correct retained connection; attribute mutation omitted from effects."
+      },
+      {
+        "id": "db/repository.py::Repository.save",
+        "source_sha256": "73413562c85b0a833220f1b07ff7969ebdcedb5f9eee450af1d1fb3adb88c319",
+        "score": 2,
+        "notes": "Invents database insert/update operations for generic execute delegation."
+      },
+      {
+        "id": "db/repository.py::Repository.get",
+        "source_sha256": "ee8caa159df2f3faac3e9f4a53c12899ce66feaf3a76c6c64f32938313154d7c",
+        "score": 2,
+        "notes": "Invents SQL query and interprets task_id as query argument."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository",
+        "source_sha256": "473e7f28d4429fff70f6bfb82328600412bce0bd101a7dbfcd1dd97e5e686737",
+        "score": 5,
+        "notes": "Precisely identifies copied dictionary and delegation."
+      },
+      {
+        "id": "db/repository.py::AuditedRepository.save",
+        "source_sha256": "1073563c7a5d4e6854796326ca30ae2e0e039f1f75b657ac7f22f2f44a642600",
+        "score": 2,
+        "notes": "Contradicts correct copy explanation by claiming in-place input modification."
+      },
+      {
+        "id": "exports.py::save",
+        "source_sha256": "0d83f5c6859dbcc731b3ce3c72425269cd2a9db8372c0d6c7891e586bd9d02b3",
+        "score": 5,
+        "notes": "Precise UTF-8 file write/overwrite and relevant standard-library failures."
+      },
+      {
+        "id": "exports.py::process",
+        "source_sha256": "d4b812a385f8ba943a17cdf3f139b2c2f45c11ae2e5265cd607e2ebf4253afae",
+        "score": 5,
+        "notes": "Precise serialization and sorted keys."
+      },
+      {
+        "id": "pipeline.py::transform",
+        "source_sha256": "ce0adcd86785b40dd5a8b9cd3d040c5d7b1342633096aa751f160f28361e5fc8",
+        "score": 3,
+        "notes": "Correct normalization; direct KeyError omitted."
+      },
+      {
+        "id": "pipeline.py::write_to_db",
+        "source_sha256": "46af8108116da3fb5ac868cfe63ad72c8d3699c382b4e86e44ce6236688dd0e4",
+        "score": 5,
+        "notes": "Correct save delegation; no missing implementations invented."
+      },
+      {
+        "id": "pipeline.py::run_pipeline",
+        "source_sha256": "0fd83ab73b570da7416a09e3a0314322fd994042bf33dba684420f09105ff8a6",
+        "score": 4,
+        "notes": "Correct comprehension; input records called from repository rather than incoming list."
+      },
+      {
+        "id": "services/notifications.py::format_notification",
+        "source_sha256": "b839a8455feb801dceb203e07bd060e5eacd663d3dbe7f6a8e49cece3999bc27",
+        "score": 5,
+        "notes": "Correct title concatenation and direct KeyError."
+      },
+      {
+        "id": "services/notifications.py::send_email",
+        "source_sha256": "a53e2c48c0a85993a708730be2a756f629c482438dc068c4a66df42caa2af295",
+        "score": 5,
+        "notes": "Correct no-op passthrough rather than actual delivery."
+      },
+      {
+        "id": "services/notifications.py::notify",
+        "source_sha256": "845393bd70c59db06d072d0aad5fd5d926835f5a403bfe37de493db345a97c4e",
+        "score": 3,
+        "notes": "Invents actual email delivery and possible confirmation result."
+      },
+      {
+        "id": "services/tasks.py::create_task",
+        "source_sha256": "f8fb0d123051bdef7c27dbc0084fb88f894006805b987792a536a08b178e02d9",
+        "score": 4,
+        "notes": "Correct derived-id purpose and retries; exact lower/replace omitted."
+      },
+      {
+        "id": "services/tasks.py::complete_task",
+        "source_sha256": "63c8f1ba093d3c1e281a69622b0b66e525248d341fd3fe78b84d3bb54d93519a",
+        "score": 5,
+        "notes": "Precise None guard, mutation and delegation."
+      },
+      {
+        "id": "services/tasks.py::process",
+        "source_sha256": "aff7c954308ee1bd1d5a0f78f02bfa8b9e675eb3cabe8816fc983ca6718b5505",
+        "score": 4,
+        "notes": "Correct mapping; effects omitted."
+      },
+      {
+        "id": "tests/test_tasks.py::test_create_and_complete",
+        "source_sha256": "98ea2da9ddd3451fc62f2198124a61e587ab9b6ca19a71da0cc46a51c243f8da",
+        "score": 3,
+        "notes": "Invents test inputs although no arguments are accepted."
+      },
+      {
+        "id": "trees.py::walk_tree",
+        "source_sha256": "8f7e8580d14e7dfdb841c22929e6cb90a4eb02355841df9b35db82829293b547",
+        "score": 4,
+        "notes": "Correct preorder recursion; direct missing-name failure omitted."
+      },
+      {
+        "id": "trees.py::is_even",
+        "source_sha256": "5528d32555efa8edd076b6ecd10bd2c23c0f29856730217d2b6ef3eddc7597d2",
+        "score": 4,
+        "notes": "Correct recurrence; negative-input limit omitted."
+      },
+      {
+        "id": "trees.py::is_odd",
+        "source_sha256": "608dbce2edb89f76ee9adc0e1f3b681e5d4dd7143e595051ef522e4d316a0b7e",
+        "score": 4,
+        "notes": "Correct recurrence; negative-input limit omitted."
+      },
+      {
+        "id": "utils/config.py::parse_config",
+        "source_sha256": "119f9daa94df2605b3a7caa02f7c13db480cd532e43f1e893246338966b0bab7",
+        "score": 4,
+        "notes": "Correct dict and truthy-secret validation; decoding failures not discussed."
+      },
+      {
+        "id": "utils/config.py::load_config",
+        "source_sha256": "98f1b7c43ff088ee183b9c3dc0bea1ebd7993f52072f50b9b50e3d5e962232c3",
+        "score": 5,
+        "notes": "Precise UTF-8 read and unknown parser-exception propagation."
+      },
+      {
+        "id": "utils/retry.py::with_retries",
+        "source_sha256": "e1ab87dc3c2a253b623351c257b11d7aa99fa8ff2f25c4a2fa5166211e2defc3",
+        "score": 3,
+        "notes": "Factory and total-attempt behavior mostly correct; parenthetical equality contradicts not-last condition."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate",
+        "source_sha256": "c720b8c727be0832e96d0e68770b68f1bf120f6e299cb65dbc3271cc990f04a7",
+        "score": 4,
+        "notes": "Correct wrapper return and captured attempts; calls decorate itself a factory."
+      },
+      {
+        "id": "utils/retry.py::with_retries.decorate.wrapped",
+        "source_sha256": "aa2d24d72fdc5abb78b66c6b9b7cb3e7e0a7ce5fcc236e8af3820c794db310d3",
+        "score": 3,
+        "notes": "Correct bounded exhaustion; captured callable/attempts included as inputs and repeated-call effects omitted."
+      }
+    ]
+  }
+}

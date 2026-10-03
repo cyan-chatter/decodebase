@@ -9,14 +9,12 @@ from cfl.core.hashing import (
 )
 
 
-def test_whitespace_only_change_keeps_code_hash():
-    """Whitespace-only change keeps code_hash identical."""
+def test_line_ending_change_keeps_code_hash():
+    """Line-ending normalization preserves the code fingerprint."""
     code1 = """def foo():
     return 1
 """
-    code2 = """def foo():
-        return 1
-"""
+    code2 = "def foo():\r\n    return 1\r\n"
     assert code_hash(code1) == code_hash(code2)
 
 
@@ -44,10 +42,25 @@ def test_callee_pair_order_independent():
     assert h1 == h2
 
 
+def test_semantic_indentation_and_literal_whitespace_change_code_hash():
+    outer = "def f(flag):\n    if flag:\n        work()\n    finish()"
+    inner = "def f(flag):\n    if flag:\n        work()\n        finish()"
+    assert code_hash(outer) != code_hash(inner)
+    assert code_hash('def f():\n    return """a  \nb"""') != code_hash(
+        'def f():\n    return """a\nb"""'
+    )
+
+
+def test_dependency_identity_and_model_digest_invalidate_context():
+    first = ctx_hash("code", [("a::save", "Save")], "1", "model", gen_model_digest="a")
+    assert first != ctx_hash("code", [("b::save", "Save")], "1", "model", gen_model_digest="a")
+    assert first != ctx_hash("code", [("a::save", "Save")], "1", "model", gen_model_digest="b")
+
+
 def test_normalize_code_basic():
     """Basic normalization works."""
     result = normalize_code("  hello  \r\n  world  \n")
-    assert result == "hello\nworld"
+    assert result == "  hello  \n  world  "
 
 
 def test_join_hash():

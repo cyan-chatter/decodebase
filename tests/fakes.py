@@ -29,6 +29,7 @@ class FakeOllama:
     def __init__(self, embed_dim: int = 768) -> None:
         self.delay = 0.0
         self.prompt_tokens = 100
+        self.cached_prompt_tokens: int | None = 0
         self.embed_dim = embed_dim
         self.call_log: list[dict] = []
         self.max_in_flight: int = 0
@@ -66,7 +67,16 @@ class FakeOllama:
             if path == "/api/version":
                 resp_json = {"version": "0.35.0"}
             elif path == "/api/tags":
-                resp_json = {"models": [{"name": "qwen2.5-coder:7b", "model": "qwen2.5-coder:7b"}]}
+                resp_json = {
+                    "models": [
+                        {
+                            "name": "qwen2.5-coder:7b",
+                            "model": "qwen2.5-coder:7b",
+                            "digest": "generator-digest",
+                        },
+                        {"name": "nomic-embed-text:latest", "digest": "embedder-digest"},
+                    ]
+                }
             elif path == "/api/ps":
                 resp_json = {
                     "models": [
@@ -81,6 +91,7 @@ class FakeOllama:
                     "response": summary,
                     "done": True,
                     "prompt_eval_count": self.prompt_tokens,
+                    "prompt_eval_cached_count": self.cached_prompt_tokens,
                     "eval_count": 50,
                     "prompt_eval_duration": 1000000000,
                     "eval_duration": 2000000000,
@@ -95,6 +106,7 @@ class FakeOllama:
                     "message": {"role": "assistant", "content": summary},
                     "done": True,
                     "prompt_eval_count": self.prompt_tokens,
+                    "prompt_eval_cached_count": self.cached_prompt_tokens,
                     "eval_count": 50,
                     "prompt_eval_duration": 1000000000,
                     "eval_duration": 2000000000,

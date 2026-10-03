@@ -2,8 +2,8 @@
 # Pull the models required by CodeFlowLens
 set -euo pipefail
 
-echo "Pulling qwen2.5-coder:7b ..."
-ollama pull qwen2.5-coder:7b
+echo "Pulling qwen3.5:9b ..."
+ollama pull qwen3.5:9b
 
 echo "Pulling nomic-embed-text ..."
 ollama pull nomic-embed-text

@@ -1,0 +1,9 @@
+# Milestone 6 measured choice: docs/decisions/0001-model-choice.md.
+gen_model = "qwen3.5:9b"
+embed_model = "nomic-embed-text"
+embed_dim = 768
+num_ctx = 8192
+kv_quantization = false
+kv_quantization_type = "q8_0"
+gen_disable_thinking = true
+tokenizer_file = ".cfl/tokenizers/qwen3.5-9b/tokenizer.json"

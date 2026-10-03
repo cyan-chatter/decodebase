@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import pathlib
@@ -175,27 +174,36 @@ def set_meta(conn: psycopg.Connection, key: str, value: str) -> None:
 
 def bump_epoch(conn: psycopg.Connection) -> None:
     """Increment the epoch counter in meta table."""
-    # Get current epoch
-    current = get_meta(conn, "epoch")
-    if current is None:
-        new_epoch = 1
-    else:
-        new_epoch = int(current) + 1
-    set_meta(conn, "epoch", str(new_epoch))
+    conn.execute(
+        """INSERT INTO meta (key, value) VALUES ('epoch', '1')
+           ON CONFLICT(key) DO UPDATE SET value = (meta.value::bigint + 1)::text"""
+    )
 
 
 def index_version(conn: psycopg.Connection) -> str:
-    """Return index version hash from meta, or 'v0' if missing."""
-    gen_model = get_meta(conn, "gen_model_tag")
-    embed_model = get_meta(conn, "embed_model_tag")
-    prompt_version = get_meta(conn, "prompt_version")
+    """Fingerprint repository revision and every model/index compatibility boundary."""
+    from cfl.core.hashing import fingerprint
 
-    if gen_model is None and embed_model is None and prompt_version is None:
-        return "v0"
-
-    # Generate hash from the components
-    parts = [gen_model or "", embed_model or "", prompt_version or ""]
-    return hashlib.sha256("|".join(parts).encode()).hexdigest()[:12]
+    keys = (
+        "repo_root",
+        "epoch",
+        "parser_version",
+        "resolve_fingerprint",
+        "graph_version",
+        "gen_model_tag",
+        "gen_model_digest",
+        "embed_model_tag",
+        "embed_model_digest",
+        "prompt_version",
+        "schema_version",
+        "retrieval_version",
+        "router_version",
+        "verification_version",
+        "generation_options",
+    )
+    # One statement gives a consistent metadata snapshot and avoids per-key round trips.
+    metadata = dict(conn.execute("SELECT key, value FROM meta WHERE key = ANY(%s)", (list(keys),)).fetchall())
+    return fingerprint({"cache_version": 2, **{key: metadata.get(key) for key in keys}})
 
 
 # -----------------------------------------------------------------------------
@@ -874,10 +882,12 @@ def get_cached_answer(
 ) -> str | None:
     """Get cached answer for query."""
     row = conn.execute(
-        "SELECT answer FROM answer_cache WHERE query_hash = %s AND index_version = %s",
+        "SELECT answer, evidence FROM answer_cache WHERE query_hash = %s AND index_version = %s AND verified",
         (query_hash, index_version),
     ).fetchone()
-    return row[0] if row else None
+    if row is None or not row[1] or not evidence_is_current(conn, row[1]):
+        return None
+    return row[0]
 
 
 def put_cached_answer(
@@ -886,15 +896,65 @@ def put_cached_answer(
     mode: str,
     answer: str,
     index_version: str,
+    *,
+    verified: bool = False,
+    evidence: list[dict] | None = None,
 ) -> None:
-    """Cache an answer."""
+    """Only callers that verify answers should set verified; old entries stay unusable."""
     conn.execute(
-        """INSERT INTO answer_cache (query_hash, mode, answer, index_version)
-           VALUES (%s, %s, %s, %s)
+        """INSERT INTO answer_cache (query_hash, mode, answer, index_version, verified, evidence)
+           VALUES (%s, %s, %s, %s, %s, %s)
            ON CONFLICT(query_hash) DO UPDATE SET mode = EXCLUDED.mode,
-           answer = EXCLUDED.answer, index_version = EXCLUDED.index_version""",
-        (query_hash, mode, answer, index_version),
+           answer = EXCLUDED.answer, index_version = EXCLUDED.index_version,
+           verified = EXCLUDED.verified, evidence = EXCLUDED.evidence""",
+        (query_hash, mode, answer, index_version, verified, json.dumps(evidence or [])),
     )
+
+
+def evidence_is_current(conn: psycopg.Connection, evidence: list[dict]) -> bool:
+    """Require unchanged source identities, code and citation ranges for every reference."""
+    if not isinstance(evidence, list):
+        return False
+    for reference in evidence:
+        if not isinstance(reference, dict) or not all(
+            key in reference for key in ("id", "code_hash", "file_path", "start_line", "end_line")
+        ):
+            return False
+        symbol = get_symbol(conn, reference["id"])
+        if symbol is None or any(
+            symbol[key] != reference[key]
+            for key in ("code_hash", "file_path", "start_line", "end_line")
+        ):
+            return False
+    return True
+
+
+def load_chat_session(conn: psycopg.Connection, session_id: str) -> dict | None:
+    row = conn.execute(
+        "SELECT repo_root, index_version, state FROM chat_sessions WHERE id = %s", (session_id,)
+    ).fetchone()
+    return None if row is None else dict(zip(("repo_root", "index_version", "state"), row))
+
+
+def save_chat_session(
+    conn: psycopg.Connection, session_id: str, repo_root: str, index_revision: str, state: dict
+) -> None:
+    conn.execute(
+        """INSERT INTO chat_sessions (id, repo_root, index_version, state) VALUES (%s, %s, %s, %s)
+           ON CONFLICT(id) DO UPDATE SET repo_root = EXCLUDED.repo_root,
+           index_version = EXCLUDED.index_version, state = EXCLUDED.state, updated_at = now()""",
+        (session_id, repo_root, index_revision, json.dumps(state)),
+    )
+
+
+def cached_embeddings(conn: psycopg.Connection, hashes: list[str]) -> dict[str, list[float]]:
+    rows = conn.execute(
+        "SELECT hash, vec FROM embeddings WHERE hash = ANY(%s)", (hashes,)
+    ).fetchall()
+    return {
+        key: [float(value) for value in (json.loads(vector) if isinstance(vector, str) else vector)]
+        for key, vector in rows
+    }
 
 
 def save_eval_metrics(

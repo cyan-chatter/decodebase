@@ -1,0 +1,61 @@
+{
+  "prompt_version": "2",
+  "schema_version": "2",
+  "system": "You are a precise code documentation engine. Describe only what the provided code and context show. Never invent symbols, files or behavior not present.",
+  "summary_prefix": "Summarize the supplied code as a JSON object matching this schema. Do not infer missing implementations. Use a nonempty string such as 'None shown' when a string field does not apply. Distinguish parameters from captured variables, decorator factories from returned wrappers, copies from mutation, and stubs from real external effects.\n[SCHEMA]\n{\"additionalProperties\":false,\"properties\":{\"inputs\":{\"minLength\":1,\"title\":\"Inputs\",\"type\":\"string\"},\"notable_logic\":{\"minLength\":1,\"title\":\"Notable Logic\",\"type\":\"string\"},\"one_liner\":{\"minLength\":1,\"title\":\"One Liner\",\"type\":\"string\"},\"purpose\":{\"minLength\":1,\"title\":\"Purpose\",\"type\":\"string\"},\"raises\":{\"items\":{\"type\":\"string\"},\"title\":\"Raises\",\"type\":\"array\"},\"returns\":{\"minLength\":1,\"title\":\"Returns\",\"type\":\"string\"},\"side_effects\":{\"items\":{\"type\":\"string\"},\"title\":\"Side Effects\",\"type\":\"array\"}},\"required\":[\"one_liner\",\"purpose\",\"inputs\",\"returns\",\"side_effects\",\"raises\",\"notable_logic\"],\"title\":\"SymbolSummary\",\"type\":\"object\"}",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "one_liner": {
+        "minLength": 1,
+        "title": "One Liner",
+        "type": "string"
+      },
+      "purpose": {
+        "minLength": 1,
+        "title": "Purpose",
+        "type": "string"
+      },
+      "inputs": {
+        "minLength": 1,
+        "title": "Inputs",
+        "type": "string"
+      },
+      "returns": {
+        "minLength": 1,
+        "title": "Returns",
+        "type": "string"
+      },
+      "side_effects": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Side Effects",
+        "type": "array"
+      },
+      "raises": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Raises",
+        "type": "array"
+      },
+      "notable_logic": {
+        "minLength": 1,
+        "title": "Notable Logic",
+        "type": "string"
+      }
+    },
+    "required": [
+      "one_liner",
+      "purpose",
+      "inputs",
+      "returns",
+      "side_effects",
+      "raises",
+      "notable_logic"
+    ],
+    "title": "SymbolSummary",
+    "type": "object"
+  }
+}

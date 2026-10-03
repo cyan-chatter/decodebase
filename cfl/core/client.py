@@ -32,6 +32,15 @@ class GenResult:
     eval_duration: int
     load_duration: int
     done_reason: str | None
+    cached_prompt_tokens: int | None = None
+
+    @property
+    def uncached_prompt_tokens(self) -> int | None:
+        return (
+            None
+            if self.cached_prompt_tokens is None
+            else self.prompt_tokens - self.cached_prompt_tokens
+        )
 
 
 class _Retryable(LLMTransportError):
@@ -222,6 +231,13 @@ class OllamaClient:
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
                 raise LLMValidationError(f"Invalid Ollama metric: {key}")
             metrics[key] = value
+        cached = data.get("prompt_eval_cached_count")
+        if cached is not None and (
+            not isinstance(cached, int)
+            or isinstance(cached, bool)
+            or not 0 <= cached <= metrics["prompt_eval_count"]
+        ):
+            raise LLMValidationError("Invalid Ollama metric: prompt_eval_cached_count")
         latency = time.perf_counter() - started
         exceeded = metrics["prompt_eval_count"] + num_predict > self.settings.num_ctx
         trace_log(
@@ -234,8 +250,13 @@ class OllamaClient:
             latency_s=latency,
             validation="budget_exceeded" if exceeded else "ok",
             attempt=attempt,
+            cached_prompt_tokens=cached,
+            prompt_eval_duration=metrics["prompt_eval_duration"],
+            eval_duration=metrics["eval_duration"],
+            load_duration=metrics["load_duration"],
         )
-        self.counter.calibrate(len(text), metrics["prompt_eval_count"])
+        if self.counter.tokenizer is None:
+            self.counter.calibrate(len(text), metrics["prompt_eval_count"])
         assert_fits(metrics["prompt_eval_count"], num_predict, self.settings.num_ctx)
         return GenResult(
             content,
@@ -246,6 +267,7 @@ class OllamaClient:
             metrics["eval_duration"],
             metrics["load_duration"],
             data.get("done_reason"),
+            cached,
         )
 
     def _run(

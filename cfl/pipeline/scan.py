@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from cfl.config import Settings
 
 logger = logging.getLogger(__name__)
-PARSER_VERSION = "python_v2"
+PARSER_VERSION = "python_v3"
 
 
 @dataclass
@@ -226,7 +226,19 @@ def run_stage1(conn: Connection, settings: Settings, repo_root: str) -> ScanResu
     if not root.is_dir():
         raise ValueError(f"Repository directory does not exist: {repo_root}")
     files = list(discover_files(root, settings))
-    register_files(conn, files, repo_root)
+    registration = register_files(conn, files, repo_root)
+    from cfl.core.db import bump_epoch, get_meta, set_meta
+
+    identity = str(root.resolve())
+    if (
+        registration.changed
+        or registration.removed
+        or get_meta(conn, "repo_root") != identity
+        or get_meta(conn, "parser_version") != PARSER_VERSION
+    ):
+        with conn.transaction():
+            set_meta(conn, "repo_root", identity)
+            bump_epoch(conn)
 
     from cfl.core.db import (
         ParsedRow,
