@@ -1,0 +1,818 @@
+version: 1
+questions:
+- id: symbol-01
+  type: symbol
+  question: What does validate_token do?
+  verified: true
+  expected:
+    symbols:
+    - auth/tokens.py::validate_token
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698167+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: validate_token partitions the token, compares it to a newly issued HMAC
+      token, raises TokenError on mismatch, and returns user_id.
+- id: symbol-02
+  type: symbol
+  question: How is issue_token signed?
+  verified: true
+  expected:
+    symbols:
+    - auth/tokens.py::issue_token
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698196+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: issue_token computes HMAC-SHA256 with the secret and returns user_id plus
+      the hexadecimal digest.
+- id: symbol-03
+  type: symbol
+  question: Explain hash_password.
+  verified: true
+  expected:
+    symbols:
+    - auth/passwords.py::hash_password
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698200+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: hash_password invokes PBKDF2-HMAC-SHA256 with password, salt, and 100000
+      iterations, returning a hex digest.
+- id: symbol-04
+  type: symbol
+  question: Explain verify_password.
+  verified: true
+  expected:
+    symbols:
+    - auth/passwords.py::verify_password
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698205+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: verify_password derives a digest with hash_password and compares it to
+      expected using hmac.compare_digest.
+- id: symbol-05
+  type: symbol
+  question: What does Repository.save persist?
+  verified: true
+  expected:
+    symbols:
+    - db/repository.py::Repository.save
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698207+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Repository.save validates task/id, executes a connection write, and returns
+      the task.
+- id: symbol-06
+  type: symbol
+  question: What does Repository.get retrieve?
+  verified: true
+  expected:
+    symbols:
+    - db/repository.py::Repository.get
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698209+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Repository.get calls connection.execute with the identifier and returns
+      a record or None.
+- id: symbol-07
+  type: symbol
+  question: What does transform normalize?
+  verified: true
+  expected:
+    symbols:
+    - pipeline.py::transform
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698211+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Transform converts id to str, strips title whitespace, and forwards the
+      normalized record to write_to_db.
+- id: symbol-08
+  type: symbol
+  question: Explain walk_tree recursion.
+  verified: true
+  expected:
+    symbols:
+    - trees.py::walk_tree
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698212+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: walk_tree collects the root name, recursively walks each child, and extends
+      the preorder names list.
+- id: module-01
+  type: module
+  question: What is auth responsible for?
+  verified: true
+  expected:
+    symbols:
+    - auth/tokens.py::validate_token
+    - auth/passwords.py::verify_password
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698214+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: auth contains signed token verification and password digest verification;
+      their dependencies provide issuance and hashing.
+- id: module-02
+  type: module
+  question: What does db.connection provide?
+  verified: true
+  expected:
+    symbols:
+    - db/connection.py::Connection.execute
+    - db/connection.py::Connection.close
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698216+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Connection.execute implements read/write and closed-state protection; Connection.close
+      marks it closed.
+- id: module-03
+  type: module
+  question: What does db.repository provide?
+  verified: true
+  expected:
+    symbols:
+    - db/repository.py::Repository.save
+    - db/repository.py::Repository.get
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698218+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Repository.save and get provide persistence and lookup; AuditedRepository
+      adds a write marker through inheritance.
+- id: module-04
+  type: module
+  question: What does services.tasks provide?
+  verified: true
+  expected:
+    symbols:
+    - services/tasks.py::create_task
+    - services/tasks.py::complete_task
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698220+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: create_task saves and notifies; complete_task loads, checks existence,
+      marks done, and saves.
+- id: module-05
+  type: module
+  question: What does services.notifications provide?
+  verified: true
+  expected:
+    symbols:
+    - services/notifications.py::notify
+    - services/notifications.py::format_notification
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698223+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: notify joins notification formatting and email-sink delivery; format_notification
+      constructs the title message.
+- id: module-06
+  type: module
+  question: What does utils.retry provide?
+  verified: true
+  expected:
+    symbols:
+    - utils/retry.py::with_retries
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698226+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: with_retries validates the attempt bound and builds a wrapper that catches
+      only RuntimeError.
+- id: module-07
+  type: module
+  question: What does utils.config provide?
+  verified: true
+  expected:
+    symbols:
+    - utils/config.py::parse_config
+    - utils/config.py::load_config
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698227+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: load_config reads the file and delegates to parse_config for JSON-object
+      and secret checks.
+- id: module-08
+  type: module
+  question: What does api.routes provide?
+  verified: true
+  expected:
+    symbols:
+    - api/routes.py::create_handler
+    - api/routes.py::complete_handler
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698229+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The two decorated handlers authenticate through an import alias, then create
+      or complete a task.
+- id: behavioral-01
+  type: behavioral
+  question: Where are transient RuntimeError retries handled?
+  verified: true
+  expected:
+    symbols:
+    - utils/retry.py::with_retries.decorate.wrapped
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698231+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The nested wrapped function contains the bounded for loop, RuntimeError
+      catch, and final re-raise.
+- id: behavioral-02
+  type: behavioral
+  question: Where are task notifications formatted and delivered?
+  verified: true
+  expected:
+    symbols:
+    - services/notifications.py::format_notification
+    - services/notifications.py::send_email
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698233+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: format_notification creates the message; send_email is the fixture sink
+      and returns that message without real email delivery.
+- id: behavioral-03
+  type: behavioral
+  question: Where are task records exported as JSON to disk?
+  verified: true
+  expected:
+    symbols:
+    - exports.py::save
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698235+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: exports.save opens a path in write mode and calls json.dump; this is distinct
+      from Repository.save.
+- id: behavioral-04
+  type: behavioral
+  question: Where are multiple tasks serialized for export?
+  verified: true
+  expected:
+    symbols:
+    - exports.py::process
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698237+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: exports.process calls json.dumps with sort_keys=True; this is distinct
+      from services.tasks.process.
+- id: behavioral-05
+  type: behavioral
+  question: Where are titles processed into stored task records?
+  verified: true
+  expected:
+    symbols:
+    - services/tasks.py::process
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698238+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: services.tasks.process uses a list comprehension to invoke create_task
+      for each title.
+- id: behavioral-06
+  type: behavioral
+  question: Where is a database connection closed?
+  verified: true
+  expected:
+    symbols:
+    - db/connection.py::Connection.close
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698240+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Connection.close is the explicit operation setting self.closed=True.
+- id: behavioral-07
+  type: behavioral
+  question: Where does the command line validate configuration and import records?
+  verified: true
+  expected:
+    symbols:
+    - cli.py::main
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698242+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: cli.main calls parse_config, constructs Connection and Repository, and
+      delegates records to run_pipeline.
+- id: behavioral-08
+  type: behavioral
+  question: Where is parity implemented with mutual recursion?
+  verified: true
+  expected:
+    symbols:
+    - trees.py::is_even
+    - trees.py::is_odd
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698244+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: is_even calls is_odd and is_odd calls is_even, with complementary zero
+      base cases.
+- id: traversal-01
+  type: traversal
+  question: Trace run_pipeline to Repository.save.
+  verified: true
+  expected:
+    symbols: &id001
+    - pipeline.py::run_pipeline
+    - pipeline.py::transform
+    - pipeline.py::write_to_db
+    - db/repository.py::Repository.save
+    ordered_symbols: *id001
+  source: pipeline.py::run_pipeline
+  target: db/repository.py::Repository.save
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698245+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Source calls establish run_pipeline -> transform -> write_to_db -> Repository.save.
+- id: traversal-02
+  type: traversal
+  question: Trace main to the database write.
+  verified: true
+  expected:
+    symbols: &id002
+    - cli.py::main
+    - pipeline.py::run_pipeline
+    - pipeline.py::transform
+    - pipeline.py::write_to_db
+    - db/repository.py::Repository.save
+    ordered_symbols: *id002
+  source: cli.py::main
+  target: db/repository.py::Repository.save
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698247+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: main delegates to run_pipeline, followed by transform, write_to_db, and
+      Repository.save.
+- id: traversal-03
+  type: traversal
+  question: Trace create_handler to email delivery.
+  verified: true
+  expected:
+    symbols: &id003
+    - api/routes.py::create_handler
+    - services/tasks.py::create_task
+    - services/notifications.py::notify
+    - services/notifications.py::send_email
+    ordered_symbols: *id003
+  source: api/routes.py::create_handler
+  target: services/notifications.py::send_email
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698249+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: create_handler delegates to create_task, which calls notify; notify calls
+      send_email.
+- id: traversal-04
+  type: traversal
+  question: Trace complete_handler to task lookup.
+  verified: true
+  expected:
+    symbols: &id004
+    - api/routes.py::complete_handler
+    - services/tasks.py::complete_task
+    - db/repository.py::Repository.get
+    ordered_symbols: *id004
+  source: api/routes.py::complete_handler
+  target: db/repository.py::Repository.get
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698251+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: complete_handler calls complete_task, which retrieves through Repository.get.
+- id: traversal-05
+  type: traversal
+  question: Trace validate_token to token signing.
+  verified: true
+  expected:
+    symbols: &id005
+    - auth/tokens.py::validate_token
+    - auth/tokens.py::issue_token
+    ordered_symbols: *id005
+  source: auth/tokens.py::validate_token
+  target: auth/tokens.py::issue_token
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698253+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: validate_token directly invokes issue_token when its separator exists.
+- id: traversal-06
+  type: traversal
+  question: Trace services.tasks.process to task persistence.
+  verified: true
+  expected:
+    symbols: &id006
+    - services/tasks.py::process
+    - services/tasks.py::create_task
+    - db/repository.py::Repository.save
+    ordered_symbols: *id006
+  source: services/tasks.py::process
+  target: db/repository.py::Repository.save
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698254+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: services.tasks.process invokes create_task, whose repo parameter is annotated
+      Repository and whose body calls repo.save.
+- id: traversal-07
+  type: traversal
+  question: Trace is_even to is_odd.
+  verified: true
+  expected:
+    symbols: &id007
+    - trees.py::is_even
+    - trees.py::is_odd
+    ordered_symbols: *id007
+  source: trees.py::is_even
+  target: trees.py::is_odd
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698256+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: is_even directly invokes is_odd for nonzero input.
+- id: traversal-08
+  type: traversal
+  question: Trace is_odd to is_even.
+  verified: true
+  expected:
+    symbols: &id008
+    - trees.py::is_odd
+    - trees.py::is_even
+    ordered_symbols: *id008
+  source: trees.py::is_odd
+  target: trees.py::is_even
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698258+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: is_odd directly invokes is_even for nonzero input.
+- id: structural-01
+  type: structural
+  question: What calls validate_token?
+  verified: true
+  target: auth/tokens.py::validate_token
+  expected:
+    symbols:
+    - auth/tokens.py::validate_token
+    callers:
+    - api/routes.py::create_handler
+    - api/routes.py::complete_handler
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698260+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only indexed direct callers are create_handler and complete_handler
+      through the authenticate alias.
+- id: structural-02
+  type: structural
+  question: What calls issue_token?
+  verified: true
+  target: auth/tokens.py::issue_token
+  expected:
+    symbols:
+    - auth/tokens.py::issue_token
+    callers:
+    - auth/tokens.py::validate_token
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698262+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only indexed direct caller is validate_token; no fixture test calls
+      issue_token.
+- id: structural-03
+  type: structural
+  question: What calls parse_config?
+  verified: true
+  target: utils/config.py::parse_config
+  expected:
+    symbols:
+    - utils/config.py::parse_config
+    callers:
+    - cli.py::main
+    - utils/config.py::load_config
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698264+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only direct callers are cli.main and utils.config.load_config.
+- id: structural-04
+  type: structural
+  question: What calls Repository.save?
+  verified: true
+  target: db/repository.py::Repository.save
+  expected:
+    symbols:
+    - db/repository.py::Repository.save
+    callers:
+    - db/repository.py::AuditedRepository.save
+    - services/tasks.py::create_task
+    - services/tasks.py::complete_task
+    - pipeline.py::write_to_db
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698266+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: Direct calls come from create_task, complete_task, write_to_db, and AuditedRepository.save
+      through super(); exports.save is unrelated.
+- id: structural-05
+  type: structural
+  question: What calls Repository.get?
+  verified: true
+  target: db/repository.py::Repository.get
+  expected:
+    symbols:
+    - db/repository.py::Repository.get
+    callers:
+    - services/tasks.py::complete_task
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698267+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only direct caller is complete_task; its repo annotation identifies
+      Repository.
+- id: structural-06
+  type: structural
+  question: What calls notify?
+  verified: true
+  target: services/notifications.py::notify
+  expected:
+    symbols:
+    - services/notifications.py::notify
+    callers:
+    - services/tasks.py::create_task
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698269+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only direct caller is create_task; tests invoke create_task but not
+      notify directly.
+- id: structural-07
+  type: structural
+  question: What calls format_notification?
+  verified: true
+  target: services/notifications.py::format_notification
+  expected:
+    symbols:
+    - services/notifications.py::format_notification
+    callers:
+    - services/notifications.py::notify
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698271+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only direct caller is notify, where its result becomes the send_email
+      argument.
+- id: structural-08
+  type: structural
+  question: What calls transform?
+  verified: true
+  target: pipeline.py::transform
+  expected:
+    symbols:
+    - pipeline.py::transform
+    callers:
+    - pipeline.py::run_pipeline
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698278+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The only direct caller is run_pipeline in its list comprehension.
+- id: reasoning-01
+  type: reasoning
+  question: Why could Repository.save fail when task is None?
+  verified: true
+  expected:
+    symbols:
+    - db/repository.py::Repository.save
+    keywords:
+    - ValueError
+    - id
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698280+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The task-is-None guard short-circuits before task.get and raises ValueError;
+      an absent id triggers the same error.
+- id: reasoning-02
+  type: reasoning
+  question: Why do operations fail after Connection.close?
+  verified: true
+  expected:
+    symbols:
+    - db/connection.py::Connection.execute
+    - db/connection.py::Connection.close
+    keywords:
+    - closed
+    - RuntimeError
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698281+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: close sets the closed flag; execute checks it first and raises RuntimeError
+      before reading or writing.
+- id: reasoning-03
+  type: reasoning
+  question: Why is a token with an invalid signature rejected?
+  verified: true
+  expected:
+    symbols:
+    - auth/tokens.py::validate_token
+    - auth/tokens.py::issue_token
+    keywords:
+    - TokenError
+    - HMAC
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698283+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: validate_token recomputes the HMAC token and rejects a mismatch with TokenError.
+- id: reasoning-04
+  type: reasoning
+  question: Why does parse_config reject a missing secret?
+  verified: true
+  expected:
+    symbols:
+    - utils/config.py::parse_config
+    keywords:
+    - secret
+    - ValueError
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698285+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: parse_config rejects non-object or false/missing secret configuration with
+      ValueError.
+- id: reasoning-05
+  type: reasoning
+  question: Why does with_retries reject zero attempts?
+  verified: true
+  expected:
+    symbols:
+    - utils/retry.py::with_retries
+    keywords:
+    - positive
+    - ValueError
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698287+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: with_retries checks attempts<1 and raises ValueError before creating the
+      decorator.
+- id: reasoning-06
+  type: reasoning
+  question: Why are ValueError operations not retried?
+  verified: true
+  expected:
+    symbols:
+    - utils/retry.py::with_retries.decorate.wrapped
+    keywords:
+    - RuntimeError
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698290+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: The wrapper catches RuntimeError only, so a ValueError propagates immediately
+      without another attempt.
+- id: reasoning-07
+  type: reasoning
+  question: Why does complete_task reject an unknown task id?
+  verified: true
+  expected:
+    symbols:
+    - services/tasks.py::complete_task
+    keywords:
+    - None
+    - KeyError
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698291+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: complete_task checks the None result of Repository.get and raises KeyError
+      before mutation or saving.
+- id: reasoning-08
+  type: reasoning
+  question: Why does exports.save not write through Repository.save?
+  verified: true
+  expected:
+    symbols:
+    - exports.py::save
+    - db/repository.py::Repository.save
+    keywords:
+    - JSON
+    - connection
+  review:
+    kind: agent
+    reviewer: Codex
+    method: independent fixture source review
+    reviewed_at: '2026-10-03T19:55:00.698293+00:00'
+    fixture_sha256: c95bc9af94eb44bceca348218d863beb2d0d10d3a8056e704404d54c3521bf10
+    notes: exports.save uses file I/O and JSON serialization, whereas Repository.save
+      writes through its connection; shared names do not imply calls.

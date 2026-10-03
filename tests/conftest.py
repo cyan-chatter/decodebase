@@ -107,3 +107,21 @@ def resolution_data(fixture_repo_path):
                 }
             )
     return symbols, files
+
+
+@pytest.fixture
+def indexed_repo(pg_conn, tmp_path, monkeypatch):
+    from cfl.core.client import OllamaClient
+    from cfl.pipeline.scan import run_stage1, run_stage2
+
+    SAMPLE = pathlib.Path(__file__).resolve().parents[1] / "eval" / "sample_repo"
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Milestone 5 must not call Ollama")
+
+    monkeypatch.setattr(OllamaClient, "__init__", forbidden)
+    settings = Settings(state_dir=str(tmp_path))
+    scan = run_stage1(pg_conn, settings, str(SAMPLE))
+    assert scan.failed == 0 and scan.parsed == 20
+    run_stage2(pg_conn, settings, str(SAMPLE))
+    return pg_conn

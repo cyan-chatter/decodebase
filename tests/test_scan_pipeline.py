@@ -9,7 +9,7 @@ from typer.testing import CliRunner
 from cfl.cli import app
 from cfl.core import db
 from cfl.parser.python_adapter import PythonAdapter
-from cfl.pipeline import scan
+from cfl.pipeline import indexer, scan
 
 
 def test_cli_scan_runs_stages_and_closes(monkeypatch):
@@ -18,9 +18,16 @@ def test_cli_scan_runs_stages_and_closes(monkeypatch):
     stages = []
     monkeypatch.setattr(scan, "run_stage1", lambda c, s, repo: stages.append((1, c, repo)))
     monkeypatch.setattr(scan, "run_stage2", lambda c, s, repo: stages.append((2, c, repo)))
+
+    def lexical(c):
+        stages.append((3, c, "lexical"))
+        return 40
+
+    monkeypatch.setattr(indexer, "build_lexical", lexical)
     result = CliRunner().invoke(app, ["scan", "some/repo"])
     assert result.exit_code == 0, result.output
-    assert stages == [(1, conn, "some/repo"), (2, conn, "some/repo")]
+    assert stages == [(1, conn, "some/repo"), (2, conn, "some/repo"), (3, conn, "lexical")]
+    assert "Lexical index built for 40 symbols." in result.output
     assert "Scan complete." in result.output
     conn.close.assert_called_once()
 

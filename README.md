@@ -89,3 +89,62 @@ local tokenizer and `FakeOllama`, and require no GPU or running Ollama server:
 pytest tests/test_budget.py tests/test_client.py tests/test_trace_log.py
 pytest  # Full regression suite also requires the PostgreSQL container.
 ```
+
+## Lexical evaluation (milestone 5)
+
+Use a dedicated database for the sample fixture: scanning replaces the database's
+indexed repository. With that database migrated, run:
+
+```sh
+cfl scan eval/sample_repo
+cfl eval --retrieval-only
+cfl eval --config eval/configs/lexical.toml --json
+cfl eval --structural-only
+cfl eval --compare RUN_A RUN_B
+```
+
+Scanning now builds the lexical view from file/module paths, names, signatures, decorators,
+docstrings, and available short summaries. Retrieval merges PostgreSQL full-text
+ranks for split identifiers with trigram symbol-name ranks. No summaries, embeddings,
+GPU, or Ollama server are required for these evaluations.
+
+`cfl.engines.retrieval.retrieve_evidence` augments lexical hits for `Trace/Path/Flow
+SOURCE to TARGET` queries with every source block on the selected call path, in
+order, including call-site locations and edge confidence. It resolves named or
+module-qualified endpoints; prose endpoints use lexical action terms and graph
+reachability. Ambiguous, unresolved, and unreachable requests have explicit
+statuses. Paths longer than the result limit stay complete and set
+`requires_batching`; a future generation caller must budget or split these blocks.
+Evaluation reports pure lexical `AnswerRecall@5` separately from enriched
+`EvidenceRecall@5`. All eight traversal questions now have complete source evidence;
+see `docs/validation/path-evidence.md`.
+
+The static taskboard fixture has 20 Python files. Its 48 questions cover symbol,
+module, behavioral, traversal, structural, and reasoning evidence. Expected IDs
+resolve to current database spans at run time. Runs persist per-question metrics,
+evidence spans, suite snapshots, and configuration in `eval_runs`; comparisons show
+changes for shared questions and flag differing suites or question selections.
+
+All 48 expectations have been independently reviewed against fixture source by
+Codex at the user's request. They carry `verified: true` with agent provenance,
+source rationale, and a fixture fingerprint. The CLI and stored runs identify the
+review method as `agent`. `--verified-only` selects reviewed expectations; newly
+unreviewed questions remain provisional. See `eval/rubric.md` and
+`docs/validation/milestone-5-agent-review.md` for the review and remaining output gaps.
+The supplied CSV is optional for future human answer/document scoring.
+Milestone 5 scores lexical evidence recall and graph exactness; reasoning answer
+quality, generated citations, and answer token cost await the later answer pipeline.
+
+Reusable synchronous operations can use the bounded retry decorator:
+
+```python
+from cfl.core.retry import with_retries
+
+@with_retries(max_retries=3, retry_on=(TimeoutError, ConnectionError))
+def fetch_data():
+    return fetch_from_service()
+```
+
+`max_retries` counts retries after the initial call, so `3` permits four total
+attempts and `0` runs once. The default retry exception is `RuntimeError`; other
+exceptions propagate immediately. Exhaustion re-raises the last exception.

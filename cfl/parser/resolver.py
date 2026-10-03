@@ -391,6 +391,15 @@ class Resolver:
                 if candidates:
                     return self._target_edges(caller_id, candidates, call_site, "local", 0.9)
         class_id = self._enclosing_class_id(caller_id)
+        if expr.startswith("super().") and expr.count(".") == 1:
+            candidates = [
+                method
+                for base in self.class_bases.get(class_id, [])
+                for method in self._method_candidates(base, _method_name(expr))
+            ]
+            if candidates:
+                return self._target_edges(caller_id, candidates, call_site, "super", 0.9)
+            return external
         if head in {"self", "cls"} and expr.count(".") == 1:
             candidates = self._method_candidates(class_id, _method_name(expr)) if class_id else []
             if candidates:
@@ -541,7 +550,7 @@ def run_resolution(conn: psycopg.Connection, settings: Settings) -> None:
     sha_parts = [f"{f['path']}:{f['sha256']}" for f in sorted(files, key=lambda f: f["path"])]
     fingerprint = join_hash(
         *sha_parts,
-        "resolver_v2",
+        "resolver_v3",
         get_meta(conn, "parser_version") or "",
         str(settings.edge_conf_threshold),
     )

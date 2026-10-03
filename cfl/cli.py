@@ -7,6 +7,7 @@ from dataclasses import asdict
 import click
 import psycopg
 import typer
+import yaml
 from rich.console import Console
 from rich.markup import escape
 from rich.table import Table
@@ -74,6 +75,10 @@ def scan(
                 f"{result.unsupported} unsupported files."
             )
         run_stage2(conn, settings, repo)
+        from cfl.pipeline.indexer import build_lexical
+
+        indexed = build_lexical(conn)
+        console.print(f"Lexical index built for {indexed} symbols.")
         console.print("[green]Scan complete.[/green]")
     finally:
         conn.close()
@@ -512,7 +517,106 @@ def docs(
 @app.command()
 def eval(
     suite: str = typer.Option("eval/", "--suite", "-s", help="Path to evaluation suite"),
-    repo: str = typer.Option(".", "--repo", help="Repository path"),
+    repo: str = typer.Option(".", "--repo", help="Repository configuration directory"),
+    config: str | None = typer.Option(None, "--config", help="TOML evaluation config"),
+    compare: tuple[str, str] | None = typer.Option(
+        None, "--compare", help="Compare two stored run IDs"
+    ),
+    retrieval_only: bool = typer.Option(
+        False, "--retrieval-only", help="Graph checks and lexical retrieval without LLM answers"
+    ),
+    structural_only: bool = typer.Option(
+        False, "--structural-only", help="Only caller and traversal graph checks"
+    ),
+    verified_only: bool = typer.Option(
+        False, "--verified-only", help="Only questions with reviewed expectations"
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Emit machine-readable results"),
 ) -> None:
-    """Run the evaluation suite and report metrics."""
-    console.print("[yellow]not implemented yet[/yellow]")
+    """Evaluate lexical retrieval and graph structure; full-answer modes come later."""
+    from pathlib import Path
+
+    from cfl.config import load_settings
+    from cfl.core import db
+    from cfl.eval.runner import compare_runs, load_config, run_eval
+
+    conn = None
+    try:
+        if retrieval_only and structural_only:
+            raise ValueError("Choose --retrieval-only or --structural-only")
+        settings = get_settings() if repo == "." else load_settings(repo)
+        conn = db.connect(settings.dsn, statement_timeout_ms=settings.statement_timeout_ms)
+        if compare is not None:
+            result = compare_runs(conn, *compare)
+        else:
+            options = (
+                load_config(config)
+                if config
+                else {"questions": str(Path(suite) / "questions.yaml")}
+            )
+            options.setdefault("min_conf", settings.edge_conf_threshold)
+            options["verified_only"] = verified_only or options.get("verified_only", False)
+            result = run_eval(
+                conn, options, ("structural",) if structural_only else ("retrieval", "structural")
+            )
+        if json_output:
+            typer.echo(json.dumps(result, ensure_ascii=False))
+        elif compare is not None:
+            table = Table(title=f"Eval comparison: {compare[0]} -> {compare[1]}")
+            for heading in ("Question", "Metric", "Run A", "Run B", "Delta"):
+                table.add_column(heading)
+            for row in result["differences"]:
+                table.add_row(
+                    row["question_id"],
+                    row["metric"],
+                    f"{row['run_a']:.3f}",
+                    f"{row['run_b']:.3f}",
+                    f"{row['delta']:+.3f}",
+                )
+            console.print(table)
+            if result["suite_changed"] or result["only_a"] or result["only_b"]:
+                console.print(
+                    "[yellow]Suite or selected questions changed; compare shared items with care.[/yellow]"
+                )
+        else:
+            console.print(f"Eval run: {result['run_id']}")
+            if result["provisional"]:
+                console.print(
+                    "[yellow]Provisional: expected values still require verification.[/yellow]"
+                )
+            if result.get("review_methods"):
+                console.print("Expectation review: " + ", ".join(result["review_methods"]))
+            console.print("AnswerRecall@5: lexical; EvidenceRecall@5: source with path evidence.")
+            table = Table(title="Retrieval and graph evaluation (no LLM)")
+            for heading in (
+                "Type",
+                "Count",
+                "Lexical @5",
+                "Evidence @5",
+                "Structural",
+                "Traversal",
+            ):
+                table.add_column(heading, no_wrap=True)
+            for kind, row in result["summary"].items():
+
+                def metric(name, row=row):
+                    return f"{row[name]:.3f}" if name in row else "—"
+
+                table.add_row(
+                    kind,
+                    str(row["count"]),
+                    metric("answer_recall_at_5"),
+                    metric("evidence_recall_at_5"),
+                    metric("structural_exactness"),
+                    metric("traversal_exactness"),
+                )
+            console.print(table)
+    except (CflError, psycopg.Error, OSError, ValueError, TypeError, yaml.YAMLError) as exc:
+        if json_output:
+            typer.echo(json.dumps({"error": str(exc)}))
+        else:
+            console.print(f"[red]Error:[/red] {escape(str(exc))}")
+        raise typer.Exit(1) from exc
+    finally:
+        if conn is not None:
+            conn.close()

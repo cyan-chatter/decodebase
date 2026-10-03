@@ -664,10 +664,11 @@ def ctx_inputs(conn: psycopg.Connection) -> list[dict]:
 
 def set_search_text(conn: psycopg.Connection, rows: list[dict]) -> None:
     """Update search_text for multiple symbols."""
-    for row in rows:
-        conn.execute(
-            "UPDATE symbols SET search_text = %s WHERE id = %s",
-            (row.get("search_text"), row.get("id")),
+    with conn.cursor() as cursor:
+        cursor.executemany(
+            """UPDATE symbols SET search_text = %s
+               WHERE id = %s AND search_text IS DISTINCT FROM %s""",
+            [(row.get('search_text'), row.get('id'), row.get('search_text')) for row in rows],
         )
 
 
@@ -677,12 +678,17 @@ def lexical_search(
     limit: int,
 ) -> list[dict]:
     """Full-text search using PostgreSQL tsvector."""
-    tsquery = " & ".join(terms)
+    import re
+
+    safe_terms = list(dict.fromkeys(term for term in terms if re.fullmatch(r'[^\W_]+', term)))
+    if not safe_terms or limit < 1:
+        return []
+    tsquery = " | ".join(safe_terms)
     rows = conn.execute(
         """SELECT id, qualname, file_path, summary_short,
            ts_rank(search, to_tsquery('simple', %s)) as rank
            FROM symbols WHERE search @@ to_tsquery('simple', %s)
-           ORDER BY rank DESC LIMIT %s""",
+           ORDER BY rank DESC, id LIMIT %s""",
         (tsquery, tsquery, limit),
     ).fetchall()
     return [{"id": r[0], "qualname": r[1], "file_path": r[2],
@@ -927,3 +933,26 @@ def set_entrypoints(conn: psycopg.Connection, rows: list[dict]) -> None:
 def invalidate_parsed_files(conn: psycopg.Connection, language: str) -> None:
     """Reparse cached source when its adapter implementation changes."""
     conn.execute("UPDATE files SET parse_status = 'pending' WHERE language = %s", (language,))
+
+
+def lexical_symbol_batches(conn: psycopg.Connection, batch_size: int):
+    """Iterate source fields in bounded batches, using keyset pagination."""
+    after = ''
+    while True:
+        rows = conn.execute(
+            """SELECT id, file_path, qualname, name, signature, decorators, docstring, summary_short
+               FROM symbols WHERE id > %s ORDER BY id LIMIT %s""", (after, batch_size),
+        ).fetchall()
+        if not rows:
+            return
+        columns = ['id', 'file_path', 'qualname', 'name', 'signature', 'decorators', 'docstring', 'summary_short']
+        yield [dict(zip(columns, row)) for row in rows]
+        after = rows[-1][0]
+
+
+def get_eval_run(conn: psycopg.Connection, run_id: str) -> list[dict]:
+    rows = conn.execute(
+        'SELECT question_id, metrics, config FROM eval_runs WHERE run_id = %s ORDER BY question_id',
+        (run_id,),
+    ).fetchall()
+    return [{'question_id': row[0], 'metrics': row[1], 'config': row[2]} for row in rows]
