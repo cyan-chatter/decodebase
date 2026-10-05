@@ -1,0 +1,22 @@
+{
+  "answers": 48,
+  "answer_statuses": {
+    "partial": 28,
+    "abstained": 20
+  },
+  "source_review": {
+    "adequate_scoped": 19,
+    "abstained": 20,
+    "limited_partial": 9
+  },
+  "observed_incorrect_factual_answers": 0,
+  "knowledge_drafts": 63,
+  "knowledge_statuses": {
+    "partial": 42,
+    "rejected": 17,
+    "complete": 4
+  },
+  "adversarial_cases": 6,
+  "adversarial_abstentions": 6,
+  "scope": "Agent review of the evaluation fixture; not a general correctness guarantee."
+}

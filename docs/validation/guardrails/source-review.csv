@@ -1,0 +1,49 @@
+id,engine_status,source_review,notes
+symbol-01,partial,adequate_scoped,"Partition, comparison, rejection and returned identifier match tokens.py; warning remains conservative."
+symbol-02,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+symbol-03,partial,adequate_scoped,"PBKDF2-HMAC-SHA256, 100000 iterations and hex return match the implementation."
+symbol-04,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+symbol-05,partial,limited_partial,"Only the connection write is described; validation, return value and in-memory backend are omitted."
+symbol-06,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+symbol-07,partial,adequate_scoped,String conversion and title whitespace stripping match transform.
+symbol-08,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+module-01,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+module-02,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+module-03,partial,adequate_scoped,"Constructor, save/get methods and audited-copy override match repository.py."
+module-04,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+module-05,partial,limited_partial,Formatting and return-only sink are described; no actual email delivery is asserted.
+module-06,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+module-07,partial,limited_partial,Only parse_config is explained; load_config is omitted.
+module-08,partial,limited_partial,Only the route decorator is explained; the two handlers are omitted.
+behavioral-01,partial,adequate_scoped,Correct retry module/decorator and default positive attempt bound; exact nested wrapper name omitted.
+behavioral-02,partial,limited_partial,Formatting is correct; the delivery part of the question remains unanswered.
+behavioral-03,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+behavioral-04,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+behavioral-05,partial,adequate_scoped,Correct process location and per-title create_task calls.
+behavioral-06,partial,adequate_scoped,Displayed close implementation sets self.closed=True.
+behavioral-07,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+behavioral-08,partial,adequate_scoped,Both functions and their mutual calls match trees.py.
+traversal-01,partial,limited_partial,"Correct transform-to-write_to_db statement; AST diagram/table retain the full path, narrative is incomplete."
+traversal-02,partial,limited_partial,Narrative covers main/run_pipeline/transform only; AST diagram/table show the remaining path.
+traversal-03,partial,limited_partial,Only entry authentication and return-only email sink remain in prose; AST path is retained.
+traversal-04,partial,limited_partial,Only the final Repository.get-to-Connection.execute call remains in prose; lookup/KeyError ambiguity removed.
+traversal-05,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+traversal-06,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+traversal-07,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+traversal-08,partial,adequate_scoped,Correct nonzero is_odd-to-is_even call; bounded AST evidence is retained.
+structural-01,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-02,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-03,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-04,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-05,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-06,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-07,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+structural-08,partial,adequate_scoped,Direct caller names and call sites match the fixture source.
+reasoning-01,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+reasoning-02,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+reasoning-03,partial,adequate_scoped,"Invalid comparison leads to TokenError, matching validate_token."
+reasoning-04,partial,adequate_scoped,"Non-dict or false/missing secret leads to ValueError, matching parse_config."
+reasoning-05,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+reasoning-06,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+reasoning-07,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.
+reasoning-08,abstained,abstained,No reliable model narrative released; bounded AST diagrams remain available for flow questions.

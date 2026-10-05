@@ -1,5 +1,7 @@
 # Milestone 6 measured choice: docs/decisions/0001-model-choice.md.
 gen_model = "qwen3.5:9b"
+verifier_model = "qwen2.5-coder:7b"
+verifier_tokenizer_file = ".cfl/tokenizers/gen/tokenizer.json"
 embed_model = "nomic-embed-text"
 embed_dim = 768
 num_ctx = 8192

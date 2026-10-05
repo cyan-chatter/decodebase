@@ -1,0 +1,1 @@
+{"ts": "2026-10-04T08:24:10.496999+05:30", "task": "benchmark", "symbol_id": null, "est_prompt_tokens": 7680, "actual_prompt_tokens": 7632, "output_tokens": 64, "latency_s": 17.36644803499803, "validation": "ok", "attempt": 1, "cached_prompt_tokens": 0, "prompt_eval_duration": 3507321000, "eval_duration": 1572939000, "load_duration": 12028770649}

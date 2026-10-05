@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from cfl.config import Settings
 
 logger = logging.getLogger(__name__)
-PARSER_VERSION = "python_v3"
+PARSER_VERSION = "python_v4"
 
 
 @dataclass

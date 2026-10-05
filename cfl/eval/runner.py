@@ -12,7 +12,7 @@ import yaml
 from cfl.core import db
 from cfl.engines import graph_queries
 from cfl.engines.retrieval import RETRIEVAL_VERSION, retrieve_evidence
-from cfl.eval.metrics import Span, answer_recall_at_5, structural_exactness
+from cfl.eval.metrics import Span, answer_recall_at_5, citation_validity, structural_exactness
 from cfl.pipeline.indexer import build_lexical, retrieve_lexical
 
 if TYPE_CHECKING:
@@ -126,12 +126,12 @@ def summarize(rows: list[dict]) -> dict:
     return result
 
 
-def run_eval(conn: Connection, config: dict, modes=None) -> dict:
+def run_eval(conn: Connection, config: dict, modes=None, *, client=None, settings=None) -> dict:
     modes = set(("retrieval", "structural") if modes is None else modes)
-    if not modes or modes - {"retrieval", "structural"}:
-        raise ValueError(
-            "Only retrieval and structural modes exist at milestone 5; full answers are unavailable"
-        )
+    if "full" in modes and (client is None or settings is None):
+        raise ValueError("full answers require a client and settings")
+    if not modes or modes - {"retrieval", "structural", "full"}:
+        raise ValueError("Modes must be retrieval, structural, or full")
     limit, depth, confidence = (
         config.get("retrieval_limit", 5),
         config.get("max_depth", 8),
@@ -189,6 +189,8 @@ def run_eval(conn: Connection, config: dict, modes=None) -> dict:
         "parser_version": db.get_meta(conn, "parser_version"),
         "resolve_fingerprint": db.get_meta(conn, "resolve_fingerprint"),
         "modes": sorted(modes),
+        "gen_model": settings.gen_model if settings else None,
+        "embed_model": settings.embed_model if settings else None,
         "suite_hash": hashlib.sha256(Path(config["questions"]).read_bytes()).hexdigest(),
         "questions_snapshot": questions,
         "review_methods": review_methods,
@@ -248,6 +250,37 @@ def run_eval(conn: Connection, config: dict, modes=None) -> dict:
                 got = [question["source"], *(row["id"] for row in hops)] if hops is not None else []
                 metrics["traversal_exactness"] = float(got == expected["ordered_symbols"])
                 metrics["actual_ordered_symbols"] = got
+            if "full" in modes:
+                from cfl.engines.ask import answer
+
+                before = client.generation_tokens
+                result = answer(
+                    conn,
+                    client,
+                    settings,
+                    question["question"],
+                    config.get("answer_mode", "detailed"),
+                )
+                metrics.update(
+                    retrieved_recall_at_5=answer_recall_at_5(
+                        [symbols[id] for id in expected["symbols"]], result["blocks"]
+                    ),
+                    cited_recall_at_5=answer_recall_at_5(
+                        [symbols[id] for id in expected["symbols"]], result["citations"]
+                    ),
+                    citation_validity=citation_validity(
+                        result.get("raw_citations", result["citations"]), result["blocks"]
+                    ),
+                    tokens_per_answer=client.generation_tokens - before,
+                    answer_text=result["text"],
+                    answer_route=result["route"],
+                    answer_sufficient=result["sufficient"],
+                    answer_status=result.get("status", "unclassified"),
+                    answer_cached=result["cached"],
+                    answer_warnings=result["warnings"],
+                    answer_spans=[vars(Span.parse(b)) for b in result["blocks"]],
+                    cited_spans=result["citations"],
+                )
             db.save_eval_metrics(conn, run_id, question["id"], metrics, snapshot)
             rows.append({"question_id": question["id"], "metrics": metrics})
     return {

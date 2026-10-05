@@ -18,6 +18,7 @@ from cfl.core.errors import LLMTransportError, LLMValidationError
 from cfl.core.trace_log import trace_log
 
 GENERATION_LOCK = threading.Lock()
+MODEL_SESSION_LOCK = threading.RLock()
 
 
 @dataclass(frozen=True)
@@ -54,7 +55,12 @@ class OllamaClient:
         assert_fits(0, 0, settings.num_ctx)
         if settings.template_overhead < 0:
             raise ValueError("Template overhead cannot be negative")
+        self.generation_tokens = 0
+        self.generation_calls = 0
+        self.last_generation_result = None
+        self.on_generation_attempt = None
         self.settings = settings.model_copy(deep=True)
+        self.transport = transport
         self.counter = TokenCounter(self.settings)
         self._client = httpx.Client(
             timeout=httpx.Timeout(600, connect=10),
@@ -81,6 +87,17 @@ class OllamaClient:
         resp = self._client.post("/api/show", json={"model": model})
         resp.raise_for_status()
         return resp.json()
+
+    def unload(self, model: str) -> None:
+        response = self._client.post("/api/generate", json={"model": model, "keep_alive": 0})
+        self._status(response)
+
+    def warm(self) -> None:
+        response = self._client.post("/api/generate", json={
+            "model": self.settings.gen_model, "keep_alive": -1,
+            "options": {"num_ctx": self.settings.num_ctx},
+        })
+        self._status(response)
 
     @staticmethod
     def _status(response: httpx.Response) -> None:
@@ -258,7 +275,9 @@ class OllamaClient:
         if self.counter.tokenizer is None:
             self.counter.calibrate(len(text), metrics["prompt_eval_count"])
         assert_fits(metrics["prompt_eval_count"], num_predict, self.settings.num_ctx)
-        return GenResult(
+        self.generation_tokens += metrics["prompt_eval_count"] + metrics["eval_count"]
+        self.generation_calls += 1
+        self.last_generation_result = GenResult(
             content,
             metrics["prompt_eval_count"],
             metrics["eval_count"],
@@ -269,6 +288,7 @@ class OllamaClient:
             data.get("done_reason"),
             cached,
         )
+        return self.last_generation_result
 
     def _run(
         self,
@@ -280,13 +300,15 @@ class OllamaClient:
         symbol_id: str | None,
         stream: bool,
     ) -> Iterator[Any]:
-        with GENERATION_LOCK:
+        with MODEL_SESSION_LOCK, GENERATION_LOCK:
             started = time.perf_counter()
             for attempt in range(3):
                 estimate = self._estimate(text, num_predict)
                 emitted = False
                 finished = False
                 try:
+                    if self.on_generation_attempt is not None:
+                        self.on_generation_attempt(task, symbol_id)
                     if not stream:
                         response = self._client.post(endpoint, json=body)
                         self._status(response)

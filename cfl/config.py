@@ -27,7 +27,10 @@ class Settings(BaseModel):
 
     # Ollama
     ollama_url: str = "http://localhost:11434"
-    gen_model: str = "qwen2.5-coder:7b"
+    gen_model: str = "qwen3.5:9b"
+    verifier_model: str = "qwen2.5-coder:7b"
+    verifier_tokenizer_file: str | None = None
+    num_predict_review: int = 1800
     embed_model: str = "nomic-embed-text"
     embed_dim: int = 768
     # Ollama server environment, not per-request options. Restart to apply.

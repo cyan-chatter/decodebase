@@ -1,0 +1,32 @@
+{
+  "tests_passed": 297,
+  "questions": 48,
+  "sufficient_answers": 47,
+  "source_review_counts": {
+    "adequate": 36,
+    "partial": 8,
+    "incorrect": 3,
+    "unanswered": 1
+  },
+  "means": {
+    "retrieved_recall_at_5": 0.9791666666666666,
+    "cited_recall_at_5": 0.8951388888888889,
+    "citation_validity": 0.9791666666666666,
+    "tokens_per_answer": 972.5625
+  },
+  "gpu_peak_mib": 7701,
+  "gpu_peak_decimal_gb": 8.075083776,
+  "structural_exactness": 1.0,
+  "traversal_exactness": 1.0,
+  "cached_answers": 4,
+  "runtime_options": {
+    "gen_model": "qwen3.5:9b",
+    "embed_model": "nomic-embed-text",
+    "embed_dim": 768,
+    "num_ctx": 8192,
+    "kv_quantization": false,
+    "graph_expansion": false,
+    "llm_rerank": false
+  },
+  "commands_all_succeeded": true
+}

@@ -1,0 +1,259 @@
+{
+  "reviewer": "Codex",
+  "method": "Independent inspection of all captured answers against eval/sample_repo implementation, using eval/rubric.md. Semantic review is separate from automated citation/recall scoring. No model self-grading.",
+  "counts": {
+    "adequate": 33,
+    "partial": 11,
+    "incorrect": 2,
+    "unanswered": 2
+  },
+  "questions": [
+    {
+      "question_id": "symbol-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-03",
+      "assessment": "partial",
+      "notes": "Correct PBKDF2 description; unsupported unqualified no-exceptions claim."
+    },
+    {
+      "question_id": "symbol-04",
+      "assessment": "partial",
+      "notes": "Correct password comparison; unsupported unqualified no-exceptions claim."
+    },
+    {
+      "question_id": "symbol-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-08",
+      "assessment": "partial",
+      "notes": "Correct preorder traversal; unsupported unqualified no-exceptions claim."
+    },
+    {
+      "question_id": "module-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-03",
+      "assessment": "partial",
+      "notes": "Conflates audit-marker subclass behavior with base Repository and cites only base class."
+    },
+    {
+      "question_id": "module-04",
+      "assessment": "partial",
+      "notes": "Core task operations correct, but claims actual email sending and RuntimeError for any issue."
+    },
+    {
+      "question_id": "module-05",
+      "assessment": "partial",
+      "notes": "Mentions simulated email but describes sending instead of exact return-only sink behavior."
+    },
+    {
+      "question_id": "module-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-07",
+      "assessment": "partial",
+      "notes": "Reduces truthy-secret rejection condition to key presence."
+    },
+    {
+      "question_id": "module-08",
+      "assessment": "partial",
+      "notes": "Correct handler responsibilities, but only cites route factory for module answer."
+    },
+    {
+      "question_id": "behavioral-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-02",
+      "assessment": "incorrect",
+      "notes": "Claims real email delivery; sink only returns its input string."
+    },
+    {
+      "question_id": "behavioral-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-08",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-01",
+      "assessment": "partial",
+      "notes": "Correct chain, but says transform normalizes identifier whitespace; identifier is cast to str and only title is stripped."
+    },
+    {
+      "question_id": "traversal-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-03",
+      "assessment": "incorrect",
+      "notes": "Correct chain but claims actual email sending with no stub qualification."
+    },
+    {
+      "question_id": "traversal-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-05",
+      "assessment": "partial",
+      "notes": "Correct signing location but omits TokenError rejection and separator-dependent short-circuit behavior."
+    },
+    {
+      "question_id": "traversal-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-07",
+      "assessment": "unanswered",
+      "notes": "No accepted source-grounded answer after the bounded citation repair."
+    },
+    {
+      "question_id": "traversal-08",
+      "assessment": "unanswered",
+      "notes": "No accepted source-grounded answer after the bounded citation repair."
+    },
+    {
+      "question_id": "structural-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-08",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-04",
+      "assessment": "partial",
+      "notes": "Reduces truthy-secret validation to key presence."
+    },
+    {
+      "question_id": "reasoning-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-08",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    }
+  ],
+  "summary_one_liner_review": {
+    "reviewed": 40,
+    "materially_wrong_symbols": [
+      "services/notifications.py::notify"
+    ],
+    "notes": "Authenticated handlers are correct. notify still claims actual email transmission; send_email is loosely simulated rather than explicitly return-only. parse_config omits truthiness."
+  }
+}

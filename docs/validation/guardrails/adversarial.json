@@ -1,0 +1,170 @@
+[
+  {
+    "case": "stub",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "reasons": [
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "review": {
+      "complete": false,
+      "missing": [
+        "What is the actual implementation of the email delivery mechanism?",
+        "How does the function handle exceptions or errors during email delivery?",
+        "What is the format of the 'message' parameter?",
+        "Is there any validation or sanitization of the 'message' parameter?",
+        "What is the return type of the function?",
+        "Is there any logging or monitoring of the email delivery process?",
+        "How does the function handle retries in case of delivery failures?",
+        "What is the maximum number of retries allowed?"
+      ],
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "unsupported",
+          "reason": "The provided code snippet does not show the actual implementation of the email delivery mechanism. It only defines a function signature and a docstring without any details on how the email is sent or handled in case of errors.",
+          "evidence": [
+            {
+              "id": "services/notifications.py::send_email",
+              "quote": "def send_email(message: str) -> str:\n    \"\"\"Represent delivery to the email sink.\"\"\"\n    return message"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case": "short-circuit",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "reasons": [
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "review": {
+      "complete": false,
+      "missing": [
+        "A claim batch failed validation."
+      ],
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "unsupported",
+          "reason": "Validation failed: Verifier evidence quote is not in current raw source",
+          "evidence": []
+        }
+      ]
+    }
+  },
+  {
+    "case": "mutation",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "reasons": [
+      "Some draft claims failed validation and were removed."
+    ],
+    "review": {
+      "complete": true,
+      "missing": [],
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "contradicted",
+          "reason": "AuditedRepository.save creates a dictionary copy; input mutation is not established.",
+          "evidence": [
+            {
+              "id": "db/repository.py::AuditedRepository.save",
+              "quote": "task = dict(task, audited=True)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case": "exceptions",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "reasons": [
+      "Some draft claims failed validation and were removed."
+    ],
+    "review": {
+      "complete": true,
+      "missing": [],
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "contradicted",
+          "reason": "An unconditional no-exceptions guarantee is not established by source.",
+          "evidence": [
+            {
+              "id": "auth/passwords.py::verify_password",
+              "quote": "return hmac.compare_digest(hash_password(password, salt), expected)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case": "concurrency-guarantee",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "reasons": [
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "review": {
+      "complete": false,
+      "missing": [
+        "Concurrency handling in the Connection class",
+        "Behavior when multiple threads attempt to execute simultaneously",
+        "Thread safety mechanisms or synchronization primitives used",
+        "Effect of concurrent operations on the rows dictionary",
+        "Handling of exceptions in concurrent scenarios",
+        "Impact of connection closure on concurrent operations",
+        "Thread safety of the rows dictionary",
+        "Behavior when the connection is closed during concurrent operations"
+      ],
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "unsupported",
+          "reason": "The provided code snippet does not demonstrate thread safety. It lacks synchronization mechanisms and does not handle concurrent operations. The code only checks if the connection is closed and then performs read or write operations on the rows dictionary. This does not guarantee thread safety in a\u591a",
+          "evidence": [
+            {
+              "id": "db/connection.py::Connection.execute",
+              "quote": "if self.closed:\n    raise RuntimeError(\"Connection is closed\")\nif value is not None:\n    self.rows[key] = value\nreturn self.rows.get(key)"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "case": "security-guarantee",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "reasons": [
+      "Some draft claims failed validation and were removed."
+    ],
+    "review": {
+      "complete": true,
+      "missing": [],
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "contradicted",
+          "reason": "External-library or runtime guarantees are not established by indexed implementation alone.",
+          "evidence": [
+            {
+              "id": "auth/passwords.py::hash_password",
+              "quote": "return hashlib.pbkdf2_hmac(\"sha256\", password.encode(), salt.encode(), 100000).hex()"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

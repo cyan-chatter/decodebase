@@ -1,0 +1,260 @@
+{
+  "reviewer": "Codex",
+  "method": "Independent inspection of all captured answers against eval/sample_repo implementation, using eval/rubric.md. Semantic review is separate from automated citation/recall scoring. No model self-grading.",
+  "counts": {
+    "adequate": 36,
+    "partial": 9,
+    "incorrect": 2,
+    "unanswered": 1
+  },
+  "questions": [
+    {
+      "question_id": "symbol-01",
+      "assessment": "partial",
+      "notes": "Verification behavior is correct but invents token format user_id:separator:hmac; source format is user_id:digest."
+    },
+    {
+      "question_id": "symbol-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-03",
+      "assessment": "partial",
+      "notes": "Correct PBKDF2 description; unqualified no-exceptions claim exceeds source guarantees."
+    },
+    {
+      "question_id": "symbol-04",
+      "assessment": "partial",
+      "notes": "Correct constant-time comparison; unqualified no-exceptions claim exceeds source guarantees."
+    },
+    {
+      "question_id": "symbol-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "symbol-08",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-05",
+      "assessment": "partial",
+      "notes": "Identifies return-only send_email stub, then inconsistently describes notify as actually sending email."
+    },
+    {
+      "question_id": "module-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "module-08",
+      "assessment": "partial",
+      "notes": "Explains route metadata but omits authenticated create/complete handler responsibilities."
+    },
+    {
+      "question_id": "behavioral-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-02",
+      "assessment": "incorrect",
+      "notes": "Claims email transmission although send_email only returns its argument."
+    },
+    {
+      "question_id": "behavioral-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "behavioral-08",
+      "assessment": "unanswered",
+      "notes": "No accepted source-grounded answer after the bounded citation repair."
+    },
+    {
+      "question_id": "traversal-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-03",
+      "assessment": "partial",
+      "notes": "Correct call chain, but create_handler is incorrectly described as a decorator factory."
+    },
+    {
+      "question_id": "traversal-04",
+      "assessment": "partial",
+      "notes": "Correct task lookup chain, but complete_handler is incorrectly described as a decorator factory."
+    },
+    {
+      "question_id": "traversal-05",
+      "assessment": "incorrect",
+      "notes": "Inverts short-circuit call order/condition; issue_token is evaluated with a present separator before comparison."
+    },
+    {
+      "question_id": "traversal-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "traversal-08",
+      "assessment": "partial",
+      "notes": "Conflates runtime zero base case with static graph expansion and omits negative-input limit."
+    },
+    {
+      "question_id": "structural-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-06",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "structural-08",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-01",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-02",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-03",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-04",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-05",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-06",
+      "assessment": "partial",
+      "notes": "Mentions RuntimeError-only catch but foregrounds zero-attempt factory validation, which does not explain operation ValueError propagation."
+    },
+    {
+      "question_id": "reasoning-07",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    },
+    {
+      "question_id": "reasoning-08",
+      "assessment": "adequate",
+      "notes": "Answer agrees with the independently inspected fixture implementation; no material omission found."
+    }
+  ],
+  "summary_one_liner_review": {
+    "reviewed": 40,
+    "materially_wrong_symbols": [
+      "api/routes.py::create_handler",
+      "api/routes.py::complete_handler"
+    ],
+    "notes": "Both authenticated handlers are mislabeled as route decorator factories; return-only email and in-memory connection one-liners are correct."
+  }
+}

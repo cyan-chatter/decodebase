@@ -1,0 +1,15 @@
+{
+  "resumed_checkpoint": true,
+  "knowledge_generation": null,
+  "knowledge_validation": {
+    "complete": 0,
+    "partial": 7,
+    "rejected": 0,
+    "cached": 56
+  },
+  "dense": {
+    "count": 106,
+    "failed": false
+  },
+  "wall_s": 7.581610323000859
+}

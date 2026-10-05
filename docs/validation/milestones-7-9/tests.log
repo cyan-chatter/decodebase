@@ -1,0 +1,30 @@
+........................................................................ [ 24%]
+........................................................................ [ 48%]
+........................................................................ [ 72%]
+........................................................................ [ 96%]
+.........                                                                [100%]
+=============================== warnings summary ===============================
+tests/test_scan.py::test_discover_files_finds_python
+tests/test_scan.py::test_discover_files_finds_python
+tests/test_scan.py::test_discover_files_excludes_env
+tests/test_scan.py::test_discover_files_excludes_env
+tests/test_scan.py::test_discover_files_excludes_lockfile
+tests/test_scan.py::test_discover_files_excludes_lockfile
+tests/test_scan.py::test_register_files
+tests/test_scan.py::test_register_files
+  /home/cyan/shelf/cs/CodeFlowLens/.venv/lib/python3.14/site-packages/pathspec/pathspec.py:326: DeprecationWarning: GitWildMatchPattern ('gitwildmatch') is deprecated. Use 'gitignore' for GitIgnoreBasicPattern or GitIgnoreSpecPattern instead.
+    patterns = [use_factory(__line) for __line in lines if __line]  # type: ignore[arg-type]
+
+tests/test_scan.py::test_discover_files_finds_python
+tests/test_scan.py::test_discover_files_finds_python
+tests/test_scan.py::test_discover_files_excludes_env
+tests/test_scan.py::test_discover_files_excludes_env
+tests/test_scan.py::test_discover_files_excludes_lockfile
+tests/test_scan.py::test_discover_files_excludes_lockfile
+tests/test_scan.py::test_register_files
+tests/test_scan.py::test_register_files
+  /home/cyan/shelf/cs/CodeFlowLens/.venv/lib/python3.14/site-packages/pathspec/pattern.py:125: DeprecationWarning: GitWildMatchPattern ('gitwildmatch') is deprecated. Use 'gitignore' for GitIgnoreBasicPattern or GitIgnoreSpecPattern instead.
+    raw_regex, include = self.pattern_to_regex(pattern)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+297 passed, 16 warnings in 25.85s

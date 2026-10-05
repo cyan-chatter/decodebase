@@ -88,9 +88,11 @@ def compute_communities(call_graph: nx.DiGraph) -> dict[str, int]:
     return {node: index for index, group in enumerate(groups) for node in group}
 
 
-def processing_order(conn: Connection, *, priority: str | None = None) -> list[WorkItem]:
+def processing_order(
+    conn: Connection, *, priority: str | None = None, min_conf: float = 0.6
+) -> list[WorkItem]:
     symbols = get_all_symbols(conn)
-    call_graph = build_call_graph(conn, threshold=0.0)
+    call_graph = build_call_graph(conn, threshold=min_conf)
     order_graph = build_order_graph(call_graph, symbols)
     condensed = condense(order_graph)
     ranks = compute_pagerank(call_graph)

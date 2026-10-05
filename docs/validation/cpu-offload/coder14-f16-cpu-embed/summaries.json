@@ -1,0 +1,2600 @@
+[
+  {
+    "id": "trees.py::walk_tree",
+    "file_path": "trees.py",
+    "kind": "function",
+    "qualname": "walk_tree",
+    "name": "walk_tree",
+    "parent_id": null,
+    "signature": "node: dict -> list[str]",
+    "decorators": "[]",
+    "docstring": "Recursively collect names in a task hierarchy in preorder.",
+    "start_line": 4,
+    "end_line": 9,
+    "raw_code": "def walk_tree(node: dict) -> list[str]:\n    \"\"\"Recursively collect names in a task hierarchy in preorder.\"\"\"\n    names = [node[\"name\"]]\n    for child in node.get(\"children\", []):\n        names.extend(walk_tree(child))\n    return names",
+    "code_hash": "8f7e8580d14e7dfdb841c22929e6cb90a4eb02355841df9b35db82829293b547",
+    "token_est": 59,
+    "pagerank": 0.09065754571559635,
+    "summary_short": "Recursively collects names from a task hierarchy in preorder.",
+    "summary_json": {
+      "inputs": "A dictionary representing a tree node with a 'name' key and an optional 'children' key containing a list of child nodes.",
+      "raises": [],
+      "purpose": "To traverse a tree structure represented as a dictionary and collect all node names in preorder.",
+      "returns": "A list of strings containing the names of all nodes in the tree in preorder.",
+      "one_liner": "Recursively collects names from a task hierarchy in preorder.",
+      "side_effects": [],
+      "notable_logic": "The function uses recursion to traverse the tree. It starts by adding the name of the current node to the list and then recursively processes each child node."
+    },
+    "summary_long": null,
+    "ctx_hash": "289a0beb44ddd803e1e52a9050a79490e9570d75f6c3e7feaeeb4bc45bfee902",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "trees.py\nwalk_tree\nwalk_tree\nnode: dict -> list[str]\nrecursively collect names in a task hierarchy in preorder.\n[\n]\ntrees py walk tree node dict list str recursively collect names in a task hierarchy preorder",
+    "search": "'a':14,31 'collect':11,28 'dict':7,24 'hierarchy':16,33 'in':13,17,30 'list':8,25 'names':12,29 'node':6,23 'preorder':18,34 'py':20 'recursively':10,27 'str':9,26 'task':15,32 'tree':3,5,22 'trees':19 'trees.py':1 'walk':2,4,21",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "node.get",
+        "kind": "call",
+        "line": 7,
+        "control_ctx": "for"
+      },
+      {
+        "expr": "names.extend",
+        "kind": "call",
+        "line": 8,
+        "control_ctx": "for"
+      },
+      {
+        "expr": "walk_tree",
+        "kind": "call",
+        "line": 8,
+        "control_ctx": "for"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "node": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-33",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/repository.py::Repository.__init__",
+    "file_path": "db/repository.py",
+    "kind": "method",
+    "qualname": "Repository.__init__",
+    "name": "__init__",
+    "parent_id": "db/repository.py::Repository",
+    "signature": "self, connection: Connection -> None",
+    "decorators": "[]",
+    "docstring": null,
+    "start_line": 9,
+    "end_line": 10,
+    "raw_code": "    def __init__(self, connection: Connection) -> None:\n        self.connection = connection",
+    "code_hash": "0c762a246b48f6f23c0d9f382ebc9718f79b20806945223e91ec82e35720ddeb",
+    "token_est": 23,
+    "pagerank": 0.017457284044773317,
+    "summary_short": "Sets `connection` of the instance.",
+    "summary_json": {
+      "inputs": "self, connection: Connection -> None",
+      "raises": [],
+      "purpose": "Sets `connection` of the instance.",
+      "returns": "See source",
+      "one_liner": "Sets `connection` of the instance.",
+      "side_effects": [],
+      "notable_logic": "Templated from source; no model inference."
+    },
+    "summary_long": null,
+    "ctx_hash": "3c3a2fdbb5a7b8d8ee2a980c0c0aed5fd52ccfc97cf20499005102cf2fb0af82",
+    "status": "skipped_trivial",
+    "attempts": 0,
+    "error": null,
+    "search_text": "db/repository.py\nrepository.__init__\n__init__\nself, connection: connection -> none\n[\n]\ndb repository py init self connection none",
+    "search": "'connection':5,6,13 'db':8 'db/repository.py':1 'init':3,11 'none':7,14 'py':10 'repository':9 'repository.__init__':2 'self':4,12",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {
+        "connection": "Connection"
+      },
+      "local_types": {},
+      "param_types": {
+        "connection": "Connection"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-17",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "services/notifications.py::format_notification",
+    "file_path": "services/notifications.py",
+    "kind": "function",
+    "qualname": "format_notification",
+    "name": "format_notification",
+    "parent_id": null,
+    "signature": "task: dict -> str",
+    "decorators": "[]",
+    "docstring": "Format a task-created notification using its title.",
+    "start_line": 4,
+    "end_line": 6,
+    "raw_code": "def format_notification(task: dict) -> str:\n    \"\"\"Format a task-created notification using its title.\"\"\"\n    return \"Task created: \" + task[\"title\"]",
+    "code_hash": "b839a8455feb801dceb203e07bd060e5eacd663d3dbe7f6a8e49cece3999bc27",
+    "token_est": 38,
+    "pagerank": 0.023326931281113353,
+    "summary_short": "Formats a task notification with its title.",
+    "summary_json": {
+      "inputs": "A dictionary representing a task with at least a 'title' key.",
+      "raises": [],
+      "purpose": "To create a formatted notification string for a task.",
+      "returns": "A string formatted as 'Task created: <task title>'.",
+      "one_liner": "Formats a task notification with its title.",
+      "side_effects": [],
+      "notable_logic": "Concatenates a static string with the task's title."
+    },
+    "summary_long": null,
+    "ctx_hash": "e253a6d86045f641e88007a7e8b42e0a2715b19e305995336cb4c75e63273d5c",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "services/notifications.py\nformat_notification\nformat_notification\ntask: dict -> str\nformat a task-created notification using its title.\n[\n]\nservices notifications py format notification task dict str a created using its title",
+    "search": "'a':10,26 'created':13,27 'dict':7,24 'format':2,4,9,21 'its':16,29 'notification':3,5,14,22 'notifications':19 'py':20 'services':18 'services/notifications.py':1 'str':8,25 'task':6,12,23 'task-created':11 'title':17,30 'using':15,28",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "task": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-25",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "services/notifications.py::send_email",
+    "file_path": "services/notifications.py",
+    "kind": "function",
+    "qualname": "send_email",
+    "name": "send_email",
+    "parent_id": null,
+    "signature": "message: str -> str",
+    "decorators": "[]",
+    "docstring": "Represent delivery to the email sink.",
+    "start_line": 9,
+    "end_line": 11,
+    "raw_code": "def send_email(message: str) -> str:\n    \"\"\"Represent delivery to the email sink.\"\"\"\n    return message",
+    "code_hash": "a53e2c48c0a85993a708730be2a756f629c482438dc068c4a66df42caa2af295",
+    "token_est": 26,
+    "pagerank": 0.023326931281113353,
+    "summary_short": "Function to simulate sending an email.",
+    "summary_json": {
+      "inputs": "message: str",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To represent the delivery of a message to an email sink.",
+      "returns": "str",
+      "one_liner": "Function to simulate sending an email.",
+      "side_effects": [
+        "None shown"
+      ],
+      "notable_logic": "None shown"
+    },
+    "summary_long": null,
+    "ctx_hash": "193e2557fbe3e8a99c25cef8558cf4dbfca1b9afbf57d78176411f49b688f04f",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "services/notifications.py\nsend_email\nsend_email\nmessage: str -> str\nrepresent delivery to the email sink.\n[\n]\nservices notifications py send email message str represent delivery to the sink",
+    "search": "'delivery':10,23 'email':3,5,13,19 'message':6,20 'notifications':16 'py':17 'represent':9,22 'send':2,4,18 'services':15 'services/notifications.py':1 'sink':14,26 'str':7,8,21 'the':12,25 'to':11,24",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "message": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-27",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "utils/retry.py::with_retries.decorate.wrapped",
+    "file_path": "utils/retry.py",
+    "kind": "nested",
+    "qualname": "with_retries.decorate.wrapped",
+    "name": "wrapped",
+    "parent_id": "utils/retry.py::with_retries.decorate",
+    "signature": "*args, **kwargs",
+    "decorators": "[\"wraps(function)\"]",
+    "docstring": null,
+    "start_line": 12,
+    "end_line": 19,
+    "raw_code": "        @wraps(function)\n        def wrapped(*args, **kwargs):\n            for index in range(attempts):\n                try:\n                    return function(*args, **kwargs)\n                except RuntimeError:\n                    if index == attempts - 1:\n                        raise",
+    "code_hash": "aa2d24d72fdc5abb78b66c6b9b7cb3e7e0a7ce5fcc236e8af3820c794db310d3",
+    "token_est": 73,
+    "pagerank": 0.0,
+    "summary_short": "A decorator that retries a function a specified number of times upon encountering a RuntimeError.",
+    "summary_json": {
+      "inputs": "The function to be decorated, along with any arguments and keyword arguments it requires.",
+      "raises": [
+        "RuntimeError if the function continues to fail after the specified number of attempts."
+      ],
+      "purpose": "To provide a mechanism for retrying a function execution in case of a RuntimeError, up to a specified number of attempts.",
+      "returns": "The result of the function if it succeeds within the allowed number of attempts.",
+      "one_liner": "A decorator that retries a function a specified number of times upon encountering a RuntimeError.",
+      "side_effects": [
+        "Retries the execution of the function up to 'attempts' times.",
+        "Raises the last RuntimeError if all attempts fail."
+      ],
+      "notable_logic": "Uses a for loop to attempt the function execution multiple times, catching and handling RuntimeError exceptions."
+    },
+    "summary_long": null,
+    "ctx_hash": "49fe54ecf6633b7ed9d5652c107179fee9d36704def0666e620fa8ad965afb5c",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "utils/retry.py\nwith_retries.decorate.wrapped\nwrapped\n*args, **kwargs\n[\n\"\nw\nr\na\np\ns\n(\nf\nu\nn\nc\nt\ni\no\nn\n)\n\"\n]\nutils retry py with retries decorate wrapped args kwargs w r a p s f u n c t i o",
+    "search": "'a':8,30 'args':4,26 'c':14,36 'decorate':24 'f':11,33 'i':16,38 'kwargs':5,27 'n':13,18,35 'o':17,39 'p':9,31 'py':21 'r':7,29 'retries':23 'retry':20 's':10,32 't':15,37 'u':12,34 'utils':19 'utils/retry.py':1 'w':6,28 'with':22 'with_retries.decorate.wrapped':2 'wrapped':3,25",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "wraps",
+        "kind": "decorator",
+        "line": 12,
+        "control_ctx": ""
+      },
+      {
+        "expr": "range",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": "for"
+      },
+      {
+        "expr": "function",
+        "kind": "call",
+        "line": 16,
+        "control_ctx": "for>try"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-38",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "exports.py::process",
+    "file_path": "exports.py",
+    "kind": "function",
+    "qualname": "process",
+    "name": "process",
+    "parent_id": null,
+    "signature": "tasks: list[dict] -> str",
+    "decorators": "[]",
+    "docstring": "Serialize tasks for export, independently of services.tasks.process.",
+    "start_line": 12,
+    "end_line": 14,
+    "raw_code": "def process(tasks: list[dict]) -> str:\n    \"\"\"Serialize tasks for export, independently of services.tasks.process.\"\"\"\n    return json.dumps(tasks, sort_keys=True)",
+    "code_hash": "d4b812a385f8ba943a17cdf3f139b2c2f45c11ae2e5265cd607e2ebf4253afae",
+    "token_est": 41,
+    "pagerank": 0.0,
+    "summary_short": "Serializes a list of task dictionaries to a JSON string.",
+    "summary_json": {
+      "inputs": "A list of dictionaries, where each dictionary represents a task.",
+      "raises": [],
+      "purpose": "Converts a list of task dictionaries into a JSON formatted string for export.",
+      "returns": "A JSON string representing the serialized tasks.",
+      "one_liner": "Serializes a list of task dictionaries to a JSON string.",
+      "side_effects": [],
+      "notable_logic": "Uses `json.dumps` to serialize the tasks, with `sort_keys=True` to ensure consistent ordering."
+    },
+    "summary_long": null,
+    "ctx_hash": "ad8ba0540643a19b34f6a7d99bb474a066a0fd0698cdbb533056d4ee3595ca1c",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "exports.py\nprocess\nprocess\ntasks: list[dict] -> str\nserialize tasks for export, independently of services.tasks.process.\n[\n]\nexports py process tasks list dict str serialize for export independently of services",
+    "search": "'dict':6,20 'export':11,24 'exports':15 'exports.py':1 'for':10,23 'independently':12,25 'list':5,19 'of':13,26 'process':2,3,17 'py':16 'serialize':8,22 'services':27 'services.tasks.process':14 'str':7,21 'tasks':4,9,18",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "json.dumps",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "tasks": "list[dict]"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-20",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "exports.py::save",
+    "file_path": "exports.py",
+    "kind": "function",
+    "qualname": "save",
+    "name": "save",
+    "parent_id": null,
+    "signature": "task: dict, path: str -> None",
+    "decorators": "[]",
+    "docstring": "Export a task as JSON to disk, independently of Repository.save.",
+    "start_line": 6,
+    "end_line": 9,
+    "raw_code": "def save(task: dict, path: str) -> None:\n    \"\"\"Export a task as JSON to disk, independently of Repository.save.\"\"\"\n    with open(path, \"w\", encoding=\"utf-8\") as file:\n        json.dump(task, file)",
+    "code_hash": "0d83f5c6859dbcc731b3ce3c72425269cd2a9db8372c0d6c7891e586bd9d02b3",
+    "token_est": 50,
+    "pagerank": 0.0,
+    "summary_short": "Saves a task dictionary as a JSON file to the specified path.",
+    "summary_json": {
+      "inputs": "task (dict): The task dictionary to be saved.\npath (str): The file path where the task should be saved.",
+      "raises": [
+        "IOError if the file cannot be opened or written to."
+      ],
+      "purpose": "To export a task as a JSON file to disk, bypassing the Repository.save method.",
+      "returns": "None",
+      "one_liner": "Saves a task dictionary as a JSON file to the specified path.",
+      "side_effects": [
+        "Writes data to a file on disk."
+      ],
+      "notable_logic": "Uses the json.dump method to serialize the task dictionary to JSON format and writes it to the specified file path."
+    },
+    "summary_long": null,
+    "ctx_hash": "c50d5231977f41d945533f6ada197cbfbc74002760c9d2ac4c80b4b3a55c7c54",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "exports.py\nsave\nsave\ntask: dict, path: str -> none\nexport a task as json to disk, independently of repository.save.\n[\n]\nexports py save task dict path str none export a as json to disk independently of repository",
+    "search": "'a':10,28 'as':12,29 'dict':5,23 'disk':15,32 'export':9,27 'exports':19 'exports.py':1 'independently':16,33 'json':13,30 'none':8,26 'of':17,34 'path':6,24 'py':20 'repository':35 'repository.save':18 'save':2,3,21 'str':7,25 'task':4,11,22 'to':14,31",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "open",
+        "kind": "call",
+        "line": 8,
+        "control_ctx": "with"
+      },
+      {
+        "expr": "json.dump",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": "with"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "path": "str",
+        "task": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-21",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/connection.py::Connection",
+    "file_path": "db/connection.py",
+    "kind": "class",
+    "qualname": "Connection",
+    "name": "Connection",
+    "parent_id": null,
+    "signature": "",
+    "decorators": "[]",
+    "docstring": "An in-memory taskboard connection with explicit close behavior.",
+    "start_line": 4,
+    "end_line": 21,
+    "raw_code": "class Connection:\n    \"\"\"An in-memory taskboard connection with explicit close behavior.\"\"\"\n\n    def __init__(self) -> None:\n        self.rows: dict[str, dict] = {}\n        self.closed = False\n\n    def execute(self, key: str, value: dict | None = None) -> dict | None:\n        \"\"\"Read or write a row; reject operations after close.\"\"\"\n        if self.closed:\n            raise RuntimeError(\"Connection is closed\")\n        if value is not None:\n            self.rows[key] = value\n        return self.rows.get(key)\n\n    def close(self) -> None:\n        \"\"\"Close the connection.\"\"\"\n        self.closed = True",
+    "code_hash": "cafda637187b2a2fe169bf8ac485d2d14d142a8c08e37d43123355af7cd59d8d",
+    "token_est": 152,
+    "pagerank": 0.017457284044773317,
+    "summary_short": "An in-memory taskboard connection with explicit close behavior.",
+    "summary_json": {
+      "inputs": "None shown",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To manage in-memory database operations with a defined close state.",
+      "returns": "None shown",
+      "one_liner": "An in-memory taskboard connection with explicit close behavior.",
+      "side_effects": [
+        "Initializes an empty dictionary for rows and sets the connection state to closed.",
+        "Sets the connection state to closed when the close method is called.",
+        "Executes read or write operations on a row in the database, rejecting operations after the connection is closed."
+      ],
+      "notable_logic": "The connection state is checked before executing any operations, and operations are rejected if the connection is closed."
+    },
+    "summary_long": null,
+    "ctx_hash": "0a30f0adc4f25777220d8a012f57d36079dcca18116e241d564e956586946970",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/connection.py\nconnection\nconnection\nan in-memory taskboard connection with explicit close behavior.\n[\n]\ndb connection py an in memory taskboard with explicit close behavior",
+    "search": "'an':4,17 'behavior':13,24 'close':12,23 'connection':2,3,9,15 'db':14 'db/connection.py':1 'explicit':11,22 'in':6,18 'in-memory':5 'memory':7,19 'py':16 'taskboard':8,20 'with':10,21",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {
+        "rows": "dict[str, dict]",
+        "closed": ""
+      },
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-10",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/repository.py::Repository.save",
+    "file_path": "db/repository.py",
+    "kind": "method",
+    "qualname": "Repository.save",
+    "name": "save",
+    "parent_id": "db/repository.py::Repository",
+    "signature": "self, task: dict -> dict",
+    "decorators": "[]",
+    "docstring": "Persist a task; missing tasks or identifiers are invalid.",
+    "start_line": 12,
+    "end_line": 17,
+    "raw_code": "    def save(self, task: dict) -> dict:\n        \"\"\"Persist a task; missing tasks or identifiers are invalid.\"\"\"\n        if task is None or not task.get(\"id\"):\n            raise ValueError(\"Task requires an id\")\n        self.connection.execute(task[\"id\"], task)\n        return task",
+    "code_hash": "73413562c85b0a833220f1b07ff7969ebdcedb5f9eee450af1d1fb3adb88c319",
+    "token_est": 70,
+    "pagerank": 0.0721746771102911,
+    "summary_short": "Saves a task to the database with a required id.",
+    "summary_json": {
+      "inputs": "task: dict",
+      "raises": [
+        "ValueError if task is None or lacks an id"
+      ],
+      "purpose": "Persist a task in the database.",
+      "returns": "dict",
+      "one_liner": "Saves a task to the database with a required id.",
+      "side_effects": [
+        "Database write operation"
+      ],
+      "notable_logic": "Checks if the task is None or missing an id before saving."
+    },
+    "summary_long": null,
+    "ctx_hash": "84dce39478f66daa923e9a453257440484a7a8dcd3e0dc113db2edc16c35b620",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/repository.py\nrepository.save\nsave\nself, task: dict -> dict\npersist a task; missing tasks or identifiers are invalid.\n[\n]\ndb repository py save self task dict persist a missing tasks or identifiers are invalid",
+    "search": "'a':9,25 'are':15,30 'db':17 'db/repository.py':1 'dict':6,7,23 'identifiers':14,29 'invalid':16,31 'missing':11,26 'or':13,28 'persist':8,24 'py':19 'repository':18 'repository.save':2 'save':3,20 'self':4,21 'task':5,10,22 'tasks':12,27",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "task.get",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "ValueError",
+        "kind": "call",
+        "line": 15,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "self.connection.execute",
+        "kind": "call",
+        "line": 16,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "task": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-19",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "services/notifications.py::notify",
+    "file_path": "services/notifications.py",
+    "kind": "function",
+    "qualname": "notify",
+    "name": "notify",
+    "parent_id": null,
+    "signature": "task: dict -> str",
+    "decorators": "[]",
+    "docstring": "Format a task notification and send it by email.",
+    "start_line": 14,
+    "end_line": 16,
+    "raw_code": "def notify(task: dict) -> str:\n    \"\"\"Format a task notification and send it by email.\"\"\"\n    return send_email(format_notification(task))",
+    "code_hash": "845393bd70c59db06d072d0aad5fd5d926835f5a403bfe37de493db345a97c4e",
+    "token_est": 35,
+    "pagerank": 0.02287930136770141,
+    "summary_short": "Formats a task notification and sends it by email.",
+    "summary_json": {
+      "inputs": "A dictionary representing a task.",
+      "raises": [],
+      "purpose": "To format a task notification and send it via email.",
+      "returns": "A string indicating the result of sending the email.",
+      "one_liner": "Formats a task notification and sends it by email.",
+      "side_effects": [
+        "Email is sent"
+      ],
+      "notable_logic": "The function uses two helper functions: `format_notification` to format the task and `send_email` to send the formatted notification."
+    },
+    "summary_long": null,
+    "ctx_hash": "6525e163511c6f064d2a8f29fe4b6657298d153a5dd55d3ffa843c7001bfb298",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "services/notifications.py\nnotify\nnotify\ntask: dict -> str\nformat a task notification and send it by email.\n[\n]\nservices notifications py notify task dict str format a notification and send it by email",
+    "search": "'a':8,24 'and':11,26 'by':14,29 'dict':5,21 'email':15,30 'format':7,23 'it':13,28 'notification':10,25 'notifications':17 'notify':2,3,19 'py':18 'send':12,27 'services':16 'services/notifications.py':1 'str':6,22 'task':4,9,20",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "send_email",
+        "kind": "call",
+        "line": 16,
+        "control_ctx": ""
+      },
+      {
+        "expr": "format_notification",
+        "kind": "call",
+        "line": 16,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "task": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-26",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/repository.py::AuditedRepository.save",
+    "file_path": "db/repository.py",
+    "kind": "method",
+    "qualname": "AuditedRepository.save",
+    "name": "save",
+    "parent_id": "db/repository.py::AuditedRepository",
+    "signature": "self, task: dict -> dict",
+    "decorators": "[]",
+    "docstring": "Mark a task audited before delegating to the base repository.",
+    "start_line": 27,
+    "end_line": 30,
+    "raw_code": "    def save(self, task: dict) -> dict:\n        \"\"\"Mark a task audited before delegating to the base repository.\"\"\"\n        task = dict(task, audited=True)\n        return super().save(task)",
+    "code_hash": "1073563c7a5d4e6854796326ca30ae2e0e039f1f75b657ac7f22f2f44a642600",
+    "token_est": 48,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Marks a task as audited and saves it to the database.",
+    "summary_json": {
+      "inputs": "task: dict",
+      "raises": [],
+      "purpose": "To mark a task as audited before saving it to the database.",
+      "returns": "dict",
+      "one_liner": "Marks a task as audited and saves it to the database.",
+      "side_effects": [
+        "Modifies the input task by adding an 'audited' key with value True",
+        "Saves the modified task to the database"
+      ],
+      "notable_logic": "Adds an 'audited' key to the task dictionary before calling the base class's save method."
+    },
+    "summary_long": null,
+    "ctx_hash": "fa8e4d4a2ea425700fa08f3685e90bce8a74ffd480d4181939d9234f918897c2",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/repository.py\nauditedrepository.save\nsave\nself, task: dict -> dict\nmark a task audited before delegating to the base repository.\n[\n]\ndb repository py audited save self task dict mark a before delegating to the base",
+    "search": "'a':9,27 'audited':11,21 'auditedrepository.save':2 'base':16,32 'before':12,28 'db':18 'db/repository.py':1 'delegating':13,29 'dict':6,7,25 'mark':8,26 'py':20 'repository':17,19 'save':3,22 'self':4,23 'task':5,10,24 'the':15,31 'to':14,30",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "dict",
+        "kind": "call",
+        "line": 29,
+        "control_ctx": ""
+      },
+      {
+        "expr": "super().save",
+        "kind": "call",
+        "line": 30,
+        "control_ctx": ""
+      },
+      {
+        "expr": "super",
+        "kind": "call",
+        "line": 30,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "task": "dict"
+      },
+      "param_types": {
+        "task": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-15",
+    "layer": 2,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/repository.py::AuditedRepository",
+    "file_path": "db/repository.py",
+    "kind": "class",
+    "qualname": "AuditedRepository",
+    "name": "AuditedRepository",
+    "parent_id": null,
+    "signature": "",
+    "decorators": "[]",
+    "docstring": "Repository whose writes include an audit marker.",
+    "start_line": 24,
+    "end_line": 30,
+    "raw_code": "class AuditedRepository(Repository):\n    \"\"\"Repository whose writes include an audit marker.\"\"\"\n\n    def save(self, task: dict) -> dict:\n        \"\"\"Mark a task audited before delegating to the base repository.\"\"\"\n        task = dict(task, audited=True)\n        return super().save(task)",
+    "code_hash": "473e7f28d4429fff70f6bfb82328600412bce0bd101a7dbfcd1dd97e5e686737",
+    "token_est": 72,
+    "pagerank": 0.0,
+    "summary_short": "Repository class that marks tasks as audited before saving them to the database.",
+    "summary_json": {
+      "inputs": "task: dict",
+      "raises": [],
+      "purpose": "To manage the storage of tasks with an audit marker.",
+      "returns": "dict",
+      "one_liner": "Repository class that marks tasks as audited before saving them to the database.",
+      "side_effects": [
+        "Marks a task as audited",
+        "Saves the task to the database"
+      ],
+      "notable_logic": "Marks a task as audited and then saves it to the database."
+    },
+    "summary_long": null,
+    "ctx_hash": "3978b6eaea4b3e705f5d873598256c42441cb62ed9c69d15305899347e09562e",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/repository.py\nauditedrepository\nauditedrepository\nrepository whose writes include an audit marker.\n[\n]\ndb repository py audited whose writes include an audit marker",
+    "search": "'an':8,18 'audit':9,19 'audited':14 'auditedrepository':2,3 'db':11 'db/repository.py':1 'include':7,17 'marker':10,20 'py':13 'repository':4,12 'whose':5,15 'writes':6,16",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [
+        "Repository"
+      ],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-14",
+    "layer": 3,
+    "summary_long_hash": null
+  },
+  {
+    "id": "api/routes.py::route",
+    "file_path": "api/routes.py",
+    "kind": "function",
+    "qualname": "route",
+    "name": "route",
+    "parent_id": null,
+    "signature": "path: str",
+    "decorators": "[]",
+    "docstring": "Attach a route path to an HTTP handler.",
+    "start_line": 8,
+    "end_line": 15,
+    "raw_code": "def route(path: str):\n    \"\"\"Attach a route path to an HTTP handler.\"\"\"\n\n    def decorate(handler):\n        handler.route_path = path\n        return handler\n\n    return decorate",
+    "code_hash": "3e9477aedfe15bfb3d0322187b1b24b6d7911b3ff38cecd2ae653c55fac7eab9",
+    "token_est": 45,
+    "pagerank": 0.021036239695679623,
+    "summary_short": "Decorator to attach a route path to an HTTP handler.",
+    "summary_json": {
+      "inputs": "path (str): The URL path to be associated with the handler.",
+      "raises": [],
+      "purpose": "To associate a specific URL path with a function that handles HTTP requests.",
+      "returns": "A decorator function that takes a handler function and returns it with an added 'route_path' attribute.",
+      "one_liner": "Decorator to attach a route path to an HTTP handler.",
+      "side_effects": [
+        "Modifies the handler function by adding a 'route_path' attribute."
+      ],
+      "notable_logic": "The decorator function 'decorate' adds the 'route_path' attribute to the handler function and returns the modified handler."
+    },
+    "summary_long": null,
+    "ctx_hash": "48c46ad4e19bb57078c1f69e202927c8fca6af14c495fb4a85259f026eb64bf2",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "api/routes.py\nroute\nroute\npath: str\nattach a route path to an http handler.\n[\n]\napi routes py route path str attach a to an http handler",
+    "search": "'a':7,21 'an':11,23 'api':14 'api/routes.py':1 'attach':6,20 'handler':13,25 'http':12,24 'path':4,9,18 'py':16 'route':2,3,8,17 'routes':15 'str':5,19 'to':10,22",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "path": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-2",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "api/routes.py::route.decorate",
+    "file_path": "api/routes.py",
+    "kind": "nested",
+    "qualname": "route.decorate",
+    "name": "decorate",
+    "parent_id": "api/routes.py::route",
+    "signature": "handler",
+    "decorators": "[]",
+    "docstring": null,
+    "start_line": 11,
+    "end_line": 13,
+    "raw_code": "    def decorate(handler):\n        handler.route_path = path\n        return handler",
+    "code_hash": "441475b48a802e265d09be0d8e7999dbf16c4be645dfd2af1b10b5f61be3bc77",
+    "token_est": 21,
+    "pagerank": 0.0,
+    "summary_short": "A decorator that sets the route_path attribute of a handler function.",
+    "summary_json": {
+      "inputs": "handler (a function): The handler function to be decorated.",
+      "raises": [],
+      "purpose": "To associate a route path with a handler function.",
+      "returns": "The handler function with the route_path attribute set.",
+      "one_liner": "A decorator that sets the route_path attribute of a handler function.",
+      "side_effects": [
+        "Modifies the handler function by adding a route_path attribute."
+      ],
+      "notable_logic": "Sets the route_path attribute of the handler function to the specified path."
+    },
+    "summary_long": null,
+    "ctx_hash": "874628055d4fc9e4fe13cbc83da0f5b85c6dea5d319636c65b57c76667e74059",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "api/routes.py\nroute.decorate\ndecorate\nhandler\n[\n]\napi routes py route decorate handler",
+    "search": "'api':5 'api/routes.py':1 'decorate':3,9 'handler':4,10 'py':7 'route':8 'route.decorate':2 'routes':6",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-3",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "auth/tokens.py::issue_token",
+    "file_path": "auth/tokens.py",
+    "kind": "function",
+    "qualname": "issue_token",
+    "name": "issue_token",
+    "parent_id": null,
+    "signature": "user_id: str, secret: str -> str",
+    "decorators": "[]",
+    "docstring": "Sign a user identifier with an HMAC digest.",
+    "start_line": 11,
+    "end_line": 14,
+    "raw_code": "def issue_token(user_id: str, secret: str) -> str:\n    \"\"\"Sign a user identifier with an HMAC digest.\"\"\"\n    digest = hmac.new(secret.encode(), user_id.encode(), hashlib.sha256).hexdigest()\n    return user_id + \":\" + digest",
+    "code_hash": "0ab20a0bc0fc5de61e5e4ac28e7212b522ef1df1067519ae3a93fd91ec8e2805",
+    "token_est": 56,
+    "pagerank": 0.022719111508387617,
+    "summary_short": "Signs a user identifier with an HMAC digest and returns a token.",
+    "summary_json": {
+      "inputs": "user_id (str), secret (str)",
+      "raises": [],
+      "purpose": "To generate a token for a user by signing their ID with a secret using HMAC and SHA-256.",
+      "returns": "str (token)",
+      "one_liner": "Signs a user identifier with an HMAC digest and returns a token.",
+      "side_effects": [],
+      "notable_logic": "Uses HMAC with SHA-256 to create a digest of the user ID and secret, then concatenates the user ID and digest with a colon separator."
+    },
+    "summary_long": null,
+    "ctx_hash": "8a8f7b656d2c2e1d6313751a05af160478afa847c86d8383590a1444eb5d7f90",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "auth/tokens.py\nissue_token\nissue_token\nuser_id: str, secret: str -> str\nsign a user identifier with an hmac digest.\n[\n]\nauth tokens py issue token user id str secret sign a identifier with an hmac digest",
+    "search": "'a':13,30 'an':17,33 'auth':20 'auth/tokens.py':1 'digest':19,35 'hmac':18,34 'id':7,26 'identifier':15,31 'issue':2,4,23 'py':22 'secret':9,28 'sign':12,29 'str':8,10,11,27 'token':3,5,24 'tokens':21 'user':6,14,25 'with':16,32",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "hmac.new(secret.encode(), user_id.encode(), hashlib.sha256).hexdigest",
+        "kind": "call",
+        "line": 13,
+        "control_ctx": ""
+      },
+      {
+        "expr": "hmac.new",
+        "kind": "call",
+        "line": 13,
+        "control_ctx": ""
+      },
+      {
+        "expr": "secret.encode",
+        "kind": "call",
+        "line": 13,
+        "control_ctx": ""
+      },
+      {
+        "expr": "user_id.encode",
+        "kind": "call",
+        "line": 13,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "digest": "hmac.new(secret.encode(), user_id.encode(), hashlib.sha256).hexdigest"
+      },
+      "param_types": {
+        "secret": "str",
+        "user_id": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-7",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "pipeline.py::transform",
+    "file_path": "pipeline.py",
+    "kind": "function",
+    "qualname": "transform",
+    "name": "transform",
+    "parent_id": null,
+    "signature": "repo: Repository, record: dict -> dict",
+    "decorators": "[]",
+    "docstring": "Normalize a raw task record's identifier and whitespace in the title.",
+    "start_line": 6,
+    "end_line": 9,
+    "raw_code": "def transform(repo: Repository, record: dict) -> dict:\n    \"\"\"Normalize a raw task record's identifier and whitespace in the title.\"\"\"\n    normalized = {\"id\": str(record[\"id\"]), \"title\": record[\"title\"].strip()}\n    return write_to_db(repo, normalized)",
+    "code_hash": "ce0adcd86785b40dd5a8b9cd3d040c5d7b1342633096aa751f160f28361e5fc8",
+    "token_est": 63,
+    "pagerank": 0.026803900924698323,
+    "summary_short": "Transforms a task record by normalizing its identifier and title whitespace, then writes it to the database.",
+    "summary_json": {
+      "inputs": "A Repository object and a dictionary representing the task record.",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To normalize a task record's identifier and title whitespace and persist it in the database.",
+      "returns": "A dictionary representing the normalized task record.",
+      "one_liner": "Transforms a task record by normalizing its identifier and title whitespace, then writes it to the database.",
+      "side_effects": [
+        "Writes the normalized record to the database using the provided repository."
+      ],
+      "notable_logic": "Normalizes the 'id' to a string and strips whitespace from the 'title'."
+    },
+    "summary_long": null,
+    "ctx_hash": "04474df8ece30f1508164525b5ea3fe8f4f066b7466bf986223400555bc4a8fc",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "pipeline.py\ntransform\ntransform\nrepo: repository, record: dict -> dict\nnormalize a raw task record's identifier and whitespace in the title.\n[\n]\npipeline py transform repo repository record dict normalize a raw task s identifier and whitespace in the title",
+    "search": "'a':10,29 'and':16,34 'dict':7,8,27 'identifier':15,33 'in':18,36 'normalize':9,28 'pipeline':21 'pipeline.py':1 'py':22 'raw':11,30 'record':6,13,26 'repo':4,24 'repository':5,25 's':14,32 'task':12,31 'the':19,37 'title':20,38 'transform':2,3,23 'whitespace':17,35",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "str",
+        "kind": "call",
+        "line": 8,
+        "control_ctx": ""
+      },
+      {
+        "expr": "record['title'].strip",
+        "kind": "call",
+        "line": 8,
+        "control_ctx": ""
+      },
+      {
+        "expr": "write_to_db",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "repo": "Repository",
+        "record": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-23",
+    "layer": 3,
+    "summary_long_hash": null
+  },
+  {
+    "id": "api/routes.py::complete_handler",
+    "file_path": "api/routes.py",
+    "kind": "function",
+    "qualname": "complete_handler",
+    "name": "complete_handler",
+    "parent_id": null,
+    "signature": "token: str, secret: str, repo: Repository, task_id: str -> dict",
+    "decorators": "[\"route('/tasks/complete')\"]",
+    "docstring": "Authenticate the request before completing a task.",
+    "start_line": 25,
+    "end_line": 29,
+    "raw_code": "@route(\"/tasks/complete\")\ndef complete_handler(token: str, secret: str, repo: Repository, task_id: str) -> dict:\n    \"\"\"Authenticate the request before completing a task.\"\"\"\n    authenticate(token, secret)\n    return complete_task(repo, task_id)",
+    "code_hash": "dd41407f3104b1ef5ca37a0acce1558f029980cdf7196ac0f44f0619d688a7ff",
+    "token_est": 62,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Handles HTTP request to complete a task after authenticating the request.",
+    "summary_json": {
+      "inputs": "token: str, secret: str, repo: Repository, task_id: str",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To authenticate and mark a task as complete in the repository.",
+      "returns": "dict",
+      "one_liner": "Handles HTTP request to complete a task after authenticating the request.",
+      "side_effects": [
+        "Authenticates the request",
+        "Marks a task as complete in the repository"
+      ],
+      "notable_logic": "Uses the authenticate function to validate the token and secret before completing the task."
+    },
+    "summary_long": null,
+    "ctx_hash": "612bc66398d6dce081d559855c9402add9a3c6bd6f06e6185f64edfbccccf33c",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "api/routes.py\ncomplete_handler\ncomplete_handler\ntoken: str, secret: str, repo: repository, task_id: str -> dict\nauthenticate the request before completing a task.\n[\n\"\nr\no\nu\nt\ne\n(\n'\n/\nt\na\ns\nk\ns\n/\nc\no\nm\np\nl\ne\nt\ne\n'\n)\n\"\n]\napi routes py complete handler token str secret repo repository task id dict authenticate the request before completing a r o u t e s k c m p l",
+    "search": "'a':21,29,59 'api':41 'api/routes.py':1 'authenticate':16,54 'before':19,57 'c':33,67 'complete':2,4,44 'completing':20,58 'dict':15,53 'e':27,38,40,64 'handler':3,5,45 'id':13,52 'k':31,66 'l':37,70 'm':35,68 'o':24,34,61 'p':36,69 'py':43 'r':23,60 'repo':10,49 'repository':11,50 'request':18,56 'routes':42 's':30,32,65 'secret':8,48 'str':7,9,14,47 't':26,28,39,63 'task':12,22,51 'the':17,55 'token':6,46 'u':25,62",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "route",
+        "kind": "decorator",
+        "line": 25,
+        "control_ctx": ""
+      },
+      {
+        "expr": "authenticate",
+        "kind": "call",
+        "line": 28,
+        "control_ctx": ""
+      },
+      {
+        "expr": "complete_task",
+        "kind": "call",
+        "line": 29,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "repo": "Repository",
+        "token": "str",
+        "secret": "str",
+        "task_id": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-0",
+    "layer": 3,
+    "summary_long_hash": null
+  },
+  {
+    "id": "api/routes.py::create_handler",
+    "file_path": "api/routes.py",
+    "kind": "function",
+    "qualname": "create_handler",
+    "name": "create_handler",
+    "parent_id": null,
+    "signature": "token: str, secret: str, repo: Repository, title: str -> dict",
+    "decorators": "[\"route('/tasks/create')\"]",
+    "docstring": "Authenticate the request before creating a task.",
+    "start_line": 18,
+    "end_line": 22,
+    "raw_code": "@route(\"/tasks/create\")\ndef create_handler(token: str, secret: str, repo: Repository, title: str) -> dict:\n    \"\"\"Authenticate the request before creating a task.\"\"\"\n    authenticate(token, secret)\n    return create_task(repo, title)",
+    "code_hash": "01c5365b638453f368886afe1d87af351f2a60a978d8a6f6d2f4d83075101daf",
+    "token_est": 59,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Handles task creation by authenticating the request and creating a task in the repository.",
+    "summary_json": {
+      "inputs": "token: str, secret: str, repo: Repository, title: str",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To authenticate a request and create a task in the repository.",
+      "returns": "dict",
+      "one_liner": "Handles task creation by authenticating the request and creating a task in the repository.",
+      "side_effects": [
+        "Authenticates the request using the provided token and secret.",
+        "Creates a task in the repository with the given title."
+      ],
+      "notable_logic": "Uses the `authenticate` function to validate the token and secret before creating a task with `create_task`."
+    },
+    "summary_long": null,
+    "ctx_hash": "5aebe969ef3a94fd117ffef681bbbd2b4d352ad7dbaade9cd669e8e001cd46d7",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "api/routes.py\ncreate_handler\ncreate_handler\ntoken: str, secret: str, repo: repository, title: str -> dict\nauthenticate the request before creating a task.\n[\n\"\nr\no\nu\nt\ne\n(\n'\n/\nt\na\ns\nk\ns\n/\nc\nr\ne\na\nt\ne\n'\n)\n\"\n]\napi routes py create handler token str secret repo repository title dict authenticate the request before creating a task r o u t e s k c",
+    "search": "'a':20,28,35,55 'api':38 'api/routes.py':1 'authenticate':15,50 'before':18,53 'c':32,64 'create':2,4,41 'creating':19,54 'dict':14,49 'e':26,34,37,61 'handler':3,5,42 'k':30,63 'o':23,58 'py':40 'r':22,33,57 'repo':10,46 'repository':11,47 'request':17,52 'routes':39 's':29,31,62 'secret':8,45 'str':7,9,13,44 't':25,27,36,60 'task':21,56 'the':16,51 'title':12,48 'token':6,43 'u':24,59",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "route",
+        "kind": "decorator",
+        "line": 18,
+        "control_ctx": ""
+      },
+      {
+        "expr": "authenticate",
+        "kind": "call",
+        "line": 21,
+        "control_ctx": ""
+      },
+      {
+        "expr": "create_task",
+        "kind": "call",
+        "line": 22,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "repo": "Repository",
+        "title": "str",
+        "token": "str",
+        "secret": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-1",
+    "layer": 3,
+    "summary_long_hash": null
+  },
+  {
+    "id": "tests/test_tasks.py::test_create_and_complete",
+    "file_path": "tests/test_tasks.py",
+    "kind": "function",
+    "qualname": "test_create_and_complete",
+    "name": "test_create_and_complete",
+    "parent_id": null,
+    "signature": " -> None",
+    "decorators": "[]",
+    "docstring": null,
+    "start_line": 8,
+    "end_line": 11,
+    "raw_code": "def test_create_and_complete() -> None:\n    repository = Repository(Connection())\n    task = create_task(repository, \"Write report\")\n    assert complete_task(repository, task[\"id\"])[\"done\"] is True",
+    "code_hash": "98ea2da9ddd3451fc62f2198124a61e587ab9b6ca19a71da0cc46a51c243f8da",
+    "token_est": 50,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Tests creating a task and marking it as complete.",
+    "summary_json": {
+      "inputs": "None",
+      "raises": [
+        "AssertionError if the task is not marked as complete after completion."
+      ],
+      "purpose": "Verifies the functionality of task creation and completion in the repository.",
+      "returns": "None",
+      "one_liner": "Tests creating a task and marking it as complete.",
+      "side_effects": [
+        "Creates a task in the repository.",
+        "Marks the created task as complete."
+      ],
+      "notable_logic": "Uses a Repository instance with an in-memory Connection to perform operations without affecting a persistent database."
+    },
+    "summary_long": null,
+    "ctx_hash": "edbc6e3949ac6b159eb95448d7517f9ae30bdcb822faf12d549aa9a33ae07b1e",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "tests/test_tasks.py\ntest_create_and_complete\ntest_create_and_complete\n -> none\n[\n]\ntests test tasks py create and complete none",
+    "search": "'and':4,8,16 'complete':5,9,17 'create':3,7,15 'none':10,18 'py':14 'tasks':13 'test':2,6,12 'tests':11 'tests/test_tasks.py':1",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "Repository",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      },
+      {
+        "expr": "Connection",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      },
+      {
+        "expr": "create_task",
+        "kind": "call",
+        "line": 10,
+        "control_ctx": ""
+      },
+      {
+        "expr": "complete_task",
+        "kind": "call",
+        "line": 11,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "task": "create_task",
+        "repository": "Repository"
+      },
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-31",
+    "layer": 3,
+    "summary_long_hash": null
+  },
+  {
+    "id": "cli.py::main",
+    "file_path": "cli.py",
+    "kind": "function",
+    "qualname": "main",
+    "name": "main",
+    "parent_id": null,
+    "signature": "config_text: str, records: list[dict] -> list[dict]",
+    "decorators": "[]",
+    "docstring": "Validate configuration and import task records through the pipeline.",
+    "start_line": 9,
+    "end_line": 14,
+    "raw_code": "def main(config_text: str, records: list[dict]) -> list[dict]:\n    \"\"\"Validate configuration and import task records through the pipeline.\"\"\"\n    parse_config(config_text)\n    connection = Connection()\n    repository = Repository(connection)\n    return run_pipeline(repository, records)",
+    "code_hash": "ae23639262bd1c97e4431e54dede6f71c0c8746cce7fdf68488547015317eba2",
+    "token_est": 72,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Validates configuration, initializes database connection and repository, and processes task records through a pipeline.",
+    "summary_json": {
+      "inputs": "config_text: str, records: list[dict]",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To validate configuration, set up a database connection and repository, and process task records through a pipeline.",
+      "returns": "list[dict]",
+      "one_liner": "Validates configuration, initializes database connection and repository, and processes task records through a pipeline.",
+      "side_effects": [
+        "Initializes a database connection.",
+        "Initializes a repository with the database connection.",
+        "Processes task records through a pipeline."
+      ],
+      "notable_logic": "Calls parse_config to validate configuration, initializes Connection and Repository, and then calls run_pipeline to process records."
+    },
+    "summary_long": null,
+    "ctx_hash": "bed88f1647909d1f9db021c08ae74fa31f6d7a2fe17bafdcda0882cb0cb50907",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "cli.py\nmain\nmain\nconfig_text: str, records: list[dict] -> list[dict]\nvalidate configuration and import task records through the pipeline.\n[\n]\ncli py main config text str records list dict validate configuration and import task through the pipeline",
+    "search": "'and':14,32 'cli':21 'cli.py':1 'config':4,24 'configuration':13,31 'dict':9,11,29 'import':15,33 'list':8,10,28 'main':2,3,23 'pipeline':20,37 'py':22 'records':7,17,27 'str':6,26 'task':16,34 'text':5,25 'the':19,36 'through':18,35 'validate':12,30",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "parse_config",
+        "kind": "call",
+        "line": 11,
+        "control_ctx": ""
+      },
+      {
+        "expr": "Connection",
+        "kind": "call",
+        "line": 12,
+        "control_ctx": ""
+      },
+      {
+        "expr": "Repository",
+        "kind": "call",
+        "line": 13,
+        "control_ctx": ""
+      },
+      {
+        "expr": "run_pipeline",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "connection": "Connection",
+        "repository": "Repository"
+      },
+      "param_types": {
+        "records": "list[dict]",
+        "config_text": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": true,
+    "entry_kind": "main",
+    "scc_id": "scc-9",
+    "layer": 5,
+    "summary_long_hash": null
+  },
+  {
+    "id": "auth/passwords.py::hash_password",
+    "file_path": "auth/passwords.py",
+    "kind": "function",
+    "qualname": "hash_password",
+    "name": "hash_password",
+    "parent_id": null,
+    "signature": "password: str, salt: str -> str",
+    "decorators": "[]",
+    "docstring": "Derive a password digest using PBKDF2 and a supplied random salt.",
+    "start_line": 7,
+    "end_line": 9,
+    "raw_code": "def hash_password(password: str, salt: str) -> str:\n    \"\"\"Derive a password digest using PBKDF2 and a supplied random salt.\"\"\"\n    return hashlib.pbkdf2_hmac(\"sha256\", password.encode(), salt.encode(), 100000).hex()",
+    "code_hash": "5b34a88ef9b8ad1739d10c5aa33cc10ab59ccd6cd16186166cb2d2168cbc4a94",
+    "token_est": 54,
+    "pagerank": 0.025165803908263815,
+    "summary_short": "Hashes a password using PBKDF2 with a given salt.",
+    "summary_json": {
+      "inputs": "password (str): The password to hash; salt (str): A random salt string.",
+      "raises": [],
+      "purpose": "To securely hash a password for storage, incorporating a salt to prevent rainbow table attacks.",
+      "returns": "A hexadecimal string representing the hashed password.",
+      "one_liner": "Hashes a password using PBKDF2 with a given salt.",
+      "side_effects": [],
+      "notable_logic": "Uses PBKDF2 with SHA-256 and 100,000 iterations for hashing."
+    },
+    "summary_long": null,
+    "ctx_hash": "44ef027012cdaae50ada296ea2c2fef5e278fed0659503c1d2cdac50c9d39687",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "auth/passwords.py\nhash_password\nhash_password\npassword: str, salt: str -> str\nderive a password digest using pbkdf2 and a supplied random salt.\n[\n]\nauth passwords py hash password str salt derive a digest using pbkdf 2 and supplied random",
+    "search": "'2':34 'a':12,18,30 'and':17,35 'auth':22 'auth/passwords.py':1 'derive':11,29 'digest':14,31 'hash':2,4,25 'password':3,5,6,13,26 'passwords':23 'pbkdf':33 'pbkdf2':16 'py':24 'random':20,37 'salt':8,21,28 'str':7,9,10,27 'supplied':19,36 'using':15,32",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000).hex",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      },
+      {
+        "expr": "hashlib.pbkdf2_hmac",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      },
+      {
+        "expr": "password.encode",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      },
+      {
+        "expr": "salt.encode",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "salt": "str",
+        "password": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-4",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "utils/retry.py::with_retries.decorate",
+    "file_path": "utils/retry.py",
+    "kind": "nested",
+    "qualname": "with_retries.decorate",
+    "name": "decorate",
+    "parent_id": "utils/retry.py::with_retries",
+    "signature": "function",
+    "decorators": "[]",
+    "docstring": null,
+    "start_line": 11,
+    "end_line": 21,
+    "raw_code": "    def decorate(function):\n        @wraps(function)\n        def wrapped(*args, **kwargs):\n            for index in range(attempts):\n                try:\n                    return function(*args, **kwargs)\n                except RuntimeError:\n                    if index == attempts - 1:\n                        raise\n\n        return wrapped",
+    "code_hash": "c720b8c727be0832e96d0e68770b68f1bf120f6e299cb65dbc3271cc990f04a7",
+    "token_est": 86,
+    "pagerank": 0.0,
+    "summary_short": "A decorator that retries a function a specified number of times upon encountering a RuntimeError.",
+    "summary_json": {
+      "inputs": "A function to be decorated.",
+      "raises": [
+        "RuntimeError if the function continues to fail after the specified number of attempts."
+      ],
+      "purpose": "To provide a mechanism for retrying a function execution in case of a RuntimeError, up to a specified number of attempts.",
+      "returns": "A wrapped function that retries the original function up to 'attempts' times.",
+      "one_liner": "A decorator that retries a function a specified number of times upon encountering a RuntimeError.",
+      "side_effects": [
+        "Retries the execution of the function multiple times if a RuntimeError occurs."
+      ],
+      "notable_logic": "Uses a for loop to attempt the function execution up to 'attempts' times. If a RuntimeError is raised, it checks if it's the last attempt before re-raising the exception."
+    },
+    "summary_long": null,
+    "ctx_hash": "a70791c439391dd55eae95f4d62baa21a65b0acc94e927f8e2035cef4aaef259",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "utils/retry.py\nwith_retries.decorate\ndecorate\nfunction\n[\n]\nutils retry py with retries decorate function",
+    "search": "'decorate':3,10 'function':4,11 'py':7 'retries':9 'retry':6 'utils':5 'utils/retry.py':1 'with':8 'with_retries.decorate':2",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-37",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "auth/tokens.py::TokenError",
+    "file_path": "auth/tokens.py",
+    "kind": "class",
+    "qualname": "TokenError",
+    "name": "TokenError",
+    "parent_id": null,
+    "signature": "",
+    "decorators": "[]",
+    "docstring": "An invalid or unauthenticated access token.",
+    "start_line": 7,
+    "end_line": 8,
+    "raw_code": "class TokenError(ValueError):\n    \"\"\"An invalid or unauthenticated access token.\"\"\"",
+    "code_hash": "1debfc8e9a55c6f65c387067d1eba688492088ff2933a947f3087d017fe65b8c",
+    "token_est": 21,
+    "pagerank": 0.022719111508387617,
+    "summary_short": "An invalid or unauthenticated access token.",
+    "summary_json": {
+      "inputs": "None shown",
+      "raises": [],
+      "purpose": "An invalid or unauthenticated access token.",
+      "returns": "See source",
+      "one_liner": "An invalid or unauthenticated access token.",
+      "side_effects": [],
+      "notable_logic": "Templated from source; no model inference."
+    },
+    "summary_long": null,
+    "ctx_hash": "04c7fc058a075a77fb7720cba162d102580b486f3130298586d706ea96814058",
+    "status": "skipped_trivial",
+    "attempts": 0,
+    "error": null,
+    "search_text": "auth/tokens.py\ntokenerror\ntokenerror\nan invalid or unauthenticated access token.\n[\n]\nauth tokens py token error an invalid or unauthenticated access",
+    "search": "'access':8,19 'an':4,15 'auth':10 'auth/tokens.py':1 'error':14 'invalid':5,16 'or':6,17 'py':12 'token':9,13 'tokenerror':2,3 'tokens':11 'unauthenticated':7,18",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [
+        "ValueError"
+      ],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-6",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "auth/passwords.py::verify_password",
+    "file_path": "auth/passwords.py",
+    "kind": "function",
+    "qualname": "verify_password",
+    "name": "verify_password",
+    "parent_id": null,
+    "signature": "password: str, salt: str, expected: str -> bool",
+    "decorators": "[]",
+    "docstring": "Compare a derived password digest in constant time.",
+    "start_line": 12,
+    "end_line": 14,
+    "raw_code": "def verify_password(password: str, salt: str, expected: str) -> bool:\n    \"\"\"Compare a derived password digest in constant time.\"\"\"\n    return hmac.compare_digest(hash_password(password, salt), expected)",
+    "code_hash": "8cf5a563e5afea352723e0e32a88316bf05a1711f87e56e4da4de0ce70e662d3",
+    "token_est": 51,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Verifies a password against an expected hash using HMAC comparison.",
+    "summary_json": {
+      "inputs": "password: str, salt: str, expected: str",
+      "raises": [],
+      "purpose": "To securely compare a password with its expected hash to prevent timing attacks.",
+      "returns": "bool",
+      "one_liner": "Verifies a password against an expected hash using HMAC comparison.",
+      "side_effects": [],
+      "notable_logic": "Uses hmac.compare_digest to ensure the comparison is done in constant time, preventing timing attacks."
+    },
+    "summary_long": null,
+    "ctx_hash": "5a46044e514f0a596068598a5991016007eb2b1d97630c4c0ae3c75671a6f112",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "auth/passwords.py\nverify_password\nverify_password\npassword: str, salt: str, expected: str -> bool\ncompare a derived password digest in constant time.\n[\n]\nauth passwords py verify password str salt expected bool compare a derived digest in constant time",
+    "search": "'a':14,31 'auth':21 'auth/passwords.py':1 'bool':12,29 'compare':13,30 'constant':19,35 'derived':15,32 'digest':17,33 'expected':10,28 'in':18,34 'password':3,5,6,16,25 'passwords':22 'py':23 'salt':8,27 'str':7,9,11,26 'time':20,36 'verify':2,4,24",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "hmac.compare_digest",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": ""
+      },
+      {
+        "expr": "hash_password",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "salt": "str",
+        "expected": "str",
+        "password": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-5",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "auth/tokens.py::validate_token",
+    "file_path": "auth/tokens.py",
+    "kind": "function",
+    "qualname": "validate_token",
+    "name": "validate_token",
+    "parent_id": null,
+    "signature": "token: str, secret: str -> str",
+    "decorators": "[]",
+    "docstring": "Verify a signed access token and return its user identifier.",
+    "start_line": 17,
+    "end_line": 22,
+    "raw_code": "def validate_token(token: str, secret: str) -> str:\n    \"\"\"Verify a signed access token and return its user identifier.\"\"\"\n    user_id, separator, _ = token.partition(\":\")\n    if not separator or not hmac.compare_digest(token, issue_token(user_id, secret)):\n        raise TokenError(\"Invalid token\")\n    return user_id",
+    "code_hash": "93d85c9ab24c945bc91be65e9e624861d5aa27ccc78e2b7891b733cfaa814632",
+    "token_est": 80,
+    "pagerank": 0.02144919611693804,
+    "summary_short": "Validates a signed access token and returns the user identifier.",
+    "summary_json": {
+      "inputs": "token: str, secret: str",
+      "raises": [
+        "TokenError"
+      ],
+      "purpose": "To verify the authenticity of a token and extract the user identifier from it.",
+      "returns": "str",
+      "one_liner": "Validates a signed access token and returns the user identifier.",
+      "side_effects": [],
+      "notable_logic": "Uses HMAC to compare the provided token with a newly issued token to ensure validity."
+    },
+    "summary_long": null,
+    "ctx_hash": "646a5ab56ba900ef8cd5143495fca9d65e230b5416c24053476abbf15e987ea0",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "auth/tokens.py\nvalidate_token\nvalidate_token\ntoken: str, secret: str -> str\nverify a signed access token and return its user identifier.\n[\n]\nauth tokens py validate token str secret verify a signed access and return its user identifier",
+    "search": "'a':12,29 'access':14,31 'and':16,32 'auth':21 'auth/tokens.py':1 'identifier':20,36 'its':18,34 'py':23 'return':17,33 'secret':8,27 'signed':13,30 'str':7,9,10,26 'token':3,5,6,15,25 'tokens':22 'user':19,35 'validate':2,4,24 'verify':11,28",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "token.partition",
+        "kind": "call",
+        "line": 19,
+        "control_ctx": ""
+      },
+      {
+        "expr": "hmac.compare_digest",
+        "kind": "call",
+        "line": 20,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "issue_token",
+        "kind": "call",
+        "line": 20,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "TokenError",
+        "kind": "call",
+        "line": 21,
+        "control_ctx": "if"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "token": "str",
+        "secret": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-8",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/repository.py::Repository.get",
+    "file_path": "db/repository.py",
+    "kind": "method",
+    "qualname": "Repository.get",
+    "name": "get",
+    "parent_id": "db/repository.py::Repository",
+    "signature": "self, task_id: str -> dict | None",
+    "decorators": "[]",
+    "docstring": "Find a task by its identifier.",
+    "start_line": 19,
+    "end_line": 21,
+    "raw_code": "    def get(self, task_id: str) -> dict | None:\n        \"\"\"Find a task by its identifier.\"\"\"\n        return self.connection.execute(task_id)",
+    "code_hash": "ee8caa159df2f3faac3e9f4a53c12899ce66feaf3a76c6c64f32938313154d7c",
+    "token_est": 35,
+    "pagerank": 0.021870811267734033,
+    "summary_short": "Find a task by its identifier.",
+    "summary_json": {
+      "inputs": "self, task_id: str -> dict | None",
+      "raises": [],
+      "purpose": "Find a task by its identifier.",
+      "returns": "See source",
+      "one_liner": "Find a task by its identifier.",
+      "side_effects": [],
+      "notable_logic": "Templated from source; no model inference."
+    },
+    "summary_long": null,
+    "ctx_hash": "bb6b6424e108077f5bbdd062a13c84005a7922ea008cdead57444483ce477432",
+    "status": "skipped_trivial",
+    "attempts": 0,
+    "error": null,
+    "search_text": "db/repository.py\nrepository.get\nget\nself, task_id: str -> dict | none\nfind a task by its identifier.\n[\n]\ndb repository py get self task id str dict none find a by its identifier",
+    "search": "'a':11,27 'by':13,28 'db':16 'db/repository.py':1 'dict':8,24 'find':10,26 'get':3,19 'id':6,22 'identifier':15,30 'its':14,29 'none':9,25 'py':18 'repository':17 'repository.get':2 'self':4,20 'str':7,23 'task':5,12,21",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "self.connection.execute",
+        "kind": "call",
+        "line": 21,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "task_id": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-18",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/repository.py::Repository",
+    "file_path": "db/repository.py",
+    "kind": "class",
+    "qualname": "Repository",
+    "name": "Repository",
+    "parent_id": null,
+    "signature": "",
+    "decorators": "[]",
+    "docstring": "Store and retrieve tasks through a connection.",
+    "start_line": 6,
+    "end_line": 21,
+    "raw_code": "class Repository:\n    \"\"\"Store and retrieve tasks through a connection.\"\"\"\n\n    def __init__(self, connection: Connection) -> None:\n        self.connection = connection\n\n    def save(self, task: dict) -> dict:\n        \"\"\"Persist a task; missing tasks or identifiers are invalid.\"\"\"\n        if task is None or not task.get(\"id\"):\n            raise ValueError(\"Task requires an id\")\n        self.connection.execute(task[\"id\"], task)\n        return task\n\n    def get(self, task_id: str) -> dict | None:\n        \"\"\"Find a task by its identifier.\"\"\"\n        return self.connection.execute(task_id)",
+    "code_hash": "1359ec2f34335bee53364fc56d9748afb1d8e196853929f834d7efc836870813",
+    "token_est": 148,
+    "pagerank": 0.017457284044773317,
+    "summary_short": "A class for storing and retrieving tasks through a database connection.",
+    "summary_json": {
+      "inputs": "connection: Connection",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To manage task data persistence using a provided database connection.",
+      "returns": "None",
+      "one_liner": "A class for storing and retrieving tasks through a database connection.",
+      "side_effects": [
+        "Sets the `connection` attribute of the instance.",
+        "Retrieves a task from the database.",
+        "Saves a task to the database."
+      ],
+      "notable_logic": "None shown"
+    },
+    "summary_long": null,
+    "ctx_hash": "b8c31822fce34fe91058d831a00ea01c2a0c4bf7837912913cd5085228eb8094",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/repository.py\nrepository\nrepository\nstore and retrieve tasks through a connection.\n[\n]\ndb repository py store and retrieve tasks through a connection",
+    "search": "'a':9,19 'and':5,15 'connection':10,20 'db':11 'db/repository.py':1 'py':13 'repository':2,3,12 'retrieve':6,16 'store':4,14 'tasks':7,17 'through':8,18",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {
+        "connection": "Connection"
+      },
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-16",
+    "layer": 2,
+    "summary_long_hash": null
+  },
+  {
+    "id": "pipeline.py::write_to_db",
+    "file_path": "pipeline.py",
+    "kind": "function",
+    "qualname": "write_to_db",
+    "name": "write_to_db",
+    "parent_id": null,
+    "signature": "repo: Repository, record: dict -> dict",
+    "decorators": "[]",
+    "docstring": "Persist a normalized incoming record through the repository.",
+    "start_line": 12,
+    "end_line": 14,
+    "raw_code": "def write_to_db(repo: Repository, record: dict) -> dict:\n    \"\"\"Persist a normalized incoming record through the repository.\"\"\"\n    return repo.save(record)",
+    "code_hash": "46af8108116da3fb5ac868cfe63ad72c8d3699c382b4e86e44ce6236688dd0e4",
+    "token_est": 39,
+    "pagerank": 0.03638680675774136,
+    "summary_short": "Writes a normalized record to the database using the provided repository.",
+    "summary_json": {
+      "inputs": "repo: Repository, record: dict",
+      "raises": [],
+      "purpose": "To persist a normalized incoming record through the repository.",
+      "returns": "dict",
+      "one_liner": "Writes a normalized record to the database using the provided repository.",
+      "side_effects": [
+        "Writes data to the database"
+      ],
+      "notable_logic": "None shown"
+    },
+    "summary_long": null,
+    "ctx_hash": "ee9bfaeb43c0af02482ac10c2c84b82189dcfb3e364744ba358f52113c905b86",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "pipeline.py\nwrite_to_db\nwrite_to_db\nrepo: repository, record: dict -> dict\npersist a normalized incoming record through the repository.\n[\n]\npipeline py write to db repo repository record dict persist a normalized incoming through the",
+    "search": "'a':14,31 'db':4,7,25 'dict':11,12,29 'incoming':16,33 'normalized':15,32 'persist':13,30 'pipeline':21 'pipeline.py':1 'py':22 'record':10,17,28 'repo':8,26 'repository':9,20,27 'the':19,35 'through':18,34 'to':3,6,24 'write':2,5,23",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "repo.save",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "repo": "Repository",
+        "record": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-24",
+    "layer": 2,
+    "summary_long_hash": null
+  },
+  {
+    "id": "pipeline.py::run_pipeline",
+    "file_path": "pipeline.py",
+    "kind": "function",
+    "qualname": "run_pipeline",
+    "name": "run_pipeline",
+    "parent_id": null,
+    "signature": "repo: Repository, records: list[dict] -> list[dict]",
+    "decorators": "[]",
+    "docstring": "Normalize and write each incoming task record.",
+    "start_line": 17,
+    "end_line": 19,
+    "raw_code": "def run_pipeline(repo: Repository, records: list[dict]) -> list[dict]:\n    \"\"\"Normalize and write each incoming task record.\"\"\"\n    return [transform(repo, record) for record in records]",
+    "code_hash": "0fd83ab73b570da7416a09e3a0314322fd994042bf33dba684420f09105ff8a6",
+    "token_est": 47,
+    "pagerank": 0.015530154078900692,
+    "summary_short": "Runs a pipeline to normalize and write each task record.",
+    "summary_json": {
+      "inputs": "repo: Repository, records: list[dict]",
+      "raises": [],
+      "purpose": "To process a list of task records by normalizing them and writing them to the database.",
+      "returns": "list[dict]",
+      "one_liner": "Runs a pipeline to normalize and write each task record.",
+      "side_effects": [
+        "Writes transformed task records to the database"
+      ],
+      "notable_logic": "Uses a list comprehension to apply the transform function to each record in the records list."
+    },
+    "summary_long": null,
+    "ctx_hash": "bc3bcaafd9ad49b090ca0d2c79b854b8e0709b2b9ace86311b588adadf594b4b",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "pipeline.py\nrun_pipeline\nrun_pipeline\nrepo: repository, records: list[dict] -> list[dict]\nnormalize and write each incoming task record.\n[\n]\npipeline py run repo repository records list dict normalize and write each incoming task record",
+    "search": "'and':14,29 'dict':10,12,27 'each':16,31 'incoming':17,32 'list':9,11,26 'normalize':13,28 'pipeline':3,5,20 'pipeline.py':1 'py':21 'record':19,34 'records':8,25 'repo':6,23 'repository':7,24 'run':2,4,22 'task':18,33 'write':15,30",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "transform",
+        "kind": "call",
+        "line": 19,
+        "control_ctx": "comp"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "repo": "Repository",
+        "records": "list[dict]"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-22",
+    "layer": 4,
+    "summary_long_hash": null
+  },
+  {
+    "id": "services/tasks.py::complete_task",
+    "file_path": "services/tasks.py",
+    "kind": "function",
+    "qualname": "complete_task",
+    "name": "complete_task",
+    "parent_id": null,
+    "signature": "repo: Repository, task_id: str -> dict",
+    "decorators": "[]",
+    "docstring": "Mark an existing task complete; missing tasks raise KeyError.",
+    "start_line": 17,
+    "end_line": 23,
+    "raw_code": "def complete_task(repo: Repository, task_id: str) -> dict:\n    \"\"\"Mark an existing task complete; missing tasks raise KeyError.\"\"\"\n    task = repo.get(task_id)\n    if task is None:\n        raise KeyError(task_id)\n    task[\"done\"] = True\n    return repo.save(task)",
+    "code_hash": "63c8f1ba093d3c1e281a69622b0b66e525248d341fd3fe78b84d3bb54d93519a",
+    "token_est": 66,
+    "pagerank": 0.019453240080855676,
+    "summary_short": "Marks an existing task as complete in the repository.",
+    "summary_json": {
+      "inputs": "repo (Repository), task_id (str)",
+      "raises": [
+        "KeyError if the task with the given task_id does not exist"
+      ],
+      "purpose": "To update the status of a task to 'done' in the database.",
+      "returns": "dict",
+      "one_liner": "Marks an existing task as complete in the repository.",
+      "side_effects": [
+        "Modifies the task in the database by setting its 'done' status to True"
+      ],
+      "notable_logic": "Checks if the task exists; if not, raises KeyError; otherwise, marks the task as complete and saves the change."
+    },
+    "summary_long": null,
+    "ctx_hash": "0df8b2aa0f271a9cd02a62ff3bf7e409d4efa425d1696f4d2b35d5fe6a9b88a5",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "services/tasks.py\ncomplete_task\ncomplete_task\nrepo: repository, task_id: str -> dict\nmark an existing task complete; missing tasks raise keyerror.\n[\n]\nservices tasks py complete task repo repository id str dict mark an existing missing raise key error",
+    "search": "'an':13,32 'complete':2,4,16,24 'dict':11,30 'error':37 'existing':14,33 'id':9,28 'key':36 'keyerror':20 'mark':12,31 'missing':17,34 'py':23 'raise':19,35 'repo':6,26 'repository':7,27 'services':21 'services/tasks.py':1 'str':10,29 'task':3,5,8,15,25 'tasks':18,22",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "repo.get",
+        "kind": "call",
+        "line": 19,
+        "control_ctx": ""
+      },
+      {
+        "expr": "KeyError",
+        "kind": "call",
+        "line": 21,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "repo.save",
+        "kind": "call",
+        "line": 23,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "task": "repo.get"
+      },
+      "param_types": {
+        "repo": "Repository",
+        "task_id": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-28",
+    "layer": 2,
+    "summary_long_hash": null
+  },
+  {
+    "id": "services/tasks.py::create_task",
+    "file_path": "services/tasks.py",
+    "kind": "function",
+    "qualname": "create_task",
+    "name": "create_task",
+    "parent_id": null,
+    "signature": "repo: Repository, title: str -> dict",
+    "decorators": "[\"with_retries(attempts=3)\"]",
+    "docstring": "Create and persist a task, then notify subscribers; retry transient errors.",
+    "start_line": 9,
+    "end_line": 14,
+    "raw_code": "@with_retries(attempts=3)\ndef create_task(repo: Repository, title: str) -> dict:\n    \"\"\"Create and persist a task, then notify subscribers; retry transient errors.\"\"\"\n    task = repo.save({\"id\": title.lower().replace(\" \", \"-\"), \"title\": title})\n    notify(task)\n    return task",
+    "code_hash": "f8fb0d123051bdef7c27dbc0084fb88f894006805b987792a536a08b178e02d9",
+    "token_est": 70,
+    "pagerank": 0.031016019876091424,
+    "summary_short": "Creates a task, persists it to the database, and notifies subscribers with retries for transient errors.",
+    "summary_json": {
+      "inputs": "repo (Repository), title (str)",
+      "raises": [
+        "RuntimeError"
+      ],
+      "purpose": "To handle the creation of a task, its persistence, and notification of subscribers with error handling for transient issues.",
+      "returns": "dict",
+      "one_liner": "Creates a task, persists it to the database, and notifies subscribers with retries for transient errors.",
+      "side_effects": [
+        "Saves a task to the database.",
+        "Sends a task notification by email.",
+        "Retries the task creation process up to 3 times on transient errors."
+      ],
+      "notable_logic": "Uses a decorator factory to retry the task creation process up to 3 times on transient errors."
+    },
+    "summary_long": null,
+    "ctx_hash": "c21723e3ee541dd8e8ee26a2911f303890024d80b85aec0d841de9e02825bcdf",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "services/tasks.py\ncreate_task\ncreate_task\nrepo: repository, title: str -> dict\ncreate and persist a task, then notify subscribers; retry transient errors.\n[\n\"\nw\ni\nt\nh\n_\nr\ne\nt\nr\ni\ne\ns\n(\na\nt\nt\ne\nm\np\nt\ns\n=\n3\n)\n\"\n]\nservices tasks py create task repo repository title str dict and persist a then notify subscribers retry transient errors w i t h r e s m p 3",
+    "search": "'3':41,70 'a':14,33,54 'and':12,52 'create':2,4,11,45 'dict':10,51 'e':27,31,36,66 'errors':21,60 'h':25,64 'i':23,30,62 'm':37,68 'notify':17,56 'p':38,69 'persist':13,53 'py':44 'r':26,29,65 'repo':6,47 'repository':7,48 'retry':19,58 's':32,40,67 'services':42 'services/tasks.py':1 'str':9,50 'subscribers':18,57 't':24,28,34,35,39,63 'task':3,5,15,46 'tasks':43 'then':16,55 'title':8,49 'transient':20,59 'w':22,61",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "with_retries",
+        "kind": "decorator",
+        "line": 9,
+        "control_ctx": ""
+      },
+      {
+        "expr": "repo.save",
+        "kind": "call",
+        "line": 12,
+        "control_ctx": ""
+      },
+      {
+        "expr": "title.lower().replace",
+        "kind": "call",
+        "line": 12,
+        "control_ctx": ""
+      },
+      {
+        "expr": "title.lower",
+        "kind": "call",
+        "line": 12,
+        "control_ctx": ""
+      },
+      {
+        "expr": "notify",
+        "kind": "call",
+        "line": 13,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "task": "repo.save"
+      },
+      "param_types": {
+        "repo": "Repository",
+        "title": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-29",
+    "layer": 2,
+    "summary_long_hash": null
+  },
+  {
+    "id": "services/tasks.py::process",
+    "file_path": "services/tasks.py",
+    "kind": "function",
+    "qualname": "process",
+    "name": "process",
+    "parent_id": null,
+    "signature": "repo: Repository, titles: list[str] -> list[dict]",
+    "decorators": "[]",
+    "docstring": "Process titles into stored task records.",
+    "start_line": 26,
+    "end_line": 28,
+    "raw_code": "def process(repo: Repository, titles: list[str]) -> list[dict]:\n    \"\"\"Process titles into stored task records.\"\"\"\n    return [create_task(repo, title) for title in titles]",
+    "code_hash": "aff7c954308ee1bd1d5a0f78f02bfa8b9e675eb3cabe8816fc983ca6718b5505",
+    "token_est": 43,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Processes a list of titles into stored task records.",
+    "summary_json": {
+      "inputs": "repo: Repository, titles: list[str]",
+      "raises": [],
+      "purpose": "To convert a list of titles into task records and store them.",
+      "returns": "list[dict]",
+      "one_liner": "Processes a list of titles into stored task records.",
+      "side_effects": [
+        "Creates task records in the database.",
+        "Notifies subscribers with retries for transient errors."
+      ],
+      "notable_logic": "Uses list comprehension to call create_task for each title."
+    },
+    "summary_long": null,
+    "ctx_hash": "f11885e8efa50a3acae187fc95ca46c9f0a494c9e7976cf599734e27ffed7eb7",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "services/tasks.py\nprocess\nprocess\nrepo: repository, titles: list[str] -> list[dict]\nprocess titles into stored task records.\n[\n]\nservices tasks py process repo repository titles list str dict into stored task records",
+    "search": "'dict':10,26 'into':13,27 'list':7,9,24 'process':2,3,11,20 'py':19 'records':16,30 'repo':4,21 'repository':5,22 'services':17 'services/tasks.py':1 'stored':14,28 'str':8,25 'task':15,29 'tasks':18 'titles':6,12,23",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "create_task",
+        "kind": "call",
+        "line": 28,
+        "control_ctx": "comp"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "repo": "Repository",
+        "titles": "list[str]"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-30",
+    "layer": 3,
+    "summary_long_hash": null
+  },
+  {
+    "id": "utils/config.py::parse_config",
+    "file_path": "utils/config.py",
+    "kind": "function",
+    "qualname": "parse_config",
+    "name": "parse_config",
+    "parent_id": null,
+    "signature": "text: str -> dict",
+    "decorators": "[]",
+    "docstring": "Parse a JSON configuration object and require an authentication secret.",
+    "start_line": 6,
+    "end_line": 11,
+    "raw_code": "def parse_config(text: str) -> dict:\n    \"\"\"Parse a JSON configuration object and require an authentication secret.\"\"\"\n    config = json.loads(text)\n    if not isinstance(config, dict) or not config.get(\"secret\"):\n        raise ValueError(\"Configuration requires a secret\")\n    return config",
+    "code_hash": "119f9daa94df2605b3a7caa02f7c13db480cd532e43f1e893246338966b0bab7",
+    "token_est": 73,
+    "pagerank": 0.02709293387413644,
+    "summary_short": "Parses a JSON configuration string and checks for a required 'secret' key.",
+    "summary_json": {
+      "inputs": "A JSON configuration string.",
+      "raises": [
+        "ValueError if the configuration is not a dictionary or does not contain a 'secret' key."
+      ],
+      "purpose": "To parse a JSON configuration string and ensure it contains a 'secret' key.",
+      "returns": "A dictionary representing the parsed JSON configuration.",
+      "one_liner": "Parses a JSON configuration string and checks for a required 'secret' key.",
+      "side_effects": [],
+      "notable_logic": "Checks if the parsed JSON is a dictionary and if it contains a 'secret' key."
+    },
+    "summary_long": null,
+    "ctx_hash": "54712ca94cdc9d3f443364f5751ed35ce0657597bfab6ceab1798c953f33749d",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "utils/config.py\nparse_config\nparse_config\ntext: str -> dict\nparse a json configuration object and require an authentication secret.\n[\n]\nutils config py parse text str dict a json configuration object and require an authentication secret",
+    "search": "'a':10,26 'an':16,32 'and':14,30 'authentication':17,33 'config':3,5,20 'configuration':12,28 'dict':8,25 'json':11,27 'object':13,29 'parse':2,4,9,22 'py':21 'require':15,31 'secret':18,34 'str':7,24 'text':6,23 'utils':19 'utils/config.py':1",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "json.loads",
+        "kind": "call",
+        "line": 8,
+        "control_ctx": ""
+      },
+      {
+        "expr": "isinstance",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "config.get",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "ValueError",
+        "kind": "call",
+        "line": 10,
+        "control_ctx": "if"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {
+        "config": "json.loads"
+      },
+      "param_types": {
+        "text": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-35",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "utils/config.py::load_config",
+    "file_path": "utils/config.py",
+    "kind": "function",
+    "qualname": "load_config",
+    "name": "load_config",
+    "parent_id": null,
+    "signature": "path: str -> dict",
+    "decorators": "[]",
+    "docstring": "Read configuration from a file and validate it.",
+    "start_line": 14,
+    "end_line": 17,
+    "raw_code": "def load_config(path: str) -> dict:\n    \"\"\"Read configuration from a file and validate it.\"\"\"\n    with open(path, encoding=\"utf-8\") as file:\n        return parse_config(file.read())",
+    "code_hash": "98f1b7c43ff088ee183b9c3dc0bea1ebd7993f52072f50b9b50e3d5e962232c3",
+    "token_est": 46,
+    "pagerank": 0.013603024113028068,
+    "summary_short": "Reads configuration from a file and validates it.",
+    "summary_json": {
+      "inputs": "path: str",
+      "raises": [
+        "None shown"
+      ],
+      "purpose": "To load and validate a configuration from a specified file path.",
+      "returns": "dict",
+      "one_liner": "Reads configuration from a file and validates it.",
+      "side_effects": [
+        "Reads from a file"
+      ],
+      "notable_logic": "Opens the file at the given path, reads its content, and passes it to the parse_config function for validation."
+    },
+    "summary_long": null,
+    "ctx_hash": "b60311c9a02886982f56060bec01dd5c29ad4f983e4c1078e065128a7a219725",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "utils/config.py\nload_config\nload_config\npath: str -> dict\nread configuration from a file and validate it.\n[\n]\nutils config py load path str dict read configuration from a file and validate it",
+    "search": "'a':12,27 'and':14,29 'config':3,5,18 'configuration':10,25 'dict':8,23 'file':13,28 'from':11,26 'it':16,31 'load':2,4,20 'path':6,21 'py':19 'read':9,24 'str':7,22 'utils':17 'utils/config.py':1 'validate':15,30",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "open",
+        "kind": "call",
+        "line": 16,
+        "control_ctx": "with"
+      },
+      {
+        "expr": "parse_config",
+        "kind": "call",
+        "line": 17,
+        "control_ctx": "with"
+      },
+      {
+        "expr": "file.read",
+        "kind": "call",
+        "line": 17,
+        "control_ctx": "with"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "path": "str"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-34",
+    "layer": 1,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/connection.py::Connection.__init__",
+    "file_path": "db/connection.py",
+    "kind": "method",
+    "qualname": "Connection.__init__",
+    "name": "__init__",
+    "parent_id": "db/connection.py::Connection",
+    "signature": "self -> None",
+    "decorators": "[]",
+    "docstring": null,
+    "start_line": 7,
+    "end_line": 9,
+    "raw_code": "    def __init__(self) -> None:\n        self.rows: dict[str, dict] = {}\n        self.closed = False",
+    "code_hash": "928c17fbecc3912579fc395ce9d6bf5675f978804f5c0a562030e80cd07a9b48",
+    "token_est": 25,
+    "pagerank": 0.017457284044773317,
+    "summary_short": "Initializes a database connection with an empty dictionary for rows and a closed state.",
+    "summary_json": {
+      "inputs": "None",
+      "raises": [],
+      "purpose": "To set up a new database connection object with default attributes.",
+      "returns": "None",
+      "one_liner": "Initializes a database connection with an empty dictionary for rows and a closed state.",
+      "side_effects": [
+        "Initializes the 'rows' attribute as an empty dictionary.",
+        "Sets the 'closed' attribute to False."
+      ],
+      "notable_logic": "None shown"
+    },
+    "summary_long": null,
+    "ctx_hash": "f651b0fdacaa3fb27e66ef928e39f5723c28e7616f18cf432018e4b14ff08d21",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/connection.py\nconnection.__init__\n__init__\nself -> none\n[\n]\ndb connection py init self none",
+    "search": "'connection':7 'connection.__init__':2 'db':6 'db/connection.py':1 'init':3,9 'none':5,11 'py':8 'self':4,10",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {
+        "rows": "dict[str, dict]",
+        "closed": ""
+      },
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-11",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/connection.py::Connection.close",
+    "file_path": "db/connection.py",
+    "kind": "method",
+    "qualname": "Connection.close",
+    "name": "close",
+    "parent_id": "db/connection.py::Connection",
+    "signature": "self -> None",
+    "decorators": "[]",
+    "docstring": "Close the connection.",
+    "start_line": 19,
+    "end_line": 21,
+    "raw_code": "    def close(self) -> None:\n        \"\"\"Close the connection.\"\"\"\n        self.closed = True",
+    "code_hash": "35f2311464fe5756f6a69c8e7e8c93e4a00ad90e7ce32287f13a3b99d169a3a4",
+    "token_est": 23,
+    "pagerank": 0.0,
+    "summary_short": "Sets `closed` of the instance.",
+    "summary_json": {
+      "inputs": "self -> None",
+      "raises": [],
+      "purpose": "Close the connection.",
+      "returns": "See source",
+      "one_liner": "Sets `closed` of the instance.",
+      "side_effects": [],
+      "notable_logic": "Templated from source; no model inference."
+    },
+    "summary_long": null,
+    "ctx_hash": "f9a10b9526079a63916ccffaf1f120fbbb60dcebb75e48b3290919d900840da7",
+    "status": "skipped_trivial",
+    "attempts": 0,
+    "error": null,
+    "search_text": "db/connection.py\nconnection.close\nclose\nself -> none\nclose the connection.\n[\n]\ndb connection py close self none the",
+    "search": "'close':3,6,12 'connection':8,10 'connection.close':2 'db':9 'db/connection.py':1 'none':5,14 'py':11 'self':4,13 'the':7,15",
+    "embed_hash": null,
+    "call_sites": [],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {}
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-12",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "utils/retry.py::with_retries",
+    "file_path": "utils/retry.py",
+    "kind": "function",
+    "qualname": "with_retries",
+    "name": "with_retries",
+    "parent_id": null,
+    "signature": "attempts: int=3",
+    "decorators": "[]",
+    "docstring": "Decorate an operation to retry RuntimeError up to a bounded attempt count.",
+    "start_line": 6,
+    "end_line": 23,
+    "raw_code": "def with_retries(attempts: int = 3):\n    \"\"\"Decorate an operation to retry RuntimeError up to a bounded attempt count.\"\"\"\n    if attempts < 1:\n        raise ValueError(\"Attempts must be positive\")\n\n    def decorate(function):\n        @wraps(function)\n        def wrapped(*args, **kwargs):\n            for index in range(attempts):\n                try:\n                    return function(*args, **kwargs)\n                except RuntimeError:\n                    if index == attempts - 1:\n                        raise\n\n        return wrapped\n\n    return decorate",
+    "code_hash": "e1ab87dc3c2a253b623351c257b11d7aa99fa8ff2f25c4a2fa5166211e2defc3",
+    "token_est": 141,
+    "pagerank": 0.02287930136770141,
+    "summary_short": "A decorator factory that retries a function up to a specified number of attempts on RuntimeError.",
+    "summary_json": {
+      "inputs": "attempts: int = 3",
+      "raises": [
+        "ValueError if the number of attempts is less than 1."
+      ],
+      "purpose": "To provide a mechanism for retrying a function a specified number of times if it raises a RuntimeError.",
+      "returns": "A decorator that can be applied to a function to enable retry behavior.",
+      "one_liner": "A decorator factory that retries a function up to a specified number of attempts on RuntimeError.",
+      "side_effects": [
+        "Retries the decorated function up to the specified number of attempts.",
+        "Raises the original RuntimeError if all attempts fail."
+      ],
+      "notable_logic": "The decorator factory checks if the number of attempts is positive. The returned decorator retries the function up to the specified number of attempts, raising the original RuntimeError if all attempts fail."
+    },
+    "summary_long": null,
+    "ctx_hash": "da76e09356788a849f89201bc4c9e6e12ede2d986a91a99b5c81eac4375f95ac",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "utils/retry.py\nwith_retries\nwith_retries\nattempts: int=3\ndecorate an operation to retry runtimeerror up to a bounded attempt count.\n[\n]\nutils retry py with retries attempts int 3 decorate an operation to runtime error up a bounded attempt count",
+    "search": "'3':8,28 'a':17,36 'an':10,30 'attempt':19,38 'attempts':6,26 'bounded':18,37 'count':20,39 'decorate':9,29 'error':34 'int':7,27 'operation':11,31 'py':23 'retries':3,5,25 'retry':13,22 'runtime':33 'runtimeerror':14 'to':12,16,32 'up':15,35 'utils':21 'utils/retry.py':1 'with':2,4,24",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "ValueError",
+        "kind": "call",
+        "line": 9,
+        "control_ctx": "if"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "attempts": "int"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-36",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "db/connection.py::Connection.execute",
+    "file_path": "db/connection.py",
+    "kind": "method",
+    "qualname": "Connection.execute",
+    "name": "execute",
+    "parent_id": "db/connection.py::Connection",
+    "signature": "self, key: str, value: dict | None=None -> dict | None",
+    "decorators": "[]",
+    "docstring": "Read or write a row; reject operations after close.",
+    "start_line": 11,
+    "end_line": 17,
+    "raw_code": "    def execute(self, key: str, value: dict | None = None) -> dict | None:\n        \"\"\"Read or write a row; reject operations after close.\"\"\"\n        if self.closed:\n            raise RuntimeError(\"Connection is closed\")\n        if value is not None:\n            self.rows[key] = value\n        return self.rows.get(key)",
+    "code_hash": "2149d2f49e3ef1295d6e997f34570fb096a91b5b3a8a78c0b6dd4d98baece89d",
+    "token_est": 80,
+    "pagerank": 0.09354356176415794,
+    "summary_short": "Executes a read or write operation on a row in the database, rejecting operations after the connection is closed.",
+    "summary_json": {
+      "inputs": "key (str): The key for the row; value (dict | None): The value to write, if any.",
+      "raises": [
+        "RuntimeError: If the connection is closed."
+      ],
+      "purpose": "To read or write a row in the database while ensuring that no operations are performed after the connection is closed.",
+      "returns": "dict | None: The value of the row if it exists, otherwise None.",
+      "one_liner": "Executes a read or write operation on a row in the database, rejecting operations after the connection is closed.",
+      "side_effects": [
+        "Writes to self.rows if a value is provided.",
+        "Raises a RuntimeError if the connection is closed."
+      ],
+      "notable_logic": "Checks if the connection is closed before performing any operations."
+    },
+    "summary_long": null,
+    "ctx_hash": "5fa2d6dc8b6fef03ff1ced5222c4ee971b1c2c4202ceebf01d1c7dc3956c1f36",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "db/connection.py\nconnection.execute\nexecute\nself, key: str, value: dict | none=none -> dict | none\nread or write a row; reject operations after close.\n[\n]\ndb connection py execute self key str value dict none read or write a row reject operations after close",
+    "search": "'a':16,35 'after':20,39 'close':21,40 'connection':23 'connection.execute':2 'db':22 'db/connection.py':1 'dict':8,11,30 'execute':3,25 'key':5,27 'none':9,10,12,31 'operations':19,38 'or':14,33 'py':24 'read':13,32 'reject':18,37 'row':17,36 'self':4,26 'str':6,28 'value':7,29 'write':15,34",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "RuntimeError",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": "if"
+      },
+      {
+        "expr": "self.rows.get",
+        "kind": "call",
+        "line": 17,
+        "control_ctx": ""
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "key": "str",
+        "value": "dict"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-13",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "trees.py::is_even",
+    "file_path": "trees.py",
+    "kind": "function",
+    "qualname": "is_even",
+    "name": "is_even",
+    "parent_id": null,
+    "signature": "value: int -> bool",
+    "decorators": "[]",
+    "docstring": "Determine parity through mutual recursion with is_odd.",
+    "start_line": 12,
+    "end_line": 14,
+    "raw_code": "def is_even(value: int) -> bool:\n    \"\"\"Determine parity through mutual recursion with is_odd.\"\"\"\n    return True if value == 0 else is_odd(value - 1)",
+    "code_hash": "5528d32555efa8edd076b6ecd10bd2c23c0f29856730217d2b6ef3eddc7597d2",
+    "token_est": 38,
+    "pagerank": 0.09065754571559635,
+    "summary_short": "Recursively checks if a number is even by calling is_odd.",
+    "summary_json": {
+      "inputs": "value: int",
+      "raises": [],
+      "purpose": "Determine if a given integer is even.",
+      "returns": "bool",
+      "one_liner": "Recursively checks if a number is even by calling is_odd.",
+      "side_effects": [],
+      "notable_logic": "Uses mutual recursion with is_odd to determine parity."
+    },
+    "summary_long": null,
+    "ctx_hash": "1ef3ed68ae862e32af1958e4457e1d32a341944e41cb640dcc15ce7aeb565a46",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "trees.py\nis_even\nis_even\nvalue: int -> bool\ndetermine parity through mutual recursion with is_odd.\n[\n]\ntrees py is even value int bool determine parity through mutual recursion with odd",
+    "search": "'bool':8,23 'determine':9,24 'even':3,5,20 'int':7,22 'is':2,4,15,19 'mutual':12,27 'odd':16,30 'parity':10,25 'py':18 'recursion':13,28 'through':11,26 'trees':17 'trees.py':1 'value':6,21 'with':14,29",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "is_odd",
+        "kind": "call",
+        "line": 14,
+        "control_ctx": "if not (value == 0)"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "value": "int"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-32",
+    "layer": 0,
+    "summary_long_hash": null
+  },
+  {
+    "id": "trees.py::is_odd",
+    "file_path": "trees.py",
+    "kind": "function",
+    "qualname": "is_odd",
+    "name": "is_odd",
+    "parent_id": null,
+    "signature": "value: int -> bool",
+    "decorators": "[]",
+    "docstring": "Determine parity through mutual recursion with is_even.",
+    "start_line": 17,
+    "end_line": 19,
+    "raw_code": "def is_odd(value: int) -> bool:\n    \"\"\"Determine parity through mutual recursion with is_even.\"\"\"\n    return False if value == 0 else is_even(value - 1)",
+    "code_hash": "608dbce2edb89f76ee9adc0e1f3b681e5d4dd7143e595051ef522e4d316a0b7e",
+    "token_est": 38,
+    "pagerank": 0.09065754571559635,
+    "summary_short": "Recursively checks if a number is odd by calling is_even.",
+    "summary_json": {
+      "inputs": "value: int",
+      "raises": [],
+      "purpose": "Determine if a given integer is odd.",
+      "returns": "bool",
+      "one_liner": "Recursively checks if a number is odd by calling is_even.",
+      "side_effects": [],
+      "notable_logic": "Uses mutual recursion with is_even to determine parity."
+    },
+    "summary_long": null,
+    "ctx_hash": "a299f730dbe78bdab0f9b0d2130e975f8e7d4a8dd9285d2543447133c5ae74c2",
+    "status": "done",
+    "attempts": 1,
+    "error": null,
+    "search_text": "trees.py\nis_odd\nis_odd\nvalue: int -> bool\ndetermine parity through mutual recursion with is_even.\n[\n]\ntrees py is odd value int bool determine parity through mutual recursion with even",
+    "search": "'bool':8,23 'determine':9,24 'even':16,30 'int':7,22 'is':2,4,15,19 'mutual':12,27 'odd':3,5,20 'parity':10,25 'py':18 'recursion':13,28 'through':11,26 'trees':17 'trees.py':1 'value':6,21 'with':14,29",
+    "embed_hash": null,
+    "call_sites": [
+      {
+        "expr": "is_even",
+        "kind": "call",
+        "line": 19,
+        "control_ctx": "if not (value == 0)"
+      }
+    ],
+    "extra": {
+      "bases": [],
+      "init_attrs": {},
+      "local_types": {},
+      "param_types": {
+        "value": "int"
+      }
+    },
+    "is_async": false,
+    "is_entrypoint": false,
+    "entry_kind": null,
+    "scc_id": "scc-32",
+    "layer": 0,
+    "summary_long_hash": null
+  }
+]

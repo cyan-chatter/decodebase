@@ -1,0 +1,10 @@
+Saved 17; cached 23; failed 0; 73.1 t/s ━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:41 0:00:00
+Estimated summary generation: 0.022 hours; 36 LLM symbols.
+{"scan": {"parsed": 0, "failed": 0, "unsupported": 0}, "estimate": 
+{"llm_symbols": 36, "trivial_symbols": 4, "prompt_tokens": 12760, 
+"output_tokens": 5400, "hours": 0.022469045553777534, "prefill_tps": 3620.2, 
+"gen_tps": 69.8, "limits": "Estimate excludes schema repairs, chunk reductions, 
+embedding and database I/O."}, "over_budget": false, "symbols": {"saved": 17, 
+"cached": 23, "trivial": 0, "failed": 0, "llm_calls": 17, "interrupted": false, 
+"tokens": 2504, "eval_ns": 34266215998}, "dense": {"count": 0, "failed": true, 
+"error": "'Vector' object is not iterable"}}

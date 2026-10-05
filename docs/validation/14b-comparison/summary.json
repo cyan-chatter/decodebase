@@ -1,0 +1,296 @@
+{
+  "cases": [
+    {
+      "model": "qwen3.5:9b",
+      "kv_type": "f16",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": true,
+      "app_preflight_error": null,
+      "model_vram_bytes": 6052317755,
+      "peak_gpu_gb": 8.32045056,
+      "device_within_10gb": true,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 2.668699691645088,
+      "answer_latency_median_s": 2.2638689309969777,
+      "summary_wall_s": 85.00087663099112,
+      "case": "baseline-f16",
+      "benchmark": {
+        "prefill_tps": 535.5,
+        "gen_tps": 70.5,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7628,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7628,
+          "load_duration": 27075144685,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 38,
+        "partial": 7,
+        "incorrect": 2,
+        "unanswered": 1
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 5613,
+        "eval_ns": 76269341999
+      },
+      "generated_answer_mean_s": 3.2004500154995186,
+      "generated_answer_median_s": 2.408006526493409,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9791666666666666,
+        "cited_recall_at_5": 0.9090277777777778,
+        "citation_validity": 0.9791666666666666,
+        "tokens_per_answer": 1033.6666666666667
+      },
+      "native_generation_tps": 73.71656594528973,
+      "successful_generation_calls": 83
+    },
+    {
+      "model": "qwen3.5:9b",
+      "kv_type": "q8_0",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": true,
+      "app_preflight_error": null,
+      "model_vram_bytes": 5926771750,
+      "peak_gpu_gb": 8.24705024,
+      "device_within_10gb": true,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 2.320039972542569,
+      "answer_latency_median_s": 2.246736683002382,
+      "summary_wall_s": 85.69339345800108,
+      "case": "baseline-q8_0",
+      "benchmark": {
+        "prefill_tps": 3630.6,
+        "gen_tps": 72.5,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7628,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7628,
+          "load_duration": 6634438049,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 36,
+        "partial": 9,
+        "incorrect": 2,
+        "unanswered": 1
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 5628,
+        "eval_ns": 76934476999
+      },
+      "generated_answer_mean_s": 2.782078047800314,
+      "generated_answer_median_s": 2.5048484629951417,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9791666666666666,
+        "cited_recall_at_5": 0.8881944444444444,
+        "citation_validity": 0.9722222222222222,
+        "tokens_per_answer": 1031.5833333333333
+      },
+      "native_generation_tps": 72.45431020011131,
+      "successful_generation_calls": 83
+    },
+    {
+      "model": "qwen2.5-coder:14b",
+      "kv_type": "f16",
+      "completed": null,
+      "error": "RuntimeError: Both models must remain fully GPU-resident",
+      "app_preflight_pass": null,
+      "app_preflight_error": null,
+      "model_vram_bytes": null,
+      "peak_gpu_gb": 11.381243904,
+      "device_within_10gb": false,
+      "sufficient_answers": null,
+      "cached_answers": null,
+      "answer_latency_mean_s": null,
+      "answer_latency_median_s": null,
+      "summary_wall_s": null,
+      "case": "coder14-f16",
+      "benchmark": {
+        "prefill_tps": 2115.5,
+        "gen_tps": 40.1,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7645,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7645,
+          "load_duration": 8402176565,
+          "cache_metrics_available": true
+        }
+      }
+    },
+    {
+      "model": "qwen2.5-coder:14b",
+      "kv_type": "q8_0",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": true,
+      "app_preflight_error": null,
+      "model_vram_bytes": 9847858788,
+      "peak_gpu_gb": 11.34034944,
+      "device_within_10gb": false,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 4.455739281749932,
+      "answer_latency_median_s": 3.3660534165101126,
+      "summary_wall_s": 102.50319862199831,
+      "case": "coder14-q8_0",
+      "benchmark": {
+        "prefill_tps": 2070.9,
+        "gen_tps": 41.0,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7645,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7645,
+          "load_duration": 3081860747,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 36,
+        "partial": 10,
+        "incorrect": 1,
+        "unanswered": 1
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 4645,
+        "eval_ns": 97202492998
+      },
+      "generated_answer_mean_s": 5.344965297900126,
+      "generated_answer_median_s": 3.7454305280043627,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9895833333333334,
+        "cited_recall_at_5": 0.8673611111111111,
+        "citation_validity": 0.9791666666666666,
+        "tokens_per_answer": 1070.2291666666667
+      },
+      "native_generation_tps": 47.49540491193808,
+      "successful_generation_calls": 84
+    },
+    {
+      "model": "qwen3:14b-q4_K_M",
+      "kv_type": "f16",
+      "completed": null,
+      "error": "RuntimeError: Both models must remain fully GPU-resident",
+      "app_preflight_pass": null,
+      "app_preflight_error": null,
+      "model_vram_bytes": null,
+      "peak_gpu_gb": 11.395923968,
+      "device_within_10gb": false,
+      "sufficient_answers": null,
+      "cached_answers": null,
+      "answer_latency_mean_s": null,
+      "answer_latency_median_s": null,
+      "summary_wall_s": null,
+      "case": "qwen14-f16",
+      "benchmark": {
+        "prefill_tps": 2176.0,
+        "gen_tps": 40.7,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7632,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7632,
+          "load_duration": 12028770649,
+          "cache_metrics_available": true
+        }
+      }
+    },
+    {
+      "model": "qwen3:14b-q4_K_M",
+      "kv_type": "q8_0",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": false,
+      "app_preflight_error": "Total VRAM used 10.02 GB exceeds limit 10.0 GB",
+      "model_vram_bytes": 10015725320,
+      "peak_gpu_gb": 11.165237248,
+      "device_within_10gb": false,
+      "sufficient_answers": 48,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 3.2311160672485735,
+      "answer_latency_median_s": 2.4025121789964032,
+      "summary_wall_s": 95.11482710800192,
+      "case": "qwen14-q8_0",
+      "benchmark": {
+        "prefill_tps": 2179.8,
+        "gen_tps": 42.2,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7632,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7632,
+          "load_duration": 3361758201,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 36,
+        "partial": 8,
+        "incorrect": 4,
+        "unanswered": 0
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 4320,
+        "eval_ns": 90211972000
+      },
+      "generated_answer_mean_s": 3.875302993297737,
+      "generated_answer_median_s": 2.5779386364956736,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9895833333333334,
+        "cited_recall_at_5": 0.8666666666666667,
+        "citation_validity": 0.9965277777777778,
+        "tokens_per_answer": 929.7291666666666
+      },
+      "native_generation_tps": 47.672870887434016,
+      "successful_generation_calls": 83
+    }
+  ],
+  "original_residency_restored": true,
+  "default_model_unchanged": true,
+  "kv_default_off": true,
+  "recommendation": "Keep Qwen3.5 9B; neither 14B candidate improves overall source correctness in this single-seed evaluation."
+}

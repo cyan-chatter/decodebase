@@ -1,0 +1,529 @@
+{
+  "commands": [
+    {
+      "name": "final-build",
+      "command": "cfl build eval/sample_repo --resume",
+      "exit_code": 0,
+      "seconds": 4.959596395492554
+    },
+    {
+      "name": "final-status",
+      "command": "cfl status --failed",
+      "exit_code": 0,
+      "seconds": 1.0854113101959229
+    },
+    {
+      "name": "ask",
+      "command": "cfl ask Where are retries handled? --json",
+      "exit_code": 0,
+      "seconds": 2.7351620197296143
+    },
+    {
+      "name": "explain",
+      "command": "cfl explain with_retries --detailed --json",
+      "exit_code": 0,
+      "seconds": 0.8239824771881104
+    },
+    {
+      "name": "explain-cached",
+      "command": "cfl explain with_retries --detailed --json",
+      "exit_code": 0,
+      "seconds": 0.8535048961639404
+    },
+    {
+      "name": "flow",
+      "command": "cfl flow run_pipeline --json",
+      "exit_code": 0,
+      "seconds": 10.462924003601074
+    },
+    {
+      "name": "flow-markdown",
+      "command": "cfl flow run_pipeline --out /home/cyan/shelf/cs/CodeFlowLens/docs/validation/milestones-7-9/flow.md",
+      "exit_code": 0,
+      "seconds": 10.087201595306396
+    },
+    {
+      "name": "cycle",
+      "command": "cfl flow is_even --depth 6 --json",
+      "exit_code": 0,
+      "seconds": 5.4756996631622314
+    },
+    {
+      "name": "eval-full",
+      "command": "cfl eval --full --json",
+      "exit_code": 0,
+      "seconds": 82.27816653251648
+    }
+  ],
+  "gpu_peak_mib": 7701,
+  "gpu_samples": [
+    {
+      "time": 1791068103.8249738,
+      "memory_mib": 7700
+    },
+    {
+      "time": 1791068104.8497734,
+      "memory_mib": 7700
+    },
+    {
+      "time": 1791068105.8711686,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068106.8928387,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068107.9159534,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068108.9366748,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068109.9565418,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068110.9792495,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068112.0027285,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068113.0240521,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068114.0458171,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068115.0679781,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068116.0907788,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068117.1121466,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068118.1334412,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068119.1583214,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068120.1800935,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068121.200498,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068122.2238092,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068123.2468798,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068124.2692695,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068125.2900262,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068126.313269,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068127.3366408,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068128.3594782,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068129.3827896,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068130.4044864,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068131.426987,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068132.450902,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068133.4738412,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068134.497611,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068135.5189757,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068136.541939,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068137.564436,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068138.5865865,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068139.609571,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068140.6298296,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068141.6522794,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068142.6741703,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068143.696013,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068144.7181556,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068145.740486,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068146.7630978,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068147.784277,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068148.8059962,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068149.829406,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068150.8514836,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068151.875354,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068152.8984175,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068153.920984,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068154.941929,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068155.9642158,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068156.9866643,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068158.0078652,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068159.03096,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068160.0525637,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068161.0755868,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068162.0980837,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068163.119654,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068164.1415808,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068165.1640503,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068166.1857777,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068167.207616,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068168.2290869,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068169.2509842,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068170.2733262,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068171.296586,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068172.3189332,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068173.3411276,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068174.3636644,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068175.3868477,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068176.4103923,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068177.432918,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068178.4553475,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068179.4784367,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068180.5012648,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068181.523529,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068182.5454726,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068183.5678375,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068184.5902598,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068185.6129158,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068186.635248,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068187.6582103,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068188.6794086,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068189.70149,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068190.724111,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068191.7457952,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068192.767446,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068193.790792,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068194.813115,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068195.8358507,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068196.858405,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068197.8807042,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068198.9029462,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068199.9263232,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068200.9492915,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068201.9726315,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068202.996088,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068204.0171432,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068205.0408897,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068206.0643013,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068207.086767,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068208.108626,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068209.13255,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068210.1533256,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068211.1766253,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068212.1987703,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068213.2222214,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068214.243636,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068215.2668722,
+      "memory_mib": 7690
+    },
+    {
+      "time": 1791068216.2901442,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068217.3131502,
+      "memory_mib": 7699
+    },
+    {
+      "time": 1791068218.3343163,
+      "memory_mib": 7685
+    },
+    {
+      "time": 1791068219.3576653,
+      "memory_mib": 7701
+    },
+    {
+      "time": 1791068220.3793297,
+      "memory_mib": 7701
+    },
+    {
+      "time": 1791068221.4008725,
+      "memory_mib": 7701
+    },
+    {
+      "time": 1791068222.4236143,
+      "memory_mib": 7692
+    }
+  ]
+}

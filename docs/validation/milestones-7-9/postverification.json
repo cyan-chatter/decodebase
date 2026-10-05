@@ -1,0 +1,112 @@
+[
+  {
+    "artifact": "ask.json",
+    "sufficient": true,
+    "citations": [
+      {
+        "path": "utils/retry.py",
+        "start_line": 6,
+        "end_line": 23
+      },
+      {
+        "path": "services/tasks.py",
+        "start_line": 9,
+        "end_line": 14
+      }
+    ],
+    "warnings": [],
+    "note": "Reverified captured native output with the final filename/module-identifier and cached-warning fixes; model text was not rewritten."
+  },
+  {
+    "artifact": "explain.json",
+    "sufficient": true,
+    "citations": [
+      {
+        "path": "utils/retry.py",
+        "start_line": 6,
+        "end_line": 23
+      }
+    ],
+    "warnings": [],
+    "note": "Reverified captured native output with the final filename/module-identifier and cached-warning fixes; model text was not rewritten."
+  },
+  {
+    "artifact": "explain-cached.json",
+    "sufficient": true,
+    "citations": [
+      {
+        "path": "utils/retry.py",
+        "start_line": 6,
+        "end_line": 23
+      }
+    ],
+    "warnings": [],
+    "note": "Reverified captured native output with the final filename/module-identifier and cached-warning fixes; model text was not rewritten."
+  },
+  {
+    "artifact": "flow.json",
+    "sufficient": true,
+    "citations": [
+      {
+        "path": "pipeline.py",
+        "start_line": 17,
+        "end_line": 19
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 19,
+        "end_line": 19
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 8,
+        "end_line": 8
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 9,
+        "end_line": 9
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 14,
+        "end_line": 14
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 14,
+        "end_line": 14
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 15,
+        "end_line": 15
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 16,
+        "end_line": 16
+      }
+    ],
+    "warnings": [],
+    "note": "Reverified captured native output with the final filename/module-identifier and cached-warning fixes; model text was not rewritten."
+  },
+  {
+    "artifact": "cycle.json",
+    "sufficient": true,
+    "citations": [
+      {
+        "path": "trees.py",
+        "start_line": 12,
+        "end_line": 14
+      },
+      {
+        "path": "trees.py",
+        "start_line": 17,
+        "end_line": 19
+      }
+    ],
+    "warnings": [],
+    "note": "Reverified captured native output with the final filename/module-identifier and cached-warning fixes; model text was not rewritten."
+  }
+]

@@ -27,7 +27,7 @@ def test_summary_cache_and_embedding_cache_skip_generation(indexed_repo, fake_ol
     # indexed_repo prohibits constructing Ollama; provide the existing fake explicitly.
     class Client:
         tags = lambda self: [
-            {"name": "qwen2.5-coder:7b", "digest": "gen-a"},
+            {"name": "qwen3.5:9b", "digest": "gen-a"},
             {"name": "nomic-embed-text:latest", "digest": "embed-a"},
         ]
 
@@ -62,7 +62,7 @@ def test_summary_cache_and_embedding_cache_skip_generation(indexed_repo, fake_ol
     restored.summarize_symbol(id, [("b::save", "Save")])
     assert client.calls == 3
     client.tags = lambda: [
-        {"name": "qwen2.5-coder:7b", "digest": "gen-b"},
+        {"name": "qwen3.5:9b", "digest": "gen-b"},
         {"name": "nomic-embed-text:latest", "digest": "embed-b"},
     ]
     changed = KnowledgeMemory(indexed_repo, client, settings)
@@ -178,7 +178,7 @@ def test_unusable_generated_memory_is_not_saved(
     symbol = original(conn, id)
     client = SimpleNamespace(
         tags=lambda: [
-            {"name": "qwen2.5-coder:7b", "digest": "gen"},
+            {"name": "qwen3.5:9b", "digest": "gen"},
             {"name": "nomic-embed-text:latest", "digest": "embed"},
         ],
         generate=lambda *args, **kwargs: SimpleNamespace(

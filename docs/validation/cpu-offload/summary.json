@@ -1,0 +1,597 @@
+{
+  "cases": [
+    {
+      "case": "coder14-f16-cpu-embed",
+      "model": "qwen2.5-coder:14b",
+      "kv_type": "f16",
+      "placement": "cpu-embed",
+      "completed": true,
+      "error": null,
+      "peak_gpu_gb": 11.435769856,
+      "peak_ollama_pss_gb": 9.92809984,
+      "peak_ollama_rss_gb": 9.962172416,
+      "peak_ollama_swap_gb": 0.0,
+      "model_vram_bytes": 10279599471,
+      "app_preflight_pass": false,
+      "app_preflight_error": "Embedder model not fully on GPU (size_vram=0, size=376449269). CPU spill is ~10x slower \u2014 abort.",
+      "cpu_memory_budget_exceeded": false,
+      "sufficient_answers": 46,
+      "cached_answers": 0,
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 4508,
+        "eval_ns": 91782060999
+      },
+      "dense_wall_s": 3.366392744006589,
+      "summary_wall_s": 97.60124751599506,
+      "benchmark": {
+        "prefill_tps": 2124.5,
+        "gen_tps": 41.0,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7645,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7645,
+          "load_duration": 10377071783,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 33,
+        "partial": 11,
+        "incorrect": 2,
+        "unanswered": 2
+      },
+      "generated_answer_mean_s": 4.8119220593507634,
+      "generated_answer_median_s": 3.6065926059964113,
+      "latency_by_question_type": {
+        "behavioral": {
+          "count": 8,
+          "mean_s": 3.5071617283756495,
+          "median_s": 3.48916163299873
+        },
+        "module": {
+          "count": 8,
+          "mean_s": 3.932141257753756,
+          "median_s": 2.83989124600339
+        },
+        "reasoning": {
+          "count": 8,
+          "mean_s": 3.843091657252444,
+          "median_s": 3.530715313005203
+        },
+        "structural": {
+          "count": 8,
+          "mean_s": 0.008963549124018755,
+          "median_s": 0.008716600998013746
+        },
+        "symbol": {
+          "count": 8,
+          "mean_s": 3.0649102774968924,
+          "median_s": 2.7189511734904954
+        },
+        "traversal": {
+          "count": 8,
+          "mean_s": 9.712305375875076,
+          "median_s": 10.440814339002827
+        }
+      },
+      "means": {
+        "retrieved_recall_at_5": 0.9895833333333334,
+        "cited_recall_at_5": 0.8378472222222222,
+        "citation_validity": 0.9479166666666666,
+        "tokens_per_answer": 998.3125
+      },
+      "native_generation_tps": 48.75143451196837
+    },
+    {
+      "case": "qwen14-f16-cpu-embed",
+      "model": "qwen3:14b-q4_K_M",
+      "kv_type": "f16",
+      "placement": "cpu-embed",
+      "completed": true,
+      "error": null,
+      "peak_gpu_gb": 11.336155136,
+      "peak_ollama_pss_gb": 9.84246272,
+      "peak_ollama_rss_gb": 9.87275264,
+      "peak_ollama_swap_gb": 0.0,
+      "model_vram_bytes": 10321636883,
+      "app_preflight_pass": false,
+      "app_preflight_error": "Embedder model not fully on GPU (size_vram=0, size=376449269). CPU spill is ~10x slower \u2014 abort.",
+      "cpu_memory_budget_exceeded": false,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 4357,
+        "eval_ns": 92969055998
+      },
+      "dense_wall_s": 3.21030705900921,
+      "summary_wall_s": 98.24024885499966,
+      "benchmark": {
+        "prefill_tps": 2118.5,
+        "gen_tps": 39.2,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7632,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7632,
+          "load_duration": 10509574393,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 37,
+        "partial": 6,
+        "incorrect": 4,
+        "unanswered": 1
+      },
+      "generated_answer_mean_s": 3.8251388258726364,
+      "generated_answer_median_s": 2.7198344954958884,
+      "latency_by_question_type": {
+        "behavioral": {
+          "count": 8,
+          "mean_s": 2.3701922012478462,
+          "median_s": 2.1835296179997385
+        },
+        "module": {
+          "count": 8,
+          "mean_s": 3.2424694483725034,
+          "median_s": 3.444370715500554
+        },
+        "reasoning": {
+          "count": 8,
+          "mean_s": 2.6324740112468135,
+          "median_s": 2.663528466997377
+        },
+        "structural": {
+          "count": 8,
+          "mean_s": 0.010487180250493111,
+          "median_s": 0.010453491500811651
+        },
+        "symbol": {
+          "count": 8,
+          "mean_s": 3.101806721122557,
+          "median_s": 3.060484802495921
+        },
+        "traversal": {
+          "count": 8,
+          "mean_s": 7.778751747373462,
+          "median_s": 7.796407793495746
+        }
+      },
+      "means": {
+        "retrieved_recall_at_5": 0.9895833333333334,
+        "cited_recall_at_5": 0.8284722222222223,
+        "citation_validity": 0.9791666666666666,
+        "tokens_per_answer": 910.0208333333334
+      },
+      "native_generation_tps": 46.569011144069556
+    },
+    {
+      "case": "qwen27-f16-hybrid",
+      "model": "qwen3.5:27b",
+      "kv_type": "f16",
+      "placement": "hybrid",
+      "completed": true,
+      "error": null,
+      "peak_gpu_gb": 11.774459904,
+      "peak_ollama_pss_gb": 18.033309696,
+      "peak_ollama_rss_gb": 18.063364096,
+      "peak_ollama_swap_gb": 0.11886592,
+      "model_vram_bytes": 9561167624,
+      "app_preflight_pass": false,
+      "app_preflight_error": "Generator model not fully on GPU (size_vram=9561167624, size=17436329897). CPU spill is ~10x slower \u2014 abort.",
+      "cpu_memory_budget_exceeded": false,
+      "sufficient_answers": 48,
+      "cached_answers": 0,
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 6141,
+        "eval_ns": 1472895743000
+      },
+      "dense_wall_s": 3.4389840990043012,
+      "summary_wall_s": 1527.9059106369969,
+      "benchmark": {
+        "prefill_tps": 364.6,
+        "gen_tps": 3.5,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7628,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7628,
+          "load_duration": 22970875774,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 40,
+        "partial": 6,
+        "incorrect": 2,
+        "unanswered": 0
+      },
+      "generated_answer_mean_s": 45.45820407849969,
+      "generated_answer_median_s": 33.43217648100108,
+      "latency_by_question_type": {
+        "behavioral": {
+          "count": 8,
+          "mean_s": 27.446754527873054,
+          "median_s": 25.419133057999716
+        },
+        "module": {
+          "count": 8,
+          "mean_s": 49.49642972524816,
+          "median_s": 49.354590109003766
+        },
+        "reasoning": {
+          "count": 8,
+          "mean_s": 32.19285349512393,
+          "median_s": 31.25390980199154
+        },
+        "structural": {
+          "count": 8,
+          "mean_s": 0.009646963375416817,
+          "median_s": 0.009468255499086808
+        },
+        "symbol": {
+          "count": 8,
+          "mean_s": 28.54058064200217,
+          "median_s": 27.985661751998123
+        },
+        "traversal": {
+          "count": 8,
+          "mean_s": 89.61440200225115,
+          "median_s": 87.04371452250052
+        }
+      },
+      "means": {
+        "retrieved_recall_at_5": 0.9791666666666666,
+        "cited_recall_at_5": 0.96875,
+        "citation_validity": 1.0,
+        "tokens_per_answer": 1114.5416666666667
+      },
+      "native_generation_tps": 4.184969063690749
+    },
+    {
+      "case": "qwen27-q8_0-hybrid",
+      "model": "qwen3.5:27b",
+      "kv_type": "q8_0",
+      "placement": "hybrid",
+      "completed": true,
+      "error": null,
+      "peak_gpu_gb": 11.86463744,
+      "peak_ollama_pss_gb": 17.709064192,
+      "peak_ollama_rss_gb": 17.73891584,
+      "peak_ollama_swap_gb": 0.0,
+      "model_vram_bytes": 9428008958,
+      "app_preflight_pass": false,
+      "app_preflight_error": "Generator model not fully on GPU (size_vram=9428008958, size=17193353867). CPU spill is ~10x slower \u2014 abort.",
+      "cpu_memory_budget_exceeded": false,
+      "sufficient_answers": 48,
+      "cached_answers": 0,
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 6173,
+        "eval_ns": 1490549740000
+      },
+      "dense_wall_s": 3.3379111510002986,
+      "summary_wall_s": 1545.8738039140007,
+      "benchmark": {
+        "prefill_tps": 480.2,
+        "gen_tps": 3.9,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7628,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7628,
+          "load_duration": 21671176879,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 38,
+        "partial": 9,
+        "incorrect": 1,
+        "unanswered": 0
+      },
+      "generated_answer_mean_s": 47.73347789824984,
+      "generated_answer_median_s": 38.30479297800048,
+      "latency_by_question_type": {
+        "behavioral": {
+          "count": 8,
+          "mean_s": 27.219718579750406,
+          "median_s": 26.442052897000394
+        },
+        "module": {
+          "count": 8,
+          "mean_s": 50.83876323437653,
+          "median_s": 45.55246522700327
+        },
+        "reasoning": {
+          "count": 8,
+          "mean_s": 31.034822129624445,
+          "median_s": 29.159442167001544
+        },
+        "structural": {
+          "count": 8,
+          "mean_s": 0.029534986500948435,
+          "median_s": 0.01022596000257181
+        },
+        "symbol": {
+          "count": 8,
+          "mean_s": 31.180793473624362,
+          "median_s": 28.18093431649322
+        },
+        "traversal": {
+          "count": 8,
+          "mean_s": 98.39329207387345,
+          "median_s": 95.20816941849625
+        }
+      },
+      "means": {
+        "retrieved_recall_at_5": 0.9791666666666666,
+        "cited_recall_at_5": 0.9541666666666667,
+        "citation_validity": 1.0,
+        "tokens_per_answer": 1105.2708333333333
+      },
+      "native_generation_tps": 4.098379533420595
+    }
+  ],
+  "previous_comparison": [
+    {
+      "model": "qwen3.5:9b",
+      "kv_type": "f16",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": true,
+      "app_preflight_error": null,
+      "model_vram_bytes": 6052317755,
+      "peak_gpu_gb": 8.32045056,
+      "device_within_10gb": true,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 2.668699691645088,
+      "answer_latency_median_s": 2.2638689309969777,
+      "summary_wall_s": 85.00087663099112,
+      "case": "baseline-f16",
+      "benchmark": {
+        "prefill_tps": 535.5,
+        "gen_tps": 70.5,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7628,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7628,
+          "load_duration": 27075144685,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 38,
+        "partial": 7,
+        "incorrect": 2,
+        "unanswered": 1
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 5613,
+        "eval_ns": 76269341999
+      },
+      "generated_answer_mean_s": 3.2004500154995186,
+      "generated_answer_median_s": 2.408006526493409,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9791666666666666,
+        "cited_recall_at_5": 0.9090277777777778,
+        "citation_validity": 0.9791666666666666,
+        "tokens_per_answer": 1033.6666666666667
+      },
+      "native_generation_tps": 73.71656594528973,
+      "successful_generation_calls": 83
+    },
+    {
+      "model": "qwen3.5:9b",
+      "kv_type": "q8_0",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": true,
+      "app_preflight_error": null,
+      "model_vram_bytes": 5926771750,
+      "peak_gpu_gb": 8.24705024,
+      "device_within_10gb": true,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 2.320039972542569,
+      "answer_latency_median_s": 2.246736683002382,
+      "summary_wall_s": 85.69339345800108,
+      "case": "baseline-q8_0",
+      "benchmark": {
+        "prefill_tps": 3630.6,
+        "gen_tps": 72.5,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7628,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7628,
+          "load_duration": 6634438049,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 36,
+        "partial": 9,
+        "incorrect": 2,
+        "unanswered": 1
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 5628,
+        "eval_ns": 76934476999
+      },
+      "generated_answer_mean_s": 2.782078047800314,
+      "generated_answer_median_s": 2.5048484629951417,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9791666666666666,
+        "cited_recall_at_5": 0.8881944444444444,
+        "citation_validity": 0.9722222222222222,
+        "tokens_per_answer": 1031.5833333333333
+      },
+      "native_generation_tps": 72.45431020011131,
+      "successful_generation_calls": 83
+    },
+    {
+      "model": "qwen2.5-coder:14b",
+      "kv_type": "q8_0",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": true,
+      "app_preflight_error": null,
+      "model_vram_bytes": 9847858788,
+      "peak_gpu_gb": 11.34034944,
+      "device_within_10gb": false,
+      "sufficient_answers": 47,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 4.455739281749932,
+      "answer_latency_median_s": 3.3660534165101126,
+      "summary_wall_s": 102.50319862199831,
+      "case": "coder14-q8_0",
+      "benchmark": {
+        "prefill_tps": 2070.9,
+        "gen_tps": 41.0,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7645,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7645,
+          "load_duration": 3081860747,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 36,
+        "partial": 10,
+        "incorrect": 1,
+        "unanswered": 1
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 4645,
+        "eval_ns": 97202492998
+      },
+      "generated_answer_mean_s": 5.344965297900126,
+      "generated_answer_median_s": 3.7454305280043627,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9895833333333334,
+        "cited_recall_at_5": 0.8673611111111111,
+        "citation_validity": 0.9791666666666666,
+        "tokens_per_answer": 1070.2291666666667
+      },
+      "native_generation_tps": 47.49540491193808,
+      "successful_generation_calls": 84
+    },
+    {
+      "model": "qwen3:14b-q4_K_M",
+      "kv_type": "q8_0",
+      "completed": true,
+      "error": null,
+      "app_preflight_pass": false,
+      "app_preflight_error": "Total VRAM used 10.02 GB exceeds limit 10.0 GB",
+      "model_vram_bytes": 10015725320,
+      "peak_gpu_gb": 11.165237248,
+      "device_within_10gb": false,
+      "sufficient_answers": 48,
+      "cached_answers": 0,
+      "answer_latency_mean_s": 3.2311160672485735,
+      "answer_latency_median_s": 2.4025121789964032,
+      "summary_wall_s": 95.11482710800192,
+      "case": "qwen14-q8_0",
+      "benchmark": {
+        "prefill_tps": 2179.8,
+        "gen_tps": 42.2,
+        "embed_dim": 768,
+        "truncation_warning": false,
+        "extra": {
+          "prompt_tokens": 7632,
+          "cached_prompt_tokens": 0,
+          "uncached_prompt_tokens": 7632,
+          "load_duration": 3361758201,
+          "cache_metrics_available": true
+        }
+      },
+      "source_review_counts": {
+        "adequate": 36,
+        "partial": 8,
+        "incorrect": 4,
+        "unanswered": 0
+      },
+      "summary_pass": {
+        "saved": 40,
+        "cached": 0,
+        "trivial": 4,
+        "failed": 0,
+        "llm_calls": 35,
+        "interrupted": false,
+        "tokens": 4320,
+        "eval_ns": 90211972000
+      },
+      "generated_answer_mean_s": 3.875302993297737,
+      "generated_answer_median_s": 2.5779386364956736,
+      "generated_answer_count": 40,
+      "means": {
+        "retrieved_recall_at_5": 0.9895833333333334,
+        "cited_recall_at_5": 0.8666666666666667,
+        "citation_validity": 0.9965277777777778,
+        "tokens_per_answer": 929.7291666666666
+      },
+      "native_generation_tps": 47.672870887434016,
+      "successful_generation_calls": 83
+    }
+  ],
+  "original_residency_restored": true,
+  "cpu_budget_gb": 24,
+  "cpu_budget_method": "sampled isolated Ollama-family PSS"
+}

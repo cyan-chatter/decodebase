@@ -1,0 +1,974 @@
+[
+  {
+    "id": "symbol-01",
+    "question": "What does validate_token do?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nThe `validate_token` function in `auth/tokens.py` verifies a signed access token by partitioning it to extract the user ID and comparing the original token against a freshly issued one using HMAC-SHA256 . [auth/tokens.py:19-19] [auth/tokens.py:20-20]\n\nIf the separator is missing or the tokens do not match, it raises a `TokenError`; otherwise, it returns the extracted `user_id`. [auth/tokens.py:20-20] [auth/tokens.py:21-21] [auth/tokens.py:22-22]\n\nLimitations: Supporting knowledge has not been fully validated.",
+    "citations": [
+      {
+        "path": "auth/tokens.py",
+        "start_line": 19,
+        "end_line": 19
+      },
+      {
+        "path": "auth/tokens.py",
+        "start_line": 20,
+        "end_line": 20
+      },
+      {
+        "path": "auth/tokens.py",
+        "start_line": 21,
+        "end_line": 21
+      },
+      {
+        "path": "auth/tokens.py",
+        "start_line": 22,
+        "end_line": 22
+      }
+    ],
+    "warnings": [
+      "Supporting knowledge has not been fully validated."
+    ],
+    "cached": false,
+    "wall_s": 12.257170846000008
+  },
+  {
+    "id": "symbol-02",
+    "question": "How is issue_token signed?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 13.170743313999992
+  },
+  {
+    "id": "symbol-03",
+    "question": "Explain hash_password.",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nThe `hash_password` function in `auth/passwords.py` derives a password digest by encoding both the input password and salt to bytes, computing PBKDF2-HMAC-SHA256 with 100,000 iterations, and returning the result as a hexadecimal string . [auth/passwords.py:9-9]\n\nLimitations: Supporting knowledge has not been fully validated.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "auth/passwords.py",
+        "start_line": 9,
+        "end_line": 9
+      }
+    ],
+    "warnings": [
+      "Supporting knowledge has not been fully validated.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 11.572681522999119
+  },
+  {
+    "id": "symbol-04",
+    "question": "Explain verify_password.",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Supporting knowledge has not been fully validated.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 13.886727365999832
+  },
+  {
+    "id": "symbol-05",
+    "question": "What does Repository.save persist?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nBased on the provided context, `Repository.save` persists a task dictionary (`task`) to the database via a connection. [db/repository.py:16-16]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "db/repository.py",
+        "start_line": 16,
+        "end_line": 16
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 21.368875759999355
+  },
+  {
+    "id": "symbol-06",
+    "question": "What does Repository.get retrieve?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 27.328784820999317
+  },
+  {
+    "id": "symbol-07",
+    "question": "What does transform normalize?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nBased on the provided context, `transform` normalizes a raw task record by converting its `id` to a string and stripping whitespace from its `title`. [pipeline.py:8-8]\n\n`transform` normalizes a task record's identifier (`id`) by casting it to a string, and normalizes the title by stripping whitespace. [pipeline.py:8-8]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "pipeline.py",
+        "start_line": 8,
+        "end_line": 8
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 25.644660384999952
+  },
+  {
+    "id": "symbol-08",
+    "question": "Explain walk_tree recursion.",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Supporting knowledge has not been fully validated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 11.327854244000264
+  },
+  {
+    "id": "module-01",
+    "question": "What is auth responsible for?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 23.044564212000296
+  },
+  {
+    "id": "module-02",
+    "question": "What does db.connection provide?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 24.495584860000235
+  },
+  {
+    "id": "module-03",
+    "question": "What does db.repository provide?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\n*   Initializes with a `connection` attribute . [db/repository.py:9-10]\n\n*   Provides a `save` method to persist a task dictionary (requiring an 'id' key) via `self.connection.execute` . [db/repository.py:16-16]\n\n*   Provides a `get` method to find a task by its identifier via `self.connection.execute` . [db/repository.py:21-21]\n\n*   Extends `Repository` to include an audit marker on writes . [db/repository.py:24-30]\n\n*   Overrides the `save` method to create a shallow copy of the task dictionary with `'audited'` set to `True` before delegating to the parent class's save method . [db/repository.py:27-30]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "db/repository.py",
+        "start_line": 9,
+        "end_line": 10
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 16,
+        "end_line": 16
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 21,
+        "end_line": 21
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 24,
+        "end_line": 30
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 27,
+        "end_line": 30
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 22.120074530999773
+  },
+  {
+    "id": "module-04",
+    "question": "What does services.tasks provide?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 30.817430594999678
+  },
+  {
+    "id": "module-05",
+    "question": "What does services.notifications provide?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nScope `notify`: It returns the output of `send_email(format_notification(task))` . [services/notifications.py:16-16] [services/notifications.py:6-6] [services/notifications.py:11-11]\n\nThe `format_notification` function creates a string like \"Task created: \" + task[\"title\"] . [services/notifications.py:6-6]\n\nThe `send_email` function represents delivery to the email sink by returning the provided message unchanged. [services/notifications.py:11-11]\n\nScope `send_email`: It takes a `message` string as input and returns that same string . [services/notifications.py:9-11]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "services/notifications.py",
+        "start_line": 16,
+        "end_line": 16
+      },
+      {
+        "path": "services/notifications.py",
+        "start_line": 6,
+        "end_line": 6
+      },
+      {
+        "path": "services/notifications.py",
+        "start_line": 11,
+        "end_line": 11
+      },
+      {
+        "path": "services/notifications.py",
+        "start_line": 9,
+        "end_line": 11
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 20.120198681000147
+  },
+  {
+    "id": "module-06",
+    "question": "What does utils.retry provide?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 15.7104488089999
+  },
+  {
+    "id": "module-07",
+    "question": "What does utils.config provide?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\n2.  **`parse_config(text: str)`**: This function parses a JSON configuration object and requires an authentication secret. [utils/config.py:6-11]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "utils/config.py",
+        "start_line": 6,
+        "end_line": 11
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 23.624966710999615
+  },
+  {
+    "id": "module-08",
+    "question": "What does api.routes provide?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nSpecifically, it offers a `route` function that accepts a path string and returns an inner `decorate` function. [api/routes.py:8-15]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "api/routes.py",
+        "start_line": 8,
+        "end_line": 15
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 19.739734460000363
+  },
+  {
+    "id": "behavioral-01",
+    "question": "Where are transient RuntimeError retries handled?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nTransient `RuntimeError` retries are handled by the `with_retries` decorator defined in `utils/retry.py`. [utils/retry.py:6-23]\n\nThe decorator accepts an `attempts` argument (defaulting to 3) and validates that it is at least 1  . [utils/retry.py:6-23]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "utils/retry.py",
+        "start_line": 6,
+        "end_line": 23
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 24.677778078999836
+  },
+  {
+    "id": "behavioral-02",
+    "question": "Where are task notifications formatted and delivered?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\n- Formatting: The `format_notification` function formats a task notification using its title, returning a string like `\"Task created: \" + task[\"title\"]`. [services/notifications.py:6-6]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "services/notifications.py",
+        "start_line": 6,
+        "end_line": 6
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 21.594575438999527
+  },
+  {
+    "id": "behavioral-03",
+    "question": "Where are task records exported as JSON to disk?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 14.676253919999908
+  },
+  {
+    "id": "behavioral-04",
+    "question": "Where are multiple tasks serialized for export?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 13.257835481000257
+  },
+  {
+    "id": "behavioral-05",
+    "question": "Where are titles processed into stored task records?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\n-  Scope `services/tasks.py::process`: purpose: Process a list of titles into stored task records using the provided repository. [services/tasks.py:26-28]\n\n-  Scope `services/tasks.py::process`: one_liner: Returns a list of task dictionaries by calling create_task for each title in the input list. [services/tasks.py:26-28]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "services/tasks.py",
+        "start_line": 26,
+        "end_line": 28
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 18.4087098279997
+  },
+  {
+    "id": "behavioral-06",
+    "question": "Where is a database connection closed?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\n```python\ndef close(self) -> None:\n    \"\"\"Close the connection.\"\"\"\n    self.closed = True\n``` [db/connection.py:21-21]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "db/connection.py",
+        "start_line": 21,
+        "end_line": 21
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 13.274057350000476
+  },
+  {
+    "id": "behavioral-07",
+    "question": "Where does the command line validate configuration and import records?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 18.744906900999922
+  },
+  {
+    "id": "behavioral-08",
+    "question": "Where is parity implemented with mutual recursion?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nParity is implemented with mutual recursion in the `trees.py` module using the functions `is_even` and `is_odd`. [trees.py:14-14] [trees.py:19-19]\n\nThe file serves as a utility module for tree traversal and parity checking via mutual recursion . [trees.py:12-19]\n\nLimitations: Some supporting knowledge is partial or unvalidated.",
+    "citations": [
+      {
+        "path": "trees.py",
+        "start_line": 14,
+        "end_line": 14
+      },
+      {
+        "path": "trees.py",
+        "start_line": 19,
+        "end_line": 19
+      },
+      {
+        "path": "trees.py",
+        "start_line": 12,
+        "end_line": 19
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated."
+    ],
+    "cached": false,
+    "wall_s": 17.4191431929994
+  },
+  {
+    "id": "traversal-01",
+    "question": "Trace run_pipeline to Repository.save.",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nThe call chain from `run_pipeline` to `Repository.save` follows these steps as described in the context: [pipeline.py:19-19] [pipeline.py:9-9] [pipeline.py:14-14] [db/repository.py:16-16]\n\n- Explanation: After normalizing the record's ID and title, `transform` returns the result of `write_to_db(repo, normalized)`. [pipeline.py:9-9]\n\nLimitations: This is a bounded static call trace; runtime paths and external behavior may be missing.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.\n\n```mermaid\nflowchart TD\n  n0[\"run_pipeline\"]\n  n1[\"transform\"]\n  n0 -->|comp| n1\n  n2[\"write_to_db\"]\n  n1 --> n2\n  n3[\"Repository.save\"]\n  n2 --> n3\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| pipeline.py:17 | run_pipeline |  | root /  |\n| pipeline.py:19 | transform | comp | ast / 0.9 |\n| pipeline.py:9 | write_to_db |  | ast / 0.9 |\n| pipeline.py:14 | Repository.save |  | ast / 0.8 |",
+    "citations": [
+      {
+        "path": "pipeline.py",
+        "start_line": 19,
+        "end_line": 19
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 9,
+        "end_line": 9
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 14,
+        "end_line": 14
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 16,
+        "end_line": 16
+      }
+    ],
+    "warnings": [
+      "Unknown identifier: records",
+      "Unknown identifier: record",
+      "Unknown identifier: records",
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 45.34882185300012
+  },
+  {
+    "id": "traversal-02",
+    "question": "Trace main to the database write.",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nThe call chain begins with `main` calling `run_pipeline` at `cli.py:14`, which then calls `transform` at `pipeline.py:19`. [cli.py:14-14] [pipeline.py:19-19] [pipeline.py:9-9]\n\nLimitations: This is a bounded static call trace; runtime paths and external behavior may be missing.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.\n\n```mermaid\nflowchart TD\n  n0[\"main\"]\n  n1[\"run_pipeline\"]\n  n0 --> n1\n  n2[\"transform\"]\n  n1 -->|comp| n2\n  n3[\"write_to_db\"]\n  n2 --> n3\n  n4[\"Repository.save\"]\n  n3 --> n4\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| cli.py:9 | main |  | root /  |\n| cli.py:14 | run_pipeline |  | ast / 0.95 |\n| pipeline.py:19 | transform | comp | ast / 0.9 |\n| pipeline.py:9 | write_to_db |  | ast / 0.9 |\n| pipeline.py:14 | Repository.save |  | ast / 0.8 |",
+    "citations": [
+      {
+        "path": "cli.py",
+        "start_line": 14,
+        "end_line": 14
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 19,
+        "end_line": 19
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 9,
+        "end_line": 9
+      }
+    ],
+    "warnings": [
+      "Unknown identifier: self.connection.execute",
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 20.189510258000155
+  },
+  {
+    "id": "traversal-03",
+    "question": "Trace create_handler to email delivery.",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nThe call chain from `create_handler` proceeds as follows: [api/routes.py:22-22]\n\n*   `create_handler`: Authenticates a request and initiates task creation. [api/routes.py:21-21]\n\n*   `send_email`: Represents delivery to the email sink by returning the message string. [services/notifications.py:9-11]\n\nLimitations: This is a bounded static call trace; runtime paths and external behavior may be missing.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.\n\n```mermaid\nflowchart TD\n  n0[\"create_handler\"]\n  n1[\"create_task\"]\n  n0 --> n1\n  n2[\"notify\"]\n  n1 --> n2\n  n3[\"send_email\"]\n  n2 --> n3\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| api/routes.py:18 | create_handler |  | root /  |\n| api/routes.py:22 | create_task |  | ast / 0.95 |\n| services/tasks.py:13 | notify |  | ast / 0.95 |\n| services/notifications.py:16 | send_email |  | ast / 0.9 |",
+    "citations": [
+      {
+        "path": "api/routes.py",
+        "start_line": 22,
+        "end_line": 22
+      },
+      {
+        "path": "api/routes.py",
+        "start_line": 21,
+        "end_line": 21
+      },
+      {
+        "path": "services/notifications.py",
+        "start_line": 9,
+        "end_line": 11
+      }
+    ],
+    "warnings": [
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 47.54008567299934
+  },
+  {
+    "id": "traversal-04",
+    "question": "Trace complete_handler to task lookup.",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nScope `complete_handler`: Finally, `Repository.get` executes via `self.connection.execute(task_id)` at `db/repository.py:19-21`. [db/repository.py:21-21]\n\nLimitations: This is a bounded static call trace; runtime paths and external behavior may be missing.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.\n\n```mermaid\nflowchart TD\n  n0[\"complete_handler\"]\n  n1[\"complete_task\"]\n  n0 --> n1\n  n2[\"Repository.get\"]\n  n1 --> n2\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| api/routes.py:25 | complete_handler |  | root /  |\n| api/routes.py:29 | complete_task |  | ast / 0.95 |\n| services/tasks.py:19 | Repository.get |  | ast / 0.8 |",
+    "citations": [
+      {
+        "path": "db/repository.py",
+        "start_line": 21,
+        "end_line": 21
+      }
+    ],
+    "warnings": [
+      "Unknown identifier: authenticate",
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 20.52577494599973
+  },
+  {
+    "id": "traversal-05",
+    "question": "Trace validate_token to token signing.",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).\n\n```mermaid\nflowchart TD\n  n0[\"validate_token\"]\n  n1[\"issue_token\"]\n  n0 -->|if| n1\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| auth/tokens.py:17 | validate_token |  | root /  |\n| auth/tokens.py:20 | issue_token | if | ast / 0.9 |",
+    "citations": [],
+    "warnings": [
+      "Unknown identifier: if",
+      "Unknown identifier: separator",
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 21.67722370699994
+  },
+  {
+    "id": "traversal-06",
+    "question": "Trace services.tasks.process to task persistence.",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).\n\n```mermaid\nflowchart TD\n  n0[\"process\"]\n  n1[\"create_task\"]\n  n0 -->|comp| n1\n  n2[\"Repository.save\"]\n  n1 --> n2\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| services/tasks.py:26 | process |  | root /  |\n| services/tasks.py:28 | create_task | comp | ast / 0.9 |\n| services/tasks.py:12 | Repository.save |  | ast / 0.8 |",
+    "citations": [],
+    "warnings": [
+      "Unknown identifier: root",
+      "Unknown identifier: comp",
+      "Unknown identifier: repo.save",
+      "Unknown identifier: repo.save",
+      "Unknown identifier: self.connection.execute",
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 28.664897171999655
+  },
+  {
+    "id": "traversal-07",
+    "question": "Trace is_even to is_odd.",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).\n\n```mermaid\nflowchart TD\n  n0[\"is_even\"]\n  n1[\"is_odd\"]\n  n0 -->|if not (value == 0)| n1\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| trees.py:12 | is_even |  | root /  |\n| trees.py:14 | is_odd | if not (value == 0) | ast / 0.9 |",
+    "citations": [],
+    "warnings": [
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 12.631686360999993
+  },
+  {
+    "id": "traversal-08",
+    "question": "Trace is_odd to is_even.",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nThe `is_odd` function determines parity by calling `is_even` when the input value is not zero. [trees.py:19-19]\n\nLimitations: This is a bounded static call trace; runtime paths and external behavior may be missing.; Some draft claims failed validation and were removed.\n\n```mermaid\nflowchart TD\n  n0[\"is_odd\"]\n  n1[\"is_even\"]\n  n0 -->|if not (value == 0)| n1\n```\n\n| Call site | Symbol | Enclosing syntax / traversal annotation | Source / confidence |\n| --- | --- | --- | --- |\n| trees.py:17 | is_odd |  | root /  |\n| trees.py:19 | is_even | if not (value == 0) | ast / 0.9 |",
+    "citations": [
+      {
+        "path": "trees.py",
+        "start_line": 19,
+        "end_line": 19
+      }
+    ],
+    "warnings": [
+      "This is a bounded static call trace; runtime paths and external behavior may be missing.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 15.357235798999682
+  },
+  {
+    "id": "structural-01",
+    "question": "What calls validate_token?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: validate_token [auth/tokens.py:17-22]\n- complete_handler [api/routes.py:25-29]; call-site api/routes.py:28 (ast, confidence 0.95)\n- create_handler [api/routes.py:18-22]; call-site api/routes.py:21 (ast, confidence 0.95)",
+    "citations": [
+      {
+        "path": "auth/tokens.py",
+        "start_line": 17,
+        "end_line": 22
+      },
+      {
+        "path": "api/routes.py",
+        "start_line": 25,
+        "end_line": 29
+      },
+      {
+        "path": "api/routes.py",
+        "start_line": 18,
+        "end_line": 22
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.007179654000537994
+  },
+  {
+    "id": "structural-02",
+    "question": "What calls issue_token?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: issue_token [auth/tokens.py:11-14]\n- validate_token [auth/tokens.py:17-22]; call-site auth/tokens.py:20 (ast, confidence 0.9)",
+    "citations": [
+      {
+        "path": "auth/tokens.py",
+        "start_line": 11,
+        "end_line": 14
+      },
+      {
+        "path": "auth/tokens.py",
+        "start_line": 17,
+        "end_line": 22
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.005675266999787709
+  },
+  {
+    "id": "structural-03",
+    "question": "What calls parse_config?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: parse_config [utils/config.py:6-11]\n- main [cli.py:9-14]; call-site cli.py:11 (ast, confidence 0.95)\n- load_config [utils/config.py:14-17]; call-site utils/config.py:17 (ast, confidence 0.9)",
+    "citations": [
+      {
+        "path": "utils/config.py",
+        "start_line": 6,
+        "end_line": 11
+      },
+      {
+        "path": "cli.py",
+        "start_line": 9,
+        "end_line": 14
+      },
+      {
+        "path": "utils/config.py",
+        "start_line": 14,
+        "end_line": 17
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.006801386999541137
+  },
+  {
+    "id": "structural-04",
+    "question": "What calls Repository.save?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: Repository.save [db/repository.py:12-17]\n- AuditedRepository.save [db/repository.py:27-30]; call-site db/repository.py:30 (ast, confidence 0.9)\n- write_to_db [pipeline.py:12-14]; call-site pipeline.py:14 (ast, confidence 0.8)\n- complete_task [services/tasks.py:17-23]; call-site services/tasks.py:23 (ast, confidence 0.8)\n- create_task [services/tasks.py:9-14]; call-site services/tasks.py:12 (ast, confidence 0.8)",
+    "citations": [
+      {
+        "path": "db/repository.py",
+        "start_line": 12,
+        "end_line": 17
+      },
+      {
+        "path": "db/repository.py",
+        "start_line": 27,
+        "end_line": 30
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 12,
+        "end_line": 14
+      },
+      {
+        "path": "services/tasks.py",
+        "start_line": 17,
+        "end_line": 23
+      },
+      {
+        "path": "services/tasks.py",
+        "start_line": 9,
+        "end_line": 14
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.00675507099913375
+  },
+  {
+    "id": "structural-05",
+    "question": "What calls Repository.get?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: Repository.get [db/repository.py:19-21]\n- complete_task [services/tasks.py:17-23]; call-site services/tasks.py:19 (ast, confidence 0.8)",
+    "citations": [
+      {
+        "path": "db/repository.py",
+        "start_line": 19,
+        "end_line": 21
+      },
+      {
+        "path": "services/tasks.py",
+        "start_line": 17,
+        "end_line": 23
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.0070424569994429476
+  },
+  {
+    "id": "structural-06",
+    "question": "What calls notify?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: notify [services/notifications.py:14-16]\n- create_task [services/tasks.py:9-14]; call-site services/tasks.py:13 (ast, confidence 0.95)",
+    "citations": [
+      {
+        "path": "services/notifications.py",
+        "start_line": 14,
+        "end_line": 16
+      },
+      {
+        "path": "services/tasks.py",
+        "start_line": 9,
+        "end_line": 14
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.006703334000121686
+  },
+  {
+    "id": "structural-07",
+    "question": "What calls format_notification?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: format_notification [services/notifications.py:4-6]\n- notify [services/notifications.py:14-16]; call-site services/notifications.py:16 (ast, confidence 0.9)",
+    "citations": [
+      {
+        "path": "services/notifications.py",
+        "start_line": 4,
+        "end_line": 6
+      },
+      {
+        "path": "services/notifications.py",
+        "start_line": 14,
+        "end_line": 16
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.005939779999607708
+  },
+  {
+    "id": "structural-08",
+    "question": "What calls transform?",
+    "status": "partial",
+    "text": "This answer may be incomplete: results cover the indexed static graph within the configured depth and confidence threshold.\nGraph query: callers. Confidence >= 0.6.\nTarget: transform [pipeline.py:6-9]\n- run_pipeline [pipeline.py:17-19]; call-site pipeline.py:19 (ast, confidence 0.9)",
+    "citations": [
+      {
+        "path": "pipeline.py",
+        "start_line": 6,
+        "end_line": 9
+      },
+      {
+        "path": "pipeline.py",
+        "start_line": 17,
+        "end_line": 19
+      }
+    ],
+    "warnings": [],
+    "cached": false,
+    "wall_s": 0.0062111159995765775
+  },
+  {
+    "id": "reasoning-01",
+    "question": "Why could Repository.save fail when task is None?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 19.07317544199941
+  },
+  {
+    "id": "reasoning-02",
+    "question": "Why do operations fail after Connection.close?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 19.417987653999262
+  },
+  {
+    "id": "reasoning-03",
+    "question": "Why is a token with an invalid signature rejected?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\nA token with an invalid signature is rejected because the `validate_token` function compares the incoming token against a freshly issued token using HMAC-SHA256. [auth/tokens.py:20-20]\n\nIf the comparison fails\u2014indicating the signature does not match what was expected given the secret\u2014the function raises a `TokenError`. [auth/tokens.py:21-21]\n\nLimitations: Some supporting knowledge is partial or unvalidated.; The verifier could not establish a complete answer from this evidence.; Some draft claims failed validation and were removed.",
+    "citations": [
+      {
+        "path": "auth/tokens.py",
+        "start_line": 20,
+        "end_line": 20
+      },
+      {
+        "path": "auth/tokens.py",
+        "start_line": 21,
+        "end_line": 21
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 26.362014965000526
+  },
+  {
+    "id": "reasoning-04",
+    "question": "Why does parse_config reject a missing secret?",
+    "status": "partial",
+    "text": "This answer may be incomplete. Only the supported portions are shown.\n\n`parse_config` rejects a missing secret because it validates that the parsed JSON object is a dictionary and that the 'secret' key exists with a truthy value using `get()`, raising a `ValueError` if either check fails. [utils/config.py:9-10]\n\nLimitations: Some supporting knowledge is partial or unvalidated.",
+    "citations": [
+      {
+        "path": "utils/config.py",
+        "start_line": 9,
+        "end_line": 10
+      }
+    ],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated."
+    ],
+    "cached": false,
+    "wall_s": 10.208641510999769
+  },
+  {
+    "id": "reasoning-05",
+    "question": "Why does with_retries reject zero attempts?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Unsupported citation stripped: [Citation: [utils/retry.py:6-23]",
+      "Unknown identifier: attempts"
+    ],
+    "cached": false,
+    "wall_s": 2.204570773999876
+  },
+  {
+    "id": "reasoning-06",
+    "question": "Why are ValueError operations not retried?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 16.03932873299982
+  },
+  {
+    "id": "reasoning-07",
+    "question": "Why does complete_task reject an unknown task id?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 14.45216980799978
+  },
+  {
+    "id": "reasoning-08",
+    "question": "Why does exports.save not write through Repository.save?",
+    "status": "abstained",
+    "text": "I cannot provide a reliable answer from the available source evidence (insufficient context or failed validation).",
+    "citations": [],
+    "warnings": [
+      "Some supporting knowledge is partial or unvalidated.",
+      "The verifier could not establish a complete answer from this evidence.",
+      "Some draft claims failed validation and were removed."
+    ],
+    "cached": false,
+    "wall_s": 11.51553511900056
+  }
+]

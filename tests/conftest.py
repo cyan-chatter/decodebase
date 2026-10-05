@@ -125,3 +125,24 @@ def indexed_repo(pg_conn, tmp_path, monkeypatch):
     assert scan.failed == 0 and scan.parsed == 20
     run_stage2(pg_conn, settings, str(SAMPLE))
     return pg_conn
+
+
+@pytest.fixture
+def ready(pg_conn, tmp_path):
+    from cfl.pipeline.indexer import build_lexical
+    from cfl.pipeline.knowledge import generate_knowledge, validate_knowledge
+    from cfl.pipeline.scan import run_stage1, run_stage2
+    from cfl.pipeline.symbol_pass import run_symbol_pass
+
+    repo = pathlib.Path(__file__).resolve().parents[1] / "eval/sample_repo"
+    settings = Settings(state_dir=str(tmp_path), num_ctx=8192)
+    fake = FakeOllama()
+    fake.source_answers = True
+    with OllamaClient(settings, transport=fake.transport) as client:
+        run_stage1(pg_conn, settings, str(repo))
+        run_stage2(pg_conn, settings, str(repo))
+        assert run_symbol_pass(pg_conn, client, settings).failed == 0
+        generate_knowledge(pg_conn, client, settings)
+        validate_knowledge(pg_conn, client, settings)
+        build_lexical(pg_conn)
+        yield pg_conn, client, settings, fake

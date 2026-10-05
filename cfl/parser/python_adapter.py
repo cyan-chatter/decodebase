@@ -93,6 +93,18 @@ class _CallVisitor(ast.NodeVisitor):
         self.generic_visit(node)
         self._ctrl_stack.pop()
 
+    def visit_IfExp(self, node: ast.IfExp) -> None:
+        # The test runs first; only one branch executes at runtime.
+        self.visit(node.test)
+        condition = ast.unparse(node.test)[:200]
+        for expression, label in (
+            (node.body, "if " + condition),
+            (node.orelse, "if not (" + condition + ")"),
+        ):
+            self._ctrl_stack.append(label)
+            self.visit(expression)
+            self._ctrl_stack.pop()
+
     def visit_For(self, node: ast.For) -> None:
         self._ctrl_stack.append("for")
         self.generic_visit(node)

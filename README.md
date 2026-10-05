@@ -11,7 +11,7 @@ Local code intelligence powered by local LLMs and PostgreSQL.
 
 ## Requirements
 
-Python 3.11+, Docker, Ollama (with qwen2.5-coder:7b and nomic-embed-text pulled).
+Python 3.11+, Docker, Ollama (with qwen3.5:9b, qwen2.5-coder:7b, and nomic-embed-text pulled).
 
 ## Scan and graph queries
 
@@ -168,8 +168,8 @@ Run `cfl db migrate` for the additive memory migration. `KnowledgeMemory` in
 including duplicate-text batching. `SessionMemory` persists recent turns, user
 constraints, and bounded source references; it rehydrates current source, clears old
 answers when the index changes, and budgets source before discussion history.
-These APIs support the upcoming ingestion and chat stages; the build/ask/chat CLI
-pipelines remain scheduled for their milestones. Answer-cache entries require
+The build and answer pipelines use these caches. The interactive chat CLI remains
+scheduled for milestone 11. Answer-cache entries require
 explicit verification and unchanged source evidence.
 
 KV quantization defaults to **off**, using `f16`. Enable it explicitly through
@@ -212,5 +212,62 @@ fixture without changing the production index and restores previous residency.
 
 All 40 selected-model summaries pass the corrected JSON contract. Their content
 still requires the later evidence verification pipeline; contract validity alone
-is not semantic correctness. M7's build-time estimator remains pending, so M6
-records a measured per-symbol projection rather than a completed build estimate.
+is not semantic correctness. The milestone 7 build estimator now measures prefill
+and generation throughput before projecting symbol-pass time.
+
+
+## Milestones 7–9: build, hybrid answers, explanations and flow
+
+```sh
+cfl db migrate
+cfl build eval/sample_repo --estimate
+cfl build eval/sample_repo --resume
+cfl status --failed
+cfl ask "Where are retries handled?"
+cfl ask "What calls validate_token?"       # deterministic graph answer
+cfl ask "What calls validate_token?" --explain
+cfl explain with_retries                  # independently reviewed brief explanation
+cfl explain with_retries --detailed
+cfl flow run_pipeline --depth 4 --out flow.md
+cfl flow is_even --depth 6 --sequence
+cfl eval --full
+```
+
+Builds resume automatically, reusing matching source/context summaries and
+embedding hashes. Ctrl-C saves completed work; `--retry-failed` revisits quarantined
+symbols. `--skip-tests`, `--min-lines N`, and `--priority entrypoints-first` control
+large builds. The estimate covers symbol generation only and excludes file/feature drafts,
+independent validation, model switching, repairs, embeddings, and I/O. A single GPU generation worker enforces context and residency checks.
+
+Dense search uses exact PostgreSQL vector scans, fused with lexical ranks through
+RRF. Graph expansion and model reranking stay off unless explicitly enabled.
+Validated file/feature knowledge is retrieved alongside raw source. Unsupported
+claims and mixed invalid citations are filtered before display; Mermaid comes from
+the parsed graph. Verified answer caches include source evidence and index revisions;
+detailed explanations also invalidate when the target or neighboring evidence changes.
+Citation verification checks source identity and ranges; it does not establish
+that every generated sentence is semantically correct.
+
+Flow diagrams and evidence tables come from the source-ordered graph, including
+conditional call sites, external/unresolved leaves and cycle markers. Generic
+flows respect `--depth` and diagram node limits. Explicit "Trace A to B" questions
+retain the requested path's intermediate evidence and batch its narrative when
+necessary. See [the live GPU validation and source review](docs/validation/milestones-7-9/review.md).
+
+## Accuracy gates and validated knowledge
+
+The generator and RAG model remain **Qwen3.5 9B**, with KV quantization off by default. Builds now require a different installed verifier checkpoint (`qwen2.5-coder:7b` by default):
+
+```sh
+ollama pull qwen3.5:9b
+ollama pull qwen2.5-coder:7b
+cfl build /path/to/repository
+cfl knowledge --json
+cfl knowledge --validate --retry-rejected
+```
+
+The first pass creates symbol/file drafts and model-selected feature candidates; AST graph traversal determines feature membership. The generator is unloaded before the source-only validation pass. Only supported, current knowledge is published for lexical/dense retrieval. Drafts and rejection diagnostics remain available for inspection. Large files use explicitly scoped parts.
+
+`ask`, `explain`, and `flow` buffer generated text until independent review finishes. Output is marked `complete`, `partial`, or `abstained` in JSON. Partial text explicitly says **“This answer may be incomplete.”** Failed validation states **“I cannot provide a reliable answer.”** Valid source tags alone are insufficient. Brief explanations also require review; deterministic graph queries retain their configured scope warning.
+
+Configure `verifier_model`, `verifier_tokenizer_file`, and `num_predict_review` in `cfl.toml` or matching `CFL_*` variables. Changing the verifier invalidates its publication certificates. If the verifier is missing, exceeds its context/output budget, or cannot establish support, the app abstains. Independent review reduces errors; it cannot guarantee zero model mistakes. See [the decision and limits](docs/decisions/0003-validated-knowledge.md).

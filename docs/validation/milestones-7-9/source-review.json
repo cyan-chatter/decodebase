@@ -1,0 +1,515 @@
+{
+  "reviewer": "Codex",
+  "method": "Independent review of all 48 captured answers against eval/sample_repo source; model output is not its own grading oracle.",
+  "reviewed_at": "2026-10-04T04:39:38.450158+05:30",
+  "counts": {
+    "adequate": 36,
+    "partial": 8,
+    "incorrect": 3,
+    "unanswered": 1
+  },
+  "fixture_files": {
+    "api/__init__.py": "5384bfdb2df380b6557cc7a71d16891415bccaa87699406e236f752c6415389f",
+    "api/routes.py": "cc241ec28ff4349fddad773bb41e101f739769cdd329268eacb2cd9c1c367038",
+    "auth/__init__.py": "5384bfdb2df380b6557cc7a71d16891415bccaa87699406e236f752c6415389f",
+    "auth/passwords.py": "496566a2c9b429991ff12c51f25b9629c254f035be9673b8264cff1433c46b49",
+    "auth/tokens.py": "a71276d755574ba294935649715e22d24918a8a588e667deafbbfe775b0a30b9",
+    "cli.py": "f332b5a95184c0d1508244bfd420018e535e817d115bc7e2f64c878ebdfbb99d",
+    "db/__init__.py": "5384bfdb2df380b6557cc7a71d16891415bccaa87699406e236f752c6415389f",
+    "db/connection.py": "81d06f66390a37ac4f6a384d903cc870225b3f6a837d53d7f72be9588a8589e2",
+    "db/repository.py": "df35cfd5207f75259a347ae610db126025f92d9cb47ffc36d2274ac3771e958f",
+    "exports.py": "a41e46e5d857df2571e2ecf9695b9d0073dbed8d23e77aa680c13498392cab7f",
+    "pipeline.py": "6b46f58015774a237c31b3d28dbd63dd6460c816d349b4fa1bf8d79a4ab277b1",
+    "services/__init__.py": "5384bfdb2df380b6557cc7a71d16891415bccaa87699406e236f752c6415389f",
+    "services/notifications.py": "5f157dd3d417fde1fd33162d4970c9d13d7cc8ebfb2eeeaef424ee22a631842b",
+    "services/tasks.py": "72989c33ed58ded55d70fabc825d868371ecd51969e133459a3438b6ca3b193e",
+    "tests/__init__.py": "5384bfdb2df380b6557cc7a71d16891415bccaa87699406e236f752c6415389f",
+    "tests/test_tasks.py": "8ab616eb295bcfb648335857036f7b6093e786f2ad1d6033f06ae6363fcfc015",
+    "trees.py": "3894690a7b3a2776607aae72ca075b2ff68e142b13c44ec340172d812cbf1b20",
+    "utils/__init__.py": "5384bfdb2df380b6557cc7a71d16891415bccaa87699406e236f752c6415389f",
+    "utils/config.py": "a8b6d4a094f98efbfcfc2debb6a4f8173696044c2f5de4510188f308fce35ca4",
+    "utils/retry.py": "5a1b75a4ca605fdf003f252d23d1b19171801128baefdb6cd5bff8885ebf304b"
+  },
+  "questions": [
+    {
+      "question_id": "symbol-01",
+      "question": "What does validate_token do?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "validate_token partitions the token, compares it to a newly issued HMAC token, raises TokenError on mismatch, and returns user_id.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-02",
+      "question": "How is issue_token signed?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "issue_token computes HMAC-SHA256 with the secret and returns user_id plus the hexadecimal digest.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-03",
+      "question": "Explain hash_password.",
+      "assessment": "partial",
+      "notes": "The core PBKDF2 description is correct; claims of no possible exceptions and unique hashes are stronger than the source establishes.",
+      "reference_source_review": "hash_password invokes PBKDF2-HMAC-SHA256 with password, salt, and 100000 iterations, returning a hex digest.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-04",
+      "question": "Explain verify_password.",
+      "assessment": "partial",
+      "notes": "Constant-time password verification is correct; unconditional no-exception wording is too strong for arbitrary inputs.",
+      "reference_source_review": "verify_password derives a digest with hash_password and compares it to expected using hmac.compare_digest.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-05",
+      "question": "What does Repository.save persist?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Repository.save validates task/id, executes a connection write, and returns the task.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-06",
+      "question": "What does Repository.get retrieve?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Repository.get calls connection.execute with the identifier and returns a record or None.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-07",
+      "question": "What does transform normalize?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Transform converts id to str, strips title whitespace, and forwards the normalized record to write_to_db.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "symbol-08",
+      "question": "Explain walk_tree recursion.",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "walk_tree collects the root name, recursively walks each child, and extends the preorder names list.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-01",
+      "question": "What is auth responsible for?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "auth contains signed token verification and password digest verification; their dependencies provide issuance and hashing.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-02",
+      "question": "What does db.connection provide?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Connection.execute implements read/write and closed-state protection; Connection.close marks it closed.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-03",
+      "question": "What does db.repository provide?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Repository.save and get provide persistence and lookup; AuditedRepository adds a write marker through inheritance.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-04",
+      "question": "What does services.tasks provide?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "create_task saves and notifies; complete_task loads, checks existence, marks done, and saves.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-05",
+      "question": "What does services.notifications provide?",
+      "assessment": "partial",
+      "notes": "The answer explicitly identifies send_email as a stub but still uses actual-email wording for notify. No delivery occurs.",
+      "reference_source_review": "notify joins notification formatting and email-sink delivery; format_notification constructs the title message.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-06",
+      "question": "What does utils.retry provide?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "with_retries validates the attempt bound and builds a wrapper that catches only RuntimeError.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-07",
+      "question": "What does utils.config provide?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "load_config reads the file and delegates to parse_config for JSON-object and secret checks.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "module-08",
+      "question": "What does api.routes provide?",
+      "assessment": "partial",
+      "notes": "The route factory is described, but a handler span is incorrectly cited for that factory and handler capabilities are omitted.",
+      "reference_source_review": "The two decorated handlers authenticate through an import alias, then create or complete a task.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.5,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-01",
+      "question": "Where are transient RuntimeError retries handled?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The nested wrapped function contains the bounded for loop, RuntimeError catch, and final re-raise.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-02",
+      "question": "Where are task notifications formatted and delivered?",
+      "assessment": "incorrect",
+      "notes": "Formatting is located correctly. The fixture send_email only returns a string; no email is delivered.",
+      "reference_source_review": "format_notification creates the message; send_email is the fixture sink and returns that message without real email delivery.",
+      "retrieved_recall_at_5": 0.5,
+      "cited_recall_at_5": 0.5,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-03",
+      "question": "Where are task records exported as JSON to disk?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "exports.save opens a path in write mode and calls json.dump; this is distinct from Repository.save.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-04",
+      "question": "Where are multiple tasks serialized for export?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "exports.process calls json.dumps with sort_keys=True; this is distinct from services.tasks.process.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-05",
+      "question": "Where are titles processed into stored task records?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "services.tasks.process uses a list comprehension to invoke create_task for each title.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-06",
+      "question": "Where is a database connection closed?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Connection.close is the explicit operation setting self.closed=True.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-07",
+      "question": "Where does the command line validate configuration and import records?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "cli.main calls parse_config, constructs Connection and Repository, and delegates records to run_pipeline.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "behavioral-08",
+      "question": "Where is parity implemented with mutual recursion?",
+      "assessment": "unanswered",
+      "notes": "Both parity functions are retrieved, but the model supplies no usable citations even after the bounded repair. The verifier correctly returns insufficient context.",
+      "reference_source_review": "is_even calls is_odd and is_odd calls is_even, with complementary zero base cases.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.0,
+      "citation_validity": 0.0
+    },
+    {
+      "question_id": "traversal-01",
+      "question": "Trace run_pipeline to Repository.save.",
+      "assessment": "partial",
+      "notes": "The complete requested chain is correct; its ordinary endpoint is incorrectly called a recursion leaf. The diagram has no cycle marker there.",
+      "reference_source_review": "Source calls establish run_pipeline -> transform -> write_to_db -> Repository.save.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.75,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-02",
+      "question": "Trace main to the database write.",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "main delegates to run_pipeline, followed by transform, write_to_db, and Repository.save.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.8,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-03",
+      "question": "Trace create_handler to email delivery.",
+      "assessment": "partial",
+      "notes": "The chain and stub return behavior are correct. create_handler is a decorated handler, not a decorator factory; its stored one-liner misleads the narrative.",
+      "reference_source_review": "create_handler delegates to create_task, which calls notify; notify calls send_email.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.75,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-04",
+      "question": "Trace complete_handler to task lookup.",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "complete_handler calls complete_task, which retrieves through Repository.get.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.3333333333333333,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-05",
+      "question": "Trace validate_token to token signing.",
+      "assessment": "incorrect",
+      "notes": "issue_token runs while computing the comparison when separator is truthy; it is not invoked after a failed comparison. The path and source lines are correct.",
+      "reference_source_review": "validate_token directly invokes issue_token when its separator exists.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-06",
+      "question": "Trace services.tasks.process to task persistence.",
+      "assessment": "partial",
+      "notes": "The persistence path is correct. A list comprehension is described as a conditional step rather than iteration.",
+      "reference_source_review": "services.tasks.process invokes create_task, whose repo parameter is annotated Repository and whose body calls repo.save.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.3333333333333333,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-07",
+      "question": "Trace is_even to is_odd.",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "is_even directly invokes is_odd for nonzero input.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "traversal-08",
+      "question": "Trace is_odd to is_even.",
+      "assessment": "partial",
+      "notes": "The mutual recursion and zero base cases are correct. Termination is not guaranteed for negative values; the answer omits that assumption.",
+      "reference_source_review": "is_odd directly invokes is_even for nonzero input.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-01",
+      "question": "What calls validate_token?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only indexed direct callers are create_handler and complete_handler through the authenticate alias.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-02",
+      "question": "What calls issue_token?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only indexed direct caller is validate_token; no fixture test calls issue_token.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-03",
+      "question": "What calls parse_config?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only direct callers are cli.main and utils.config.load_config.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-04",
+      "question": "What calls Repository.save?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "Direct calls come from create_task, complete_task, write_to_db, and AuditedRepository.save through super(); exports.save is unrelated.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-05",
+      "question": "What calls Repository.get?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only direct caller is complete_task; its repo annotation identifies Repository.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-06",
+      "question": "What calls notify?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only direct caller is create_task; tests invoke create_task but not notify directly.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-07",
+      "question": "What calls format_notification?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only direct caller is notify, where its result becomes the send_email argument.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "structural-08",
+      "question": "What calls transform?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The only direct caller is run_pipeline in its list comprehension.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-01",
+      "question": "Why could Repository.save fail when task is None?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The task-is-None guard short-circuits before task.get and raises ValueError; an absent id triggers the same error.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-02",
+      "question": "Why do operations fail after Connection.close?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "close sets the closed flag; execute checks it first and raises RuntimeError before reading or writing.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.5,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-03",
+      "question": "Why is a token with an invalid signature rejected?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "validate_token recomputes the HMAC token and rejects a mismatch with TokenError.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 0.5,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-04",
+      "question": "Why does parse_config reject a missing secret?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "parse_config rejects non-object or false/missing secret configuration with ValueError.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-05",
+      "question": "Why does with_retries reject zero attempts?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "with_retries checks attempts<1 and raises ValueError before creating the decorator.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-06",
+      "question": "Why are ValueError operations not retried?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "The wrapper catches RuntimeError only, so a ValueError propagates immediately without another attempt.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-07",
+      "question": "Why does complete_task reject an unknown task id?",
+      "assessment": "adequate",
+      "notes": "Core answer agrees with the independently reviewed fixture behavior.",
+      "reference_source_review": "complete_task checks the None result of Repository.get and raises KeyError before mutation or saving.",
+      "retrieved_recall_at_5": 1.0,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    },
+    {
+      "question_id": "reasoning-08",
+      "question": "Why does exports.save not write through Repository.save?",
+      "assessment": "incorrect",
+      "notes": "Export independence is explained correctly. Connection.execute manipulates a dictionary in this fixture, not SQL commands.",
+      "reference_source_review": "exports.save uses file I/O and JSON serialization, whereas Repository.save writes through its connection; shared names do not imply calls.",
+      "retrieved_recall_at_5": 0.5,
+      "cited_recall_at_5": 1.0,
+      "citation_validity": 1.0
+    }
+  ]
+}

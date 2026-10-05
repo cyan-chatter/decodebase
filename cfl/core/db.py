@@ -196,9 +196,12 @@ def index_version(conn: psycopg.Connection) -> str:
         "embed_model_digest",
         "prompt_version",
         "schema_version",
+        "summary_schema_version",
         "retrieval_version",
         "router_version",
         "verification_version",
+        "guard_version",
+        "verifier_model_digest",
         "generation_options",
     )
     # One statement gives a consistent metadata snapshot and avoids per-key round trips.
@@ -290,7 +293,7 @@ def list_files(conn: psycopg.Connection) -> list[dict]:
     rows = conn.execute("SELECT * FROM files ORDER BY path").fetchall()
     columns = ["path", "sha256", "language", "size_bytes", "token_est", "parsed_at",
                "summary", "summary_ctx_hash", "parse_status", "parse_error",
-               "imports", "exports", "embed_hash"]
+               "imports", "exports", "embed_hash", "skeleton", "line_count"]
     return [dict(zip(columns, row)) for row in rows]
 
 
@@ -544,8 +547,8 @@ def lookup_symbols(conn: psycopg.Connection, query: str, limit: int) -> list[dic
         name = query
     pattern = "%" + name.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
     sql = """SELECT id, qualname, name, file_path, kind, summary_short, start_line, end_line
-             FROM symbols WHERE (qualname ILIKE %s OR name ILIKE %s)"""
-    params: list = [pattern, pattern]
+             FROM symbols WHERE (qualname ILIKE %s OR name ILIKE %s OR (replace(regexp_replace(file_path, '(/__init__)?[.]py$', ''), '/', '.') || '.' || qualname) ILIKE %s)"""
+    params: list = [pattern, pattern, pattern]
     if sep:
         sql += " AND file_path = %s"
         params.append(file_path.removeprefix("./"))
@@ -578,7 +581,7 @@ def get_symbol(conn: psycopg.Connection, id: str) -> dict | None:
                "decorators", "docstring", "start_line", "end_line", "raw_code", "code_hash",
                "token_est", "pagerank", "summary_short", "summary_json", "summary_long",
                "ctx_hash", "status", "attempts", "error", "search_text", "search", "embed_hash",
-               "call_sites", "extra", "is_async", "is_entrypoint", "entry_kind", "scc_id", "layer"]
+               "call_sites", "extra", "is_async", "is_entrypoint", "entry_kind", "scc_id", "layer", "summary_long_hash"]
     return dict(zip(columns, row))
 
 
@@ -592,7 +595,7 @@ def get_symbols(conn: psycopg.Connection, ids: list[str]) -> list[dict]:
                "decorators", "docstring", "start_line", "end_line", "raw_code", "code_hash",
                "token_est", "pagerank", "summary_short", "summary_json", "summary_long",
                "ctx_hash", "status", "attempts", "error", "search_text", "search", "embed_hash",
-               "call_sites", "extra", "is_async", "is_entrypoint", "entry_kind", "scc_id", "layer"]
+               "call_sites", "extra", "is_async", "is_entrypoint", "entry_kind", "scc_id", "layer", "summary_long_hash"]
     return [dict(zip(columns, row)) for row in rows]
 
 
@@ -608,43 +611,39 @@ def save_symbol_summary(
     summary_short: str,
     summary_long: str | None,
     ctx_hash: str,
+    *, increment_attempts: bool = True,
 ) -> None:
     """Save a completed symbol summary."""
     conn.execute(
         """UPDATE symbols SET summary_json = %s, summary_short = %s, summary_long = %s,
-           ctx_hash = %s, status = 'done', attempts = attempts + 1, error = NULL
+           ctx_hash = %s, status = 'done', attempts = attempts + %s, error = NULL, embed_hash=NULL, summary_long_hash=NULL
            WHERE id = %s""",
-        (json.dumps(summary_json), summary_short, summary_long, ctx_hash, id),
+        (json.dumps(summary_json), summary_short, summary_long, ctx_hash, int(increment_attempts), id),
     )
 
 
-def save_trivial_summary(conn: psycopg.Connection, id: str, summary_short: str) -> None:
-    """Mark a symbol as having a trivial (skipped) summary."""
+def save_trivial_summary(conn, id, summary_short, ctx_hash=None, summary_json=None):
     conn.execute(
-        "UPDATE symbols SET summary_short = %s, status = 'skipped_trivial' WHERE id = %s",
-        (summary_short, id),
+        """UPDATE symbols SET summary_short=%s, summary_json=%s, summary_long=NULL, summary_long_hash=NULL,
+           ctx_hash=%s, status='skipped_trivial', error=NULL, embed_hash=NULL WHERE id=%s""",
+        (summary_short, json.dumps(summary_json) if summary_json else None, ctx_hash, id),
     )
 
 
-def quarantine_symbol(
-    conn: psycopg.Connection,
-    id: str,
-    raw_output: str,
-    error: str,
-) -> None:
-    """Mark a symbol as failed with error details."""
-    error_msg = f"{error}\n---\nRAW---\n{raw_output[:2000]}"
+def quarantine_symbol(conn, id, raw_output, error, *, increment_attempts=True):
     conn.execute(
-        "UPDATE symbols SET status = 'failed', error = %s, attempts = attempts + 1 WHERE id = %s",
-        (error_msg, id),
+        """UPDATE symbols SET status='failed', error=%s, attempts=attempts+%s,
+           summary_short=NULL, summary_json=NULL, summary_long=NULL, ctx_hash=NULL,
+           embed_hash=NULL WHERE id=%s""",
+        (f"{error}\n---\nRAW---\n{raw_output[:2000]}", int(increment_attempts), id),
     )
 
 
-def set_summary_long(conn: psycopg.Connection, id: str, text: str) -> None:
+def set_summary_long(conn: psycopg.Connection, id: str, text: str, cache_hash=None) -> None:
     """Set the long summary for a symbol."""
     conn.execute(
-        "UPDATE symbols SET summary_long = %s WHERE id = %s",
-        (text, id),
+        "UPDATE symbols SET summary_long = %s, summary_long_hash = %s WHERE id = %s",
+        (text, cache_hash, id),
     )
 
 
@@ -656,13 +655,9 @@ def status_counts(conn: psycopg.Connection) -> dict:
     return {row[0]: row[1] for row in rows}
 
 
-def ctx_inputs(conn: psycopg.Connection) -> list[dict]:
-    """Get symbols pending or failed that need context for summarization."""
-    rows = conn.execute(
-        """SELECT id, code_hash, ctx_hash FROM symbols
-           WHERE status IN ('pending', 'failed') ORDER BY layer ASC NULLS LAST, id"""
-    ).fetchall()
-    return [{"id": r[0], "code_hash": r[1], "ctx_hash": r[2]} for r in rows]
+def ctx_inputs(conn):
+    """Current source and summaries for recomputing freshness, including completed rows."""
+    return get_all_symbols(conn)
 
 
 # -----------------------------------------------------------------------------
@@ -920,6 +915,11 @@ def evidence_is_current(conn: psycopg.Connection, evidence: list[dict]) -> bool:
             key in reference for key in ("id", "code_hash", "file_path", "start_line", "end_line")
         ):
             return False
+        if reference["id"].startswith("file:"):
+            file = next((f for f in list_files(conn) if f["path"] == reference["file_path"]), None)
+            if file is None or file["sha256"] != reference["code_hash"] or reference["start_line"] != 1 or reference["end_line"] != max(1, file["line_count"] or 1):
+                return False
+            continue
         symbol = get_symbol(conn, reference["id"])
         if symbol is None or any(
             symbol[key] != reference[key]
@@ -949,7 +949,7 @@ def save_chat_session(
 
 def cached_embeddings(conn: psycopg.Connection, hashes: list[str]) -> dict[str, list[float]]:
     rows = conn.execute(
-        "SELECT hash, vec FROM embeddings WHERE hash = ANY(%s)", (hashes,)
+        "SELECT hash, vec::text FROM embeddings WHERE hash = ANY(%s)", (hashes,)
     ).fetchall()
     return {
         key: [float(value) for value in (json.loads(vector) if isinstance(vector, str) else vector)]
@@ -1016,3 +1016,129 @@ def get_eval_run(conn: psycopg.Connection, run_id: str) -> list[dict]:
         (run_id,),
     ).fetchall()
     return [{'question_id': row[0], 'metrics': row[1], 'config': row[2]} for row in rows]
+
+
+def record_symbol_attempt(conn, ids):
+    conn.execute('UPDATE symbols SET attempts=attempts+1 WHERE id=ANY(%s)', (ids,))
+
+
+def lock_symbol_hashes(conn, ids):
+    return dict(conn.execute('SELECT id, code_hash FROM symbols WHERE id=ANY(%s) FOR UPDATE', (ids,)).fetchall())
+
+
+def set_file_skeleton(conn, path, skeleton, line_count):
+    conn.execute('UPDATE files SET skeleton=%s, line_count=%s WHERE path=%s', (skeleton, line_count, path))
+
+
+def set_embedding_keys(conn, kind, rows):
+    from psycopg import sql
+    table, key = {'symbol': ('symbols', 'id'), 'file': ('files', 'path'),
+                  'feature': ('features', 'id'), 'module': ('module_tree', 'id'),
+                  'knowledge': ('knowledge_drafts', 'id')}[kind]
+    with conn.cursor() as cursor:
+        cursor.executemany(sql.SQL('UPDATE {} SET embed_hash=%s WHERE {}=%s').format(
+            sql.Identifier(table), sql.Identifier(key)), [(r['hash'], r['id']) for r in rows])
+
+
+def summary_units(conn):
+    """Future M10 summaries, with authoritative member source spans."""
+    return [{"id": "knowledge:"+r["id"], "unit_id": r["id"], "kind": "knowledge",
+             "name": r["title"], "summary_short": r["published"], "embed_hash": r["embed_hash"],
+             "knowledge_status": r["status"], "members": evidence_units(conn,r["evidence"])}
+            for r in published_knowledge(conn)]
+
+
+def dense_units(conn, vector, limit):
+    """Exact cosine scan across source and independently published knowledge."""
+    rows = conn.execute('''SELECT kind, id, distance FROM (
+        SELECT 'symbol' AS kind, s.id, e.vec <=> %s::vector AS distance
+        FROM symbols s JOIN embeddings e ON e.hash=s.embed_hash
+        UNION ALL SELECT 'file', f.path, e.vec <=> %s::vector
+        FROM files f JOIN embeddings e ON e.hash=f.embed_hash
+        UNION ALL SELECT 'knowledge', k.id, e.vec <=> %s::vector
+        FROM knowledge_drafts k JOIN embeddings e ON e.hash=k.embed_hash
+        WHERE k.status IN ('complete','partial')
+        ) units ORDER BY distance, kind, id LIMIT %s''', (vector,vector,vector,limit)).fetchall()
+    files = {f['path']: f for f in list_files(conn)}
+    rollups = {r['id']: r for r in summary_units(conn)}
+    result = []
+    for kind, id, distance in rows:
+        if kind == 'symbol':
+            unit = get_symbol(conn,id)
+        elif kind == 'file':
+            f = files[id]
+            unit = {**f, 'id': 'file:'+id, 'kind': 'file', 'file_path': id,
+                    'start_line': 1, 'end_line': max(1,f['line_count'] or 1), 'raw_code': f['skeleton'] or ''}
+        else:
+            unit = rollups.get(kind+':'+id)
+        if unit: result.append({**unit, 'distance': distance})
+    return result
+
+
+def invalidate_summaries(conn):
+    conn.execute("UPDATE symbols SET ctx_hash=NULL, summary_long=NULL, summary_long_hash=NULL, status='pending', error=NULL")
+    bump_epoch(conn)
+
+
+def cached_answer_evidence(conn,key,revision):
+    row=conn.execute('SELECT evidence FROM answer_cache WHERE query_hash=%s AND index_version=%s AND verified',(key,revision)).fetchone()
+    return row[0] if row else []
+
+
+def evidence_units(conn, references):
+    """Hydrate verified cached L0 or symbol evidence from current source metadata."""
+    files = {f['path']: f for f in list_files(conn)}
+    result = []
+    for ref in references:
+        if ref['id'].startswith('file:'):
+            f = files.get(ref['file_path'])
+            if f:
+                result.append({**f, **ref, 'kind': 'file', 'raw_code': f['skeleton'] or ''})
+        else:
+            row = get_symbol(conn, ref['id'])
+            if row: result.append(row)
+    return result
+
+
+def put_knowledge_draft(conn, row):
+    """Replace changed drafts atomically; unchanged review certificates survive resume."""
+    conn.execute('''INSERT INTO knowledge_drafts
+        (id,kind,title,draft,draft_hash,evidence,generator_digest)
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        ON CONFLICT(id) DO UPDATE SET kind=EXCLUDED.kind,title=EXCLUDED.title,
+        draft=EXCLUDED.draft,draft_hash=EXCLUDED.draft_hash,evidence=EXCLUDED.evidence,
+        generator_digest=EXCLUDED.generator_digest,status='pending',published=NULL,embed_hash=NULL,
+        review=NULL,verifier_digest=NULL,guard_version=NULL,updated_at=now()
+        WHERE knowledge_drafts.draft_hash<>EXCLUDED.draft_hash''',
+        (row['id'], row['kind'], row['title'], row['draft'], row['draft_hash'],
+         json.dumps(row['evidence']), row['generator_digest']))
+
+
+def knowledge_drafts(conn):
+    from psycopg.rows import dict_row
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute('SELECT * FROM knowledge_drafts ORDER BY kind,id')
+        return cur.fetchall()
+
+
+def save_knowledge_review(conn, id, draft_hash, status, published, review, digest, version):
+    row = conn.execute('''UPDATE knowledge_drafts SET status=%s,published=%s,review=%s,embed_hash=NULL,
+        verifier_digest=%s,guard_version=%s,updated_at=now() WHERE id=%s AND draft_hash=%s
+        RETURNING id''', (status,published,json.dumps(review),digest,version,id,draft_hash)).fetchone()
+    if not row:
+        raise ValueError('Draft changed during validation')
+
+
+def published_knowledge(conn, ids=None):
+    from cfl.engines.guardrails import GUARD_VERSION
+    rows = knowledge_drafts(conn)
+    wanted = set(ids) if ids is not None else None
+    digest = get_meta(conn, 'verifier_model_digest')
+    return [r for r in rows if (wanted is None or r['id'] in wanted)
+            and r['status'] in {'complete','partial'} and r['published']
+            and r['guard_version'] == GUARD_VERSION and r['verifier_digest'] == digest
+            and evidence_is_current(conn,r['evidence'])]
+
+
+def remove_missing_knowledge(conn, ids):
+    conn.execute('DELETE FROM knowledge_drafts WHERE NOT (id=ANY(%s))', (list(ids),))

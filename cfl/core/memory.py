@@ -30,7 +30,7 @@ def answer_key(question: str, mode: str, settings: dict, session_state: dict | N
 class KnowledgeMemory:
     """Durable source-backed summaries and embeddings; no accumulated ingest history."""
 
-    def __init__(self, conn, client, settings):
+    def __init__(self, conn, client, settings, *, persist_metadata=True):
         self.conn, self.client, self.settings = conn, client, settings
         tags = {row["name"]: row for row in client.tags()}
         self.digests = {}
@@ -52,6 +52,8 @@ class KnowledgeMemory:
                 "kv_quantization_type",
             )
         }
+        if not persist_metadata:
+            return
         with conn.transaction():
             for key, value in {
                 "gen_model_tag": settings.gen_model,
@@ -59,6 +61,8 @@ class KnowledgeMemory:
                 "gen_model_digest": self.digests[settings.gen_model],
                 "embed_model_digest": self.digests[settings.embed_model],
                 "prompt_version": PROMPT_VERSION,
+                "summary_schema_version": SCHEMA_VERSION,
+                "num_ctx": str(settings.num_ctx),
                 "generation_options": json.dumps(self.options, sort_keys=True),
             }.items():
                 db.set_meta(conn, key, value)

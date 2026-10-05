@@ -53,7 +53,7 @@ def test_preflight_rejects_invalid_gpu_or_context(failure):
 
     rows = [
         {
-            "name": "qwen2.5-coder:7b",
+            "name": "qwen3.5:9b",
             "size": 5_000_000_000,
             "size_vram": 5_000_000_000,
             "context_length": 8192,
@@ -83,7 +83,7 @@ def test_preflight_accepts_untagged_latest_alias():
     from cfl.core.preflight import check_residency
 
     rows = [
-        {"name": "qwen2.5-coder:7b", "size": 5, "size_vram": 5, "context_length": 8192},
+        {"name": "qwen3.5:9b", "size": 5, "size_vram": 5, "context_length": 8192},
         {"name": "nomic-embed-text:latest", "size": 1, "size_vram": 1},
     ]
     assert check_residency(SimpleNamespace(ps=lambda: rows), Settings()) == []

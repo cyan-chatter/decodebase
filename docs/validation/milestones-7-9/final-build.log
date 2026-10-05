@@ -1,0 +1,9 @@
+Saved 0; cached 40; failed 0; 0.0 t/s ━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:04 0:00:00
+Estimated summary generation: 0.023 hours; 36 LLM symbols.
+{"scan": {"parsed": 0, "failed": 0, "unsupported": 0}, "estimate": 
+{"llm_symbols": 36, "trivial_symbols": 4, "prompt_tokens": 12760, 
+"output_tokens": 5400, "hours": 0.02283974470366337, "prefill_tps": 3639.6, 
+"gen_tps": 68.6, "limits": "Estimate excludes schema repairs, chunk reductions, 
+embedding and database I/O."}, "over_budget": false, "symbols": {"saved": 0, 
+"cached": 40, "trivial": 0, "failed": 0, "llm_calls": 0, "interrupted": false, 
+"tokens": 0, "eval_ns": 0}, "dense": {"count": 60, "failed": false}}

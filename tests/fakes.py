@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import random
+import re
 import threading
 import time
 
@@ -27,6 +28,15 @@ class _TrackedStream(httpx.SyncByteStream):
 
 class FakeOllama:
     def __init__(self, embed_dim: int = 768) -> None:
+        self.source_answers = False
+        self.review_override = None
+        self.loaded_generator = "qwen3.5:9b"
+        self.answer_text = None
+        self.stable_summary = False
+        self.invalid_outputs = 0
+        self.kill_after = None
+        self.generated = 0
+        self.context_length = 8192
         self.delay = 0.0
         self.prompt_tokens = 100
         self.cached_prompt_tokens: int | None = 0
@@ -70,23 +80,100 @@ class FakeOllama:
                 resp_json = {
                     "models": [
                         {
-                            "name": "qwen2.5-coder:7b",
-                            "model": "qwen2.5-coder:7b",
+                            "name": "qwen3.5:9b",
+                            "model": "qwen3.5:9b",
                             "digest": "generator-digest",
                         },
                         {"name": "nomic-embed-text:latest", "digest": "embedder-digest"},
+                        {"name": "qwen2.5-coder:7b", "digest": "verifier-digest"},
                     ]
                 }
             elif path == "/api/ps":
                 resp_json = {
                     "models": [
-                        {"name": "qwen2.5-coder:7b", "size": 5000000000, "size_vram": 5000000000}
+                        {
+                            "name": self.loaded_generator,
+                            "size": 5000000000,
+                            "size_vram": 5000000000,
+                            "context_length": self.context_length,
+                        },
+                        {
+                            "name": "nomic-embed-text:latest",
+                            "size": 300000000,
+                            "size_vram": 300000000,
+                        },
                     ]
                 }
             elif path == "/api/generate":
+                if body.get("keep_alive") == 0:
+                    if self.loaded_generator == body.get("model"):
+                        self.loaded_generator = None
+                else:
+                    self.loaded_generator = body.get("model", self.loaded_generator)
+                if self.kill_after is not None and self.generated >= self.kill_after:
+                    raise KeyboardInterrupt
+                self.generated += 1
+                self.context_length = body.get("options", {}).get("num_ctx", 8192)
                 prompt = body.get("prompt", "")
                 code = prompt
-                summary = self._make_summary(code, False, body.get("options", {}))
+                summary = self._make_summary(code, self.stable_summary, body.get("options", {}))
+                fmt = body.get("format", {})
+                if isinstance(fmt, dict) and "claims" in fmt.get("properties", {}):
+                    data = json.loads(prompt[prompt.index('{"question"') :])
+                    source = data["sources"][0]
+                    evidence = [
+                        {
+                            "id": source["id"],
+                            "quote": next(
+                                line for line in source["code"].splitlines() if line.strip()
+                            ),
+                        }
+                    ]
+                    value = {
+                        "complete": True,
+                        "missing": [],
+                        "claims": [
+                            {
+                                "index": i,
+                                "verdict": "supported",
+                                "reason": "Test review fixture",
+                                "evidence": evidence,
+                            }
+                            for i, _ in data["claims"]
+                        ],
+                    }
+                    if self.review_override is not None:
+                        value = (
+                            self.review_override(data)
+                            if callable(self.review_override)
+                            else self.review_override
+                        )
+                    summary = json.dumps(value)
+                elif isinstance(fmt, dict) and "explanation" in fmt.get("properties", {}):
+                    data = json.loads(prompt[prompt.index('{"question"') :])
+                    summary = json.dumps(
+                        {
+                            "explanation": "Source-grounded test explanation "
+                            + data["sources"][0]["citation"],
+                            "limitations": [],
+                        }
+                    )
+                elif isinstance(fmt, dict) and "features" in fmt.get("properties", {}):
+                    summary = json.dumps({"features": []})
+                elif (
+                    isinstance(fmt, dict)
+                    and fmt.get("properties")
+                    and "one_liner" not in fmt["properties"]
+                ):
+                    summary = json.dumps(
+                        {
+                            id: json.loads(self._make_summary(code + id, self.stable_summary))
+                            for id in fmt["properties"]
+                        }
+                    )
+                if self.invalid_outputs:
+                    self.invalid_outputs -= 1
+                    summary = "{invalid"
                 resp_json = {
                     "response": summary,
                     "done": True,
@@ -102,6 +189,13 @@ class FakeOllama:
                 messages = body.get("messages", [])
                 code = messages[-1]["content"] if messages else ""
                 summary = self._make_summary(code, False, body.get("options", {}))
+                if self.source_answers:
+                    cites = list(dict.fromkeys(re.findall(r"\[[^\]\n]+:\d+-\d+\]", code)))
+                    summary = (
+                        self.answer_text
+                        if self.answer_text is not None
+                        else "Source-grounded test answer: " + " ".join(cites[:5])
+                    )
                 resp_json = {
                     "message": {"role": "assistant", "content": summary},
                     "done": True,
@@ -129,7 +223,12 @@ class FakeOllama:
 
             if body.get("stream") and path in ("/api/generate", "/api/chat"):
                 key = "response" if path == "/api/generate" else "message"
-                piece = {key: "hello" if key == "response" else {"content": "hello"}, "done": False}
+                piece = {
+                    key: "hello"
+                    if key == "response"
+                    else {"content": summary if self.source_answers else "hello"},
+                    "done": False,
+                }
                 resp_json[key] = "" if key == "response" else {"content": ""}
                 data = (json.dumps(piece) + "\n" + json.dumps(resp_json) + "\n").encode()
                 transferred = True

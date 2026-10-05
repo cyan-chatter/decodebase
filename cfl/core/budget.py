@@ -321,3 +321,15 @@ def output_reserve(task: str, settings: Settings | None = None) -> int:
         "module": 300,
         "one_liner": 300,
     }.get(task, settings.num_predict_symbol)
+
+
+class ChatCounter:
+    """Count the exact single-user-message envelope used by answer calls."""
+
+    def __init__(self, counter):
+        self.counter = counter
+
+    def count(self, text):
+        return self.counter.count(
+            json.dumps([{"role": "user", "content": text}], ensure_ascii=False)
+        )

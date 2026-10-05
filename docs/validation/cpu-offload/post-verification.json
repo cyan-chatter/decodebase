@@ -1,0 +1,47 @@
+{
+  "source_manifest_unchanged": true,
+  "temporary_databases_remaining": [],
+  "current_resident": [
+    {
+      "name": "qwen3.5:9b",
+      "model": "qwen3.5:9b",
+      "size": 5729167604,
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35",
+        "families": [
+          "qwen35"
+        ],
+        "parameter_size": "9.7B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2319-01-14T10:38:14.297267547+05:30",
+      "size_vram": 5729167604,
+      "context_length": 8192
+    },
+    {
+      "name": "nomic-embed-text:latest",
+      "model": "nomic-embed-text:latest",
+      "size": 323150151,
+      "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "nomic-bert",
+        "families": [
+          "nomic-bert"
+        ],
+        "parameter_size": "137M",
+        "quantization_level": "F16"
+      },
+      "expires_at": "2319-01-14T10:38:07.567368283+05:30",
+      "size_vram": 323150151,
+      "context_length": 2048
+    }
+  ],
+  "original_models_and_contexts_restored": true,
+  "default_generator": "qwen3.5:9b",
+  "kv_quantization_default": false
+}

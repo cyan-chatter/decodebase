@@ -36,6 +36,12 @@ def resolve_symbol(conn: Connection, query: str) -> Symbol:
     _, sep, scoped_name = query.partition("::")
     name = scoped_name if sep else query
     ranks = [
+        lambda row: (
+            row["file_path"].removesuffix(".py").removesuffix("/__init__").replace("/", ".")
+            + "."
+            + row["qualname"]
+            == name
+        ),
         lambda row: row["qualname"] == name,
         lambda row: row["name"] == name,
         lambda row: row["qualname"].endswith("." + name),

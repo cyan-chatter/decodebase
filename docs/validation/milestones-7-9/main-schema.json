@@ -1,0 +1,13 @@
+{
+  "before": {
+    "schema_version": "1",
+    "repo_root": null,
+    "build_epoch": null
+  },
+  "after": {
+    "schema_version": "1",
+    "repo_root": null,
+    "build_epoch": null
+  },
+  "source_index_preserved": true
+}
